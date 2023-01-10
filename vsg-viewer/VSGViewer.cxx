@@ -30,19 +30,17 @@ using namespace vsg;
 using namespace std;
 
 VSGViewer::ViewSet::ViewSet() :
-  camera(NULL),
-  view_offset()
+  camera(NULL)
 {
   //
 }
-
-
 
 void VSGViewer::ViewSet::init(const ViewSpec& spec,
                               WindowSet& ws,
                               vsg::ref_ptr<vsg::Viewer> viewer,
                               vsg::ref_ptr<vsg::Group> root,
-                              int zorder,
+			      vsg::ref_ptr<vsg::TrackingViewMatrix> viewmatrix,
+			      int zorder,
                               const std::vector<double>& bg_color)
 {
   cout << "Creating camera " << spec.name << endl;
@@ -69,33 +67,26 @@ void VSGViewer::ViewSet::init(const ViewSpec& spec,
   auto viewportstate = vsg::ViewportState::create
     (spec.portcoords[0],spec.portcoords[1],
      spec.portcoords[2],spec.portcoords[3]);
-  
-  camera = vsg::Camera::create(perspective, view_offset, viewportstate);
 
-  // set up the projection
-
-  // camera->setComputeNearFarMode(vsg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
-
-  // draw in the back buffer
-  //camera->setDrawBuffer(GL_BACK);
-  //camera->setReadBuffer(GL_BACK);
-
-  auto commandgraph = vsg::createCommandGraphForView(window, camera, root);
-  
-
-  if (spec.eye_pos.size() == 3) {
-    view_offset.makeTranslate(AxisTransform::vsgPos(spec.eye_pos));
+  if (spec.eye_pos.size() == 0) {
+    camera = vsg::Camera::create(perspective, viewmatrix, viewportstate);
+  }
+  else if (spec.eye_pos.size() == 3) {
+    auto view_offset = vsg::translate(AxisTransform::vsgPos(spec.eye_pos));
+    auto relview = vsg::RelativeViewMatrix::create(view_offset, viewmatrix);
+    camera = vsg::Camera::create(perspective, relview, viewportstate);
   }
   else if (spec.eye_pos.size() == 6) {
-    vsg::Matrixd trans;
-    trans.makeTranslate(AxisTransform::vsgPos(spec.eye_pos));
-    vsg::Matrixd rot = AxisTransform::vsgRotation
+    auto trans = vsg::translate(AxisTransform::vsgPos(spec.eye_pos));
+    auto rot = AxisTransform::vsgRotation
        (spec.eye_pos[3], spec.eye_pos[4], spec.eye_pos[5]);
-    view_offset = trans * rot;
+    auto view_offset = trans * rot;
+    auto relview = vsg::RelativeViewMatrix::create(view_offset, viewmatrix);
+    camera = vsg::Camera::create(perspective, relview, viewportstate);
   }
-  vsg::Matrixd viewinv = view_offset.inverse(view_offset);
-  camera->setViewMatrix(viewinv);
 
+  auto commandgraph = vsg::createCommandGraphForView(ws.window, camera, root);
+  
   if (spec.overlay.size()) {
     cout << "Looking for overlay " << spec.overlay << endl;
     // not implemented
@@ -106,9 +97,8 @@ void VSGViewer::ViewSet::init(const ViewSpec& spec,
 VSGViewer::VSGViewer() :
   winspec(),
   root(NULL),
-  base_gc(NULL),
+  observer(NULL),
   oviewer(NULL),
-  cviewer(NULL),
   config_dynamic_created(0),
   allow_unknown(false),
   windows(),
@@ -148,24 +138,7 @@ VSGViewer::myCreateWindow(const WinSpec &ws, vsg::ref_ptr<vsg::Group> root)
   // result, to be returned
   WindowSet res;
   res.name = ws.name;
-
-  // check windowing system
-  vsg::GraphicsContext::WindowingSystemInterface* wsi =
-    vsg::GraphicsContext::getWindowingSystemInterface();
-  if (!wsi) {
-    cerr << "cannot access windowing system" << endl;
-    throw (DuecaVSGConfigError());
-  }
-
-  // How many screens?
-  // vsg::GraphicsContext::ScreenIdentifier si;
-  res.traits->readDISPLAY();
-  if (!wsi->getNumScreens(*(res.traits))) {
-    cerr << "No screens available" << endl;
-    throw (DuecaVSGConfigError());
-  }
-  //cerr << "number of screens " << wsi->getNumScreens(*(res.traits));
-  res.traits->setUndefinedScreenDetailsToDefaultScreen();
+  auto traits = vsg::WindowTraits::create();
 
   // get screen size
   vsg::GraphicsContext::ScreenSettings sdata;
@@ -174,10 +147,10 @@ VSGViewer::myCreateWindow(const WinSpec &ws, vsg::ref_ptr<vsg::Group> root)
   // wsi->getScreenResolution(vsg::GraphicsContext::ScreenIdentifier(0),
   //                       width, height);
 
-  res.traits->windowName = ws.name;
-  res.traits->doubleBuffer = true;
-  res.traits->vsync = true;
-  res.traits->useCursor = false;
+  traits->windowTitle = ws.name;
+  traits->doubleBuffer = true;
+  traits->vsync = true;
+  traits->useCursor = false;
 
   // Full screen?
   if (ws.size_and_position.size() == 0) {
@@ -224,16 +197,27 @@ namespace dueca {
 void VSGViewer::init(bool waitswap)
 {
   // create root
-  root = vsg::Group::create();
   options = vsg::Options::create();
   options->fileCache = vsg::getEnv("VSG_FILE_CACHE");
   options->paths = vsg::getEnvPaths("VSG_FILE_PATH");
+
+  // add vsgXchange reading and writing of 3rd party file formats
   options->add(vsgXchange::all::create());
 
   // create viewer
   oviewer = vsg::Viewer::create();
   oviewer->setCameraManipulator(NULL);
 
+  // create scene graph root
+  root = vsg::Group::create();
+
+  // and the observer/eye group
+  observer = vsg::Group::create();
+  std::list<vsg::ref_ptr<vsg::Group> > observer_path;
+  observer_path.push_back(observer);
+  
+  auto viewmatrix = vsg::TrackingViewMatrix::create(observer_path);
+  
   // create windows
   if (winspec.empty()) {
     WinSpec window;
@@ -274,7 +258,7 @@ void VSGViewer::init(bool waitswap)
       // init view
       ii->second.viewset[viewspec.front().name].init
         (viewspec.front(), ii->second, cviewer, oviewer,
-         root, zorder++, bg_color, cb);
+         root, viewmatrix, zorder++, bg_color, cb);
     }
     viewspec.pop_front();
   }
@@ -282,31 +266,6 @@ void VSGViewer::init(bool waitswap)
   // if applicable, initialize static objects and dynamic objects
   for (auto &ao: active_objects) { ao.second->init(root, this); }
   for (auto &so: static_objects) { so->init(root, this); }
-
-  // set fog parameters on the root
-  if (fog_mode != Off) {
-    vsg::Fog* fog = new vsg::Fog();
-    switch(fog_mode) {
-    case Off:
-    case Linear:
-      fog->setMode(vsg::Fog::LINEAR);
-      break;
-    case Exponential:
-      fog->setMode(vsg::Fog::EXP);
-      break;
-    case Exponential2:
-      fog->setMode(vsg::Fog::EXP2);
-      break;
-    }
-    fog->setDensity(fog_density);
-    fog->setColor(fog_colour);
-    fog->setStart(fog_start);
-    fog->setEnd(fog_end);
-    vsg::StateSet* rootstate = root->getOrCreateStateSet();
-    rootstate->setAttribute(fog, vsg::StateAttribute::ON);
-    rootstate->setMode(GL_FOG, vsg::StateAttribute::ON);
-    //root->setStateSet(rootstate);
-  }
 
   // add it all to the viewer
   vsgUtil::Optimizer optimizer;

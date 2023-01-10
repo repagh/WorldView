@@ -16,14 +16,6 @@
 #include <vector>
 #include "VSGObject.hxx"
 
-#ifdef OWN_WIN_AND_CONTEXT
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <GL/gl.h>
-#include <GL/glx.h>
-#include <GL/glu.h>
-#endif
-
 #include <vsg/all.h>
 #include <vsgXchange/all.h>
 #include <WorldViewerBase.hxx>
@@ -49,6 +41,9 @@ class VSGViewer: public WorldViewerBase
   /** scene manager */
   vsg::ref_ptr<vsg::Group>  root;
 
+  /** observer is a node in the scene */
+  vsg::ref_ptr<vsg::Group>  observer;
+  
   /** A single viewer, matching a single scene */
   vsg::ref_ptr<vsg::Viewer> oviewer;
 
@@ -70,9 +65,6 @@ private:
     /** The render camera set-up */
     vsg::ref_ptr<vsg::Camera> camera;
 
-    /** Rotation and position offset with respect to ego-motion data*/
-    vsg::dmat4 view_offset;
-
     /** Constructor */
     ViewSet();
 
@@ -80,7 +72,9 @@ private:
     void init(const ViewSpec& vs, WindowSet& window,
               vsg::ref_ptr<vsg::Viewer> viewer,
               vsg::ref_ptr<vsg::Group> root,
-              int zorder, const std::vector<double>& bg_color);
+	      vsg::ref_ptr<vsg::TrackingViewMatrix> viewmatrix,
+	      int zorder,
+	      const std::vector<double>& bg_color);
 
     /** create the camera and window. */
     void complete();
@@ -94,7 +88,7 @@ private:
     std::string name;
 
     /** The actual window */
-    vsg::ref_ptr<vsgXcb::Xcb_Window> window;
+    vsg::ref_ptr<vsg::Window> window;
     
     /** A list of view sets; these represent the different render
         areas within the window */

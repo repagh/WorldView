@@ -65,29 +65,27 @@ struct AxisTransform
       centered reference frame, x north, y east, z down, 
       to the vsg world. */
   template <typename T>
-  static inline vsg::t_vec3<T> vsgPos(const T xyz)
+  static inline vsg::t_vec3<typename T::value_type> vsgPos(const T xyz)
   { 
     return vsgPos(xyz[0], xyz[1], xyz[2]); 
   }
 
   /** Switch the scaling to the proper dimensions */
   template <typename T>
-  static inline vsg::t_vec3<T> vsgScale(const T xyz)
+  static inline vsg::t_vec3<typename T::value_type> vsgScale(const T xyz)
   { 
     return vsg::t_vec3<T>(xyz[1], xyz[0], xyz[2]); 
   }
 
   template <typename T>
-  static inline vsg::t_mat3<T> vsgRotation(const T phi, const T tht, const T psi)
+  static inline vsg::t_mat4<T> vsgRotation(const T phi, const T tht, const T psi)
   {
     // not sure abt order of axes and angles
     static const vsg::t_vec3<T> xax( 0.0,  1.0,  0.0);
     static const vsg::t_vec3<T> yax( 1.0,  0.0,  0.0);
     static const vsg::t_vec3<T> zax( 0.0,  0.0, -1.0);
-    vsg::t_mat3<T> result;
-    result.makeRotate(phi, xax, tht, yax, psi, zax);
-    return result;
-  }  
+    return vsg::rotate(phi, xax) * vsg::rotate(tht, yax) * vsg::rotate(psi, zax);
+  }
 };
 
 
