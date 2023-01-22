@@ -89,7 +89,10 @@ private:
 
     /** The actual window */
     vsg::ref_ptr<vsg::Window> window;
-    
+
+    /** Traits of the window */
+    vsg::ref_ptr<vsg::WindowTraits> traits;
+
     /** A list of view sets; these represent the different render
         areas within the window */
     std::map<std::string,ViewSet> viewset;

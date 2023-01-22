@@ -138,54 +138,27 @@ VSGViewer::myCreateWindow(const WinSpec &ws, vsg::ref_ptr<vsg::Group> root)
   // result, to be returned
   WindowSet res;
   res.name = ws.name;
-  auto traits = vsg::WindowTraits::create();
+  res.traits = vsg::WindowTraits::create();
 
   // get screen size
-  vsg::GraphicsContext::ScreenSettings sdata;
-  wsi->getScreenSettings(*(res.traits), sdata);
-  //  unsigned int width, height;
-  // wsi->getScreenResolution(vsg::GraphicsContext::ScreenIdentifier(0),
-  //                       width, height);
-
   traits->windowTitle = ws.name;
-  traits->doubleBuffer = true;
-  traits->vsync = true;
-  traits->useCursor = false;
 
   // Full screen?
   if (ws.size_and_position.size() == 0) {
-    res.traits->x = 0; res.traits->y = 0;
-    res.traits->width = sdata.width;
-    res.traits->height = sdata.height;
-    res.traits->windowDecoration = false;
+    traits->fullscreen = true;
   }
   else {
     // Check for position information
     if (ws.size_and_position.size() == 4) {
-      res.traits->x = ws.size_and_position[2];
-      res.traits->y = ws.size_and_position[3];
+      traits->x = ws.size_and_position[2];
+      traits->y = ws.size_and_position[3];
     }
-    res.traits->width = ws.size_and_position[0];
-    res.traits->height = ws.size_and_position[1];
-    res.traits->windowDecoration = true;
-    res.traits->supportsResize = true;
-  }
-  res.traits->sharedContext = base_gc;
-  res.gc = vsg::GraphicsContext::createGraphicsContext(res.traits);
-  if (base_gc == NULL) {
-    base_gc = res.gc;
+    traits->width = ws.size_and_position[0];
+    traits->height = ws.size_and_position[1];
+    traits->fullscreen = false;
   }
 
-  if (res.gc.valid()) {
-    res.gc->setClearColor
-      (vsg::Vec4f(bg_color[0],bg_color[1],bg_color[2],
-                  bg_color.size() == 4 ? bg_color[3] : 1.0f));
-    res.gc->setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  } else {
-    cerr << "cannot create window \"" << ws.name.c_str() << '"' << endl;
-    throw (DuecaVSGConfigError());
-  }
-
+  
   return res;
 }
 
