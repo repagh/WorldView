@@ -42,7 +42,7 @@ class VSGViewer: public WorldViewerBase
 
   /** observer is a node in the scene */
   vsg::ref_ptr<vsg::Group>  observer;
-  
+
   /** A single viewer, matching a single scene */
   vsg::ref_ptr<vsg::Viewer> viewer;
 
@@ -70,27 +70,33 @@ private:
     /** The view of this camera */
     vsg::ref_ptr<vsg::View> view;
 
+    /** The view matrix for the camera */
+    vsg::ref_ptr<vsg::LookAt> view_matrix;
+
+    /** The camera's offset from the base vehicle point (angle,
+        distance or both) */
+    vsg::t_mat4<double> eye_offset;
+
     /** A rendergraph */
     vsg::ref_ptr<vsg::RenderGraph> render_graph;
-    
+
     /** Constructor */
     ViewSet();
 
     /** Initialise a view in a window
 
-	@param vs     Specification for the view; viewport coordinates and
-	              perspective/frustum, eye position+orientation
-	@param viewer Overall scene viewer
-	@param root   Scene root
-	@param viewmatrix ?? How now
-	@param bg_col Background color (4 element)
+        @param vs     Specification for the view; viewport coordinates and
+                      perspective/frustum, eye position+orientation
+        @param viewer Overall scene viewer
+        @param root   Scene root
+        @param viewmatrix ?? How now
+        @param bg_col Background color (4 element)
 
      */
     void init(const ViewSpec& vs, WindowSet& window,
               vsg::ref_ptr<vsg::Viewer> viewer,
               vsg::ref_ptr<vsg::Group>   root,
-	      vsg::ref_ptr<vsg::TrackingViewMatrix> viewmatrix,
-	      const std::vector<float>& bg_col);
+              const std::vector<float>& bg_col);
 
     /** create the camera and window. */
     void complete();
@@ -149,7 +155,7 @@ private:
 
   /** Helper */
   WindowSet myCreateWindow(const WinSpec &ws, vsg::ref_ptr<vsg::Group> root,
-			   const WindowsMap& windows);
+                           const WindowsMap& windows);
 
   /** List of specifications for the wiews, will be applied later */
   std::list<ViewSpec> viewspec;

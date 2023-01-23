@@ -35,10 +35,56 @@ VSGViewer::ViewSet::ViewSet() :
   //
 }
 
+namespace vsg
+{
+  class VSG_DECLSPEC FrustumPerspective : public Inherit<ProjectionMatrix, FrustumPerspective>
+  {
+  public:
+    FrustumPerspective() :
+      left(-0.5),
+      right(0.5),
+      bottom(-0.5),
+      top(0.5),
+      nearDistance(1.0),
+      farDistance(10000.0)
+      {
+      }
+
+    FrustumPerspective(double left, double right, double bottom, double top,
+                       double nd, double fd) :
+      left(left),
+      right(right),
+      bottom(bottom),
+      top(top),
+      nearDistance(nd),
+      farDistance(fd)
+      {
+      }
+
+    dmat4 transform() const override
+    { return perspective(left, right, bottom, top, nearDistance, farDistance); }
+
+    void changeExtent(const VkExtent2D&, const VkExtent2D& newExtent) override
+    {
+      //aspectRatio = static_cast<double>(newExtent.width) / static_cast<double>(newExtent.height);
+    }
+
+    void read(Input& input) override;
+    void write(Output& output) const override;
+
+    double left;
+    double right;
+    double bottom;
+    double top;
+    double nearDistance;
+    double farDistance;
+    };
+  VSG_type_name(vsg::FrustumPerspective);
+}
+
 void VSGViewer::ViewSet::init(const ViewSpec& spec, WindowSet& ws,
                               vsg::ref_ptr<vsg::Viewer> viewer,
                               vsg::ref_ptr<vsg::Group> root,
-			      vsg::ref_ptr<vsg::TrackingViewMatrix> viewmatrix,
                               const std::vector<float>& bg_color)
 {
   cout << "Creating camera " << spec.name << endl;
@@ -47,41 +93,47 @@ void VSGViewer::ViewSet::init(const ViewSpec& spec, WindowSet& ws,
   // aspect ratio
   double aspect = double(spec.portcoords[3])/double(spec.portcoords[2]);
 
-  vsg::ref_ptr<vsg::Perspective> perspective;
+  // perspective transformation matrix
+  vsg::ref_ptr<vsg::ProjectionMatrix> perspective;
+
+  // option 1, fov, aspect, ...
   if (spec.frustum_data.size() == 3) {
     // from fov, aspect, near dist, far dist
     perspective = vsg::Perspective::create
       (spec.frustum_data[2], aspect,
        spec.frustum_data[0], spec.frustum_data[1]);
   }
+
+  // option 2, as frustum
   else if (spec.frustum_data.size() == 6) {
-    perspective = vsg::RelativeProjection::create
-      (vsg::perspective
-       (spec.frustum_data[2], spec.frustum_data[3],
-	spec.frustum_data[4], spec.frustum_data[5],
-	spec.frustum_data[0], spec.frustum_data[1]));
+    perspective = vsg::FrustumPerspective::create
+      (spec.frustum_data[2], spec.frustum_data[3],
+       spec.frustum_data[4], spec.frustum_data[5],
+       spec.frustum_data[0], spec.frustum_data[1]);
   }
 
+  // viewport given
   auto viewportstate = vsg::ViewportState::create
     (spec.portcoords[0],spec.portcoords[1],
      spec.portcoords[2],spec.portcoords[3]);
 
   if (spec.eye_pos.size() == 0) {
-    camera = vsg::Camera::create(perspective, viewmatrix, viewportstate);
+    eye_offset = vsg::t_mat4<double>();
+    view_matrix = vsg::LookAt::create();
   }
   else if (spec.eye_pos.size() == 3) {
-    auto view_offset = vsg::translate(AxisTransform::vsgPos(spec.eye_pos));
-    auto relview = vsg::RelativeViewMatrix::create(view_offset, viewmatrix);
-    camera = vsg::Camera::create(perspective, relview, viewportstate);
+    eye_offset = vsg::translate
+      (AxisTransform::vsgPos
+       (-spec.eye_pos[0], -spec.eye_pos[1], -spec.eye_pos[2]));
   }
   else if (spec.eye_pos.size() == 6) {
-    auto trans = vsg::translate(AxisTransform::vsgPos(spec.eye_pos));
-    auto rot = AxisTransform::vsgRotation
-       (spec.eye_pos[3], spec.eye_pos[4], spec.eye_pos[5]);
-    auto view_offset = trans * rot;
-    auto relview = vsg::RelativeViewMatrix::create(view_offset, viewmatrix);
-    camera = vsg::Camera::create(perspective, relview, viewportstate);
+    eye_offset = AxisTransform::vsgRotation
+      (-spec.eye_pos[3], -spec.eye_pos[4], -spec.eye_pos[5]) *
+      vsg::translate
+      (AxisTransform::vsgPos
+       (-spec.eye_pos[0], -spec.eye_pos[1], -spec.eye_pos[2]));
   }
+  camera = vsg::Camera::create(perspective, viewmatrix, viewportstate);
 
   view = vsg::View::create(camera, root);
 
@@ -389,10 +441,20 @@ bool VSGViewer::adaptSceneGraph(const WorldViewConfig& adapt)
 void VSGViewer::setBase(TimeTickType tick, const BaseObjectMotion& ownm,
                         double late)
 {
-  // \todo: modify to update all cameras, as they are in the viewset list
-  viewmatrix = vsg::translate(ownm.xyz[1], ownm.xyz[0], -ownm.xyz[2]) *
-    vsg::rotate(AxisTransform::vsgQuat(ownm.attitude_q));
+  // transformation from world origin to the base of the vehicle
+  auto world2orig =
+    vsg::rotate(AxisTransform::vsgQuatInv(ownm.attitude_q)) *
+    vsg::translate(-ownm.xyz[1], -ownm.xyz[0], ownm.xyz[2]);
 
+  // update all cameras, as they are in the viewset list
+  for (auto &win: windows) {
+    for (auto &view: win.second.viewset) {
+      view.second.view_matrix->set(view.second.eye_offset * world2orig);
+    }
+  }
+
+  // run through all active objects, and inform about the vehicle
+  // position & time
   for (auto &obj : active_objects) {
     obj.second->iterate(tick, ownm, late);
   }

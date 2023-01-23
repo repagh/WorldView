@@ -2,7 +2,7 @@
 /*      item            : AxisTransform.hxx
         made by         : rvanpaassen
         date            : Mon Nov 22 2010
-        category        : header file 
+        category        : header file
         description     : convert aircraft axes to vsg objects
         changes         : Mon Nov 22 2010 copied from plib version
         language        : C++
@@ -15,66 +15,71 @@
 #include <RvPQuat.hxx>
 
 /** Glue object; Axis transformation from a user's reference frame to
-    plib/ssg position and attitude (quaternion) objects. 
+    plib/ssg position and attitude (quaternion) objects.
 
     My representation; x north
                        y east
-		       z down
-		       psi: rotation about z
-		       tht: rotation about y
-		       phi: rotation about x
+                       z down
+                       psi: rotation about z
+                       tht: rotation about y
+                       phi: rotation about x
 
     Vsg;               x right on screen
                        y up on screen
-		       z towards you
-		       psi: rotation about z axis
-		       tht: rotation about x axis
-		       phi: rotation about -z axis
+                       z towards you
+                       psi: rotation about z axis
+                       tht: rotation about x axis
+                       phi: rotation about -z axis
 */
 struct AxisTransform
 {
   /** Generate an vsg orientation quaternion from quaternion coordinates
       in the aircraft reference frame */
   template <typename T>
-  static inline vsg::quat vsgQuat(const T q0, const T q1, 
-				  const T q2, const T q3)
-  { 
-    vsg::quat quat(q2, q1, -q3, q0);
-    return quat; 
+  static inline vsg::t_quat<T> vsgQuat(const T q0, const T q1,
+                                       const T q2, const T q3)
+  {
+    return vsg::t_quat<T>(q2, q1, -q3, q0);
   }
 
   /** Generate an vsg orientation quaternion from quaternion
       vector/array in the aircraft reference frame */
   template <typename T>
-  static inline vsg::quat vsgQuat(T q) 
+  static inline vsg::t_quat<typename T::value_type> vsgQuat(const T& q)
   {
     return vsgQuat(q[0], q[1], q[2], q[3]);
   }
 
-  /** Calculate from a position aircraft earth-fixed, earth
-      centered reference frame, x north, y east, z down, 
-      to the vsg world. */
   template <typename T>
-  static inline vsg::t_vec3<T> vsgPos(const T x, const T y, const T z)
-  { 
-    vsg::t_vec3<T> vec(y, x, -z);
-    return vec; 
+  static inline vsg::t_quat<typename T::value_type> vsgQuatInv(const T &q)
+  {
+    return vsg::t_quat<typename T::value_type>(-q[2], -q[1], q[3], q[0]);
   }
 
   /** Calculate from a position aircraft earth-fixed, earth
-      centered reference frame, x north, y east, z down, 
+      centered reference frame, x north, y east, z down,
+      to the vsg world. */
+  template <typename T>
+  static inline vsg::t_vec3<T> vsgPos(const T x, const T y, const T z)
+  {
+    vsg::t_vec3<T> vec(y, x, -z);
+    return vec;
+  }
+
+  /** Calculate from a position aircraft earth-fixed, earth
+      centered reference frame, x north, y east, z down,
       to the vsg world. */
   template <typename T>
   static inline vsg::t_vec3<typename T::value_type> vsgPos(const T xyz)
-  { 
-    return vsgPos(xyz[0], xyz[1], xyz[2]); 
+  {
+    return vsgPos(xyz[0], xyz[1], xyz[2]);
   }
 
   /** Switch the scaling to the proper dimensions */
   template <typename T>
   static inline vsg::t_vec3<typename T::value_type> vsgScale(const T xyz)
-  { 
-    return vsg::t_vec3<T>(xyz[1], xyz[0], xyz[2]); 
+  {
+    return vsg::t_vec3<T>(xyz[1], xyz[0], xyz[2]);
   }
 
   template <typename T>
