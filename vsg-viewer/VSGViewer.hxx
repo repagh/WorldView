@@ -23,10 +23,9 @@
 
 // Used the vsgwindows example as inspiration
 
-/** This is a wrapper that can load and display VSG scenes,
-    optionally in multiple windows and viewports. It is inteded for
-    encapsulation in a DUECA module, but can also be used stand-alone
-    (see the test souce main.cpp in this directory). */
+/** This is a wrapper that can load and display VSG scenes, optionally
+    in multiple windows and viewports. It is intended for
+    encapsulation in a DUECA module. */
 class VSGViewer: public WorldViewerBase
 {
   // Advance definition, collection of data for a window.
@@ -45,7 +44,10 @@ class VSGViewer: public WorldViewerBase
   vsg::ref_ptr<vsg::Group>  observer;
   
   /** A single viewer, matching a single scene */
-  vsg::ref_ptr<vsg::Viewer> oviewer;
+  vsg::ref_ptr<vsg::Viewer> viewer;
+
+  /** Options object */
+  vsg::ref_ptr<vsg::Options> options;
 
   /** counter dynamical creation */
   unsigned config_dynamic_created;
@@ -65,16 +67,30 @@ private:
     /** The render camera set-up */
     vsg::ref_ptr<vsg::Camera> camera;
 
+    /** The view of this camera */
+    vsg::ref_ptr<vsg::View> view;
+
+    /** A rendergraph */
+    vsg::ref_ptr<vsg::RenderGraph> render_graph;
+    
     /** Constructor */
     ViewSet();
 
-    /** Initialise */
+    /** Initialise a view in a window
+
+	@param vs     Specification for the view; viewport coordinates and
+	              perspective/frustum, eye position+orientation
+	@param viewer Overall scene viewer
+	@param root   Scene root
+	@param viewmatrix ?? How now
+	@param bg_col Background color (4 element)
+
+     */
     void init(const ViewSpec& vs, WindowSet& window,
               vsg::ref_ptr<vsg::Viewer> viewer,
-              vsg::ref_ptr<vsg::Group> root,
+              vsg::ref_ptr<vsg::Group>   root,
 	      vsg::ref_ptr<vsg::TrackingViewMatrix> viewmatrix,
-	      int zorder,
-	      const std::vector<double>& bg_color);
+	      const std::vector<float>& bg_col);
 
     /** create the camera and window. */
     void complete();
@@ -87,11 +103,17 @@ private:
     /** Descriptive name */
     std::string name;
 
+    /** Display on which it is presented */
+    std::string display;
+
     /** The actual window */
     vsg::ref_ptr<vsg::Window> window;
 
     /** Traits of the window */
     vsg::ref_ptr<vsg::WindowTraits> traits;
+
+    /** Each window has a command graph */
+    vsg::ref_ptr<vsg::CommandGraph> command_graph;
 
     /** A list of view sets; these represent the different render
         areas within the window */
@@ -126,7 +148,8 @@ private:
   ObjectListType post_draw;
 
   /** Helper */
-  WindowSet myCreateWindow(const WinSpec &ws, vsg::ref_ptr<vsg::Group> root);
+  WindowSet myCreateWindow(const WinSpec &ws, vsg::ref_ptr<vsg::Group> root,
+			   const WindowsMap& windows);
 
   /** List of specifications for the wiews, will be applied later */
   std::list<ViewSpec> viewspec;
@@ -192,7 +215,7 @@ protected:
   bool keep_pointer;
 
   /** background/clear color */
-  std::vector<double> bg_color;
+  std::vector<float> bg_color;
 
   /** fog */
   enum FogMode {

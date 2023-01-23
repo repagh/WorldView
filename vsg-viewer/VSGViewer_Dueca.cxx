@@ -188,7 +188,7 @@ const ParameterTable* VSGViewer_Dueca::getParameterTable()
       "derive from VSGObject." },
 
     { "set-bg-color",
-      new VarProbe<_ThisObject_,std::vector<double> >
+      new VarProbe<_ThisObject_,std::vector<float> >
       (&_ThisObject_::bg_color),
       "set the background color, R, G, B, A components, scaled 0 -- 1" },
 

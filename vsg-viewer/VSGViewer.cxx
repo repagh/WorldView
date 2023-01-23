@@ -35,20 +35,18 @@ VSGViewer::ViewSet::ViewSet() :
   //
 }
 
-void VSGViewer::ViewSet::init(const ViewSpec& spec,
-                              WindowSet& ws,
+void VSGViewer::ViewSet::init(const ViewSpec& spec, WindowSet& ws,
                               vsg::ref_ptr<vsg::Viewer> viewer,
                               vsg::ref_ptr<vsg::Group> root,
 			      vsg::ref_ptr<vsg::TrackingViewMatrix> viewmatrix,
-			      int zorder,
-                              const std::vector<double>& bg_color)
+                              const std::vector<float>& bg_color)
 {
   cout << "Creating camera " << spec.name << endl;
-  name = spec.name;  
+  name = spec.name;
 
   // aspect ratio
   double aspect = double(spec.portcoords[3])/double(spec.portcoords[2]);
-  
+
   vsg::ref_ptr<vsg::Perspective> perspective;
   if (spec.frustum_data.size() == 3) {
     // from fov, aspect, near dist, far dist
@@ -63,7 +61,7 @@ void VSGViewer::ViewSet::init(const ViewSpec& spec,
 	spec.frustum_data[4], spec.frustum_data[5],
 	spec.frustum_data[0], spec.frustum_data[1]));
   }
-  
+
   auto viewportstate = vsg::ViewportState::create
     (spec.portcoords[0],spec.portcoords[1],
      spec.portcoords[2],spec.portcoords[3]);
@@ -85,8 +83,14 @@ void VSGViewer::ViewSet::init(const ViewSpec& spec,
     camera = vsg::Camera::create(perspective, relview, viewportstate);
   }
 
-  auto commandgraph = vsg::createCommandGraphForView(ws.window, camera, root);
-  
+  view = vsg::View::create(camera, root);
+
+  render_graph = vsg::RenderGraph::create(ws.window, view);
+  render_graph->clearValues[0].color = {{
+      bg_color[0], bg_color[1], bg_color[2], bg_color[3] }};
+
+  ws.command_graph->addChild(render_graph);
+
   if (spec.overlay.size()) {
     cout << "Looking for overlay " << spec.overlay << endl;
     // not implemented
@@ -98,7 +102,8 @@ VSGViewer::VSGViewer() :
   winspec(),
   root(NULL),
   observer(NULL),
-  oviewer(NULL),
+  viewer(NULL),
+  options(NULL),
   config_dynamic_created(0),
   allow_unknown(false),
   windows(),
@@ -108,13 +113,14 @@ VSGViewer::VSGViewer() :
   viewspec(),
   resourcepath(),
   keep_pointer(false),
-  bg_color(3, 0.0),
+  bg_color(4, 0.0),
   fog_mode(Off),
   fog_density(0.0),
   fog_colour(1.0, 1.0, 1.0, 0.001),
   fog_start(10000.0),
   fog_end(100000.0)
 {
+  bg_color[3] = 1.0;
   // root is created upon window init
 }
 
@@ -133,32 +139,45 @@ struct DuecaVSGConfigError: public std::exception
 
 // to simplify programming
 inline VSGViewer::WindowSet
-VSGViewer::myCreateWindow(const WinSpec &ws, vsg::ref_ptr<vsg::Group> root)
+VSGViewer::myCreateWindow(const WinSpec &ws, vsg::ref_ptr<vsg::Group> root,
+			  const WindowsMap& windows)
 {
   // result, to be returned
   WindowSet res;
+  res.display = ws.display;
   res.name = ws.name;
   res.traits = vsg::WindowTraits::create();
 
   // get screen size
-  traits->windowTitle = ws.name;
+  res.traits->windowTitle = ws.name;
+
+  // do we share a device?
+  for (auto const &ow: windows) {
+    if (ow.second.display == ws.display) {
+      I_MOD("VSG window '" << ws.name << "' shares with '" <<
+	    ow.second.name << "'");
+      res.traits->shareWindow = ow.second.window;
+    }
+  }
 
   // Full screen?
   if (ws.size_and_position.size() == 0) {
-    traits->fullscreen = true;
+    res.traits->fullscreen = true;
   }
   else {
     // Check for position information
     if (ws.size_and_position.size() == 4) {
-      traits->x = ws.size_and_position[2];
-      traits->y = ws.size_and_position[3];
+      res.traits->x = ws.size_and_position[2];
+      res.traits->y = ws.size_and_position[3];
     }
-    traits->width = ws.size_and_position[0];
-    traits->height = ws.size_and_position[1];
-    traits->fullscreen = false;
+    res.traits->width = ws.size_and_position[0];
+    res.traits->height = ws.size_and_position[1];
+    res.traits->fullscreen = false;
   }
 
-  
+  res.window = vsg::Window::create(res.traits);
+  res.command_graph = vsg::CommandGraph::create(res.window);
+
   return res;
 }
 
@@ -178,8 +197,7 @@ void VSGViewer::init(bool waitswap)
   options->add(vsgXchange::all::create());
 
   // create viewer
-  oviewer = vsg::Viewer::create();
-  oviewer->setCameraManipulator(NULL);
+  viewer = vsg::Viewer::create();
 
   // create scene graph root
   root = vsg::Group::create();
@@ -188,10 +206,10 @@ void VSGViewer::init(bool waitswap)
   observer = vsg::Group::create();
   std::list<vsg::ref_ptr<vsg::Group> > observer_path;
   observer_path.push_back(observer);
-  
+
   auto viewmatrix = vsg::TrackingViewMatrix::create(observer_path);
-  
-  // create windows
+
+  // If no window specified, give a dummy default specification
   if (winspec.empty()) {
     WinSpec window;
     window.name = "DUECA/VSG default window";
@@ -203,17 +221,19 @@ void VSGViewer::init(bool waitswap)
     addWindow(window);
   }
 
+  // now create all windows
   while (!winspec.empty()) {
     if (windows.find(winspec.front().name) != windows.end()) {
       cerr << "Already specified a window " << winspec.front().name
            << " ignoring second one" << endl;
     }
-    windows[winspec.front().name] = myCreateWindow(winspec.front(), root);
+    windows[winspec.front().name] = myCreateWindow
+      (winspec.front(), root, windows);
+    viewer->addWindow(windows[winspec.front().name].window);
     winspec.pop_front();
   }
 
   // create cameras and viewports
-  int zorder = 0; // should do zorder per window??
   while (!viewspec.empty()) {
     // find the appropriate window
     WindowsMap::iterator ii = windows.find(viewspec.front().winname);
@@ -230,8 +250,8 @@ void VSGViewer::init(bool waitswap)
 
       // init view
       ii->second.viewset[viewspec.front().name].init
-        (viewspec.front(), ii->second, cviewer, oviewer,
-         root, viewmatrix, zorder++, bg_color, cb);
+        (viewspec.front(), ii->second, viewer,
+         root, viewmatrix, bg_color);
     }
     viewspec.pop_front();
   }
@@ -241,13 +261,19 @@ void VSGViewer::init(bool waitswap)
   for (auto &so: static_objects) { so->init(root, this); }
 
   // add it all to the viewer
-  vsgUtil::Optimizer optimizer;
-  optimizer.optimize(root);
+  //vsgUtil::Optimizer optimizer;
+  //optimizer.optimize(root);
 
-  oviewer->setSceneData(root);
-  oviewer->setThreadingModel(vsg::Viewer::SingleThreaded);
-  oviewer->setReleaseContextAtEndOfFrameHint(true);
-  oviewer->realize();
+  // viewer->setSceneData(root);
+  // viewer->setThreadingModel(vsg::Viewer::SingleThreaded);
+  // viewer->setReleaseContextAtEndOfFrameHint(true);
+  CommandGraphs cgs;
+  for (auto const &win: windows) {
+    cgs.push_back(win.second.command_graph);
+  }
+
+  viewer->assignRecordAndSubmitTaskAndPresentation(cgs);
+  viewer->compile();
 }
 
 void VSGViewer::addViewport(const ViewSpec& vp)
@@ -257,7 +283,12 @@ void VSGViewer::addViewport(const ViewSpec& vp)
 
 void VSGViewer::redraw(bool wait, bool reset_context)
 {
-  oviewer->frame();
+  if (viewer->advanceToNextFrame()) {
+    viewer->handleEvents();
+    viewer->update();
+    viewer->recordAndSubmit();
+    viewer->present();
+  }
 }
 
 void VSGViewer::waitSwap()
@@ -279,6 +310,7 @@ void VSGViewer::waitSwap()
 #endif
 }
 
+#if 0
 template <typename T>
 inline static void updateTransform(vsg::Node* tf, const T& v)
 {
@@ -295,7 +327,7 @@ inline static void updateTransform(vsg::Node* tf, const T& v)
     t->setScale(AxisTransform::vsgScale(v.data()+7));
   }
 }
-
+#endif
 
 bool VSGViewer::adaptSceneGraph(const WorldViewConfig& adapt)
 {
@@ -313,13 +345,8 @@ bool VSGViewer::adaptSceneGraph(const WorldViewConfig& adapt)
     }
       break;
 
-    case WorldViewConfig::RemoveNode: {
-      for (int ii = root->getNumChildren(); ii--; ) {
-        if (root->getChild(ii)->getName() == adapt.config.name) {
-          root->removeChild(ii);
-        }
-      }
-    }
+    case WorldViewConfig::RemoveNode:
+      // TODO
       break;
 
     case WorldViewConfig::LoadObject: {
@@ -337,11 +364,12 @@ bool VSGViewer::adaptSceneGraph(const WorldViewConfig& adapt)
       break;
 
     case WorldViewConfig::MoveObject: {
-      for (int ii = root->getNumChildren(); ii--; ) {
+      // TODO
+      /*for (int ii = root->getNumChildren(); ii--; ) {
         if (root->getChild(ii)->getName() == adapt.config.name) {
           updateTransform(root->getChild(ii), adapt.config.coordinates);
         }
-      }
+	}*/
     }
       break;
     case WorldViewConfig::ListNodes:
@@ -362,22 +390,8 @@ void VSGViewer::setBase(TimeTickType tick, const BaseObjectMotion& ownm,
                         double late)
 {
   // \todo: modify to update all cameras, as they are in the viewset list
-
-  // get the world position of the base point in VSG space
-  vsg::Matrixd base;
-  base.makeTranslate(ownm.xyz[1], ownm.xyz[0], -ownm.xyz[2]);
-
-  // rotate the camera according to view angles
-  vsg::Matrixd camrot(AxisTransform::vsgQuat(ownm.attitude_q));
-
-  static vsg::Matrixd projectorrot =
-    vsg::Matrixd::rotate(M_PI*0.5, vsg::Vec3(1,0,0));
-
-  vsg::Matrixd total = projectorrot * camrot * base;
-  vsg::Matrixd inverse = total.inverse(total);
-
-  // set the master camera only; slave cameras will follow suit
-  oviewer->getCamera()->setViewMatrix(inverse);
+  viewmatrix = vsg::translate(ownm.xyz[1], ownm.xyz[0], -ownm.xyz[2]) *
+    vsg::rotate(AxisTransform::vsgQuat(ownm.attitude_q));
 
   for (auto &obj : active_objects) {
     obj.second->iterate(tick, ownm, late);
@@ -476,15 +490,16 @@ vsg::ref_ptr<vsg::Camera>
 VSGViewer::getMainCamera(const std::string& wname,
                          const std::string& vname)
 {
+  static vsg::ref_ptr<vsg::Camera> _null;
   auto winset = windows.find(wname);
   if (winset == windows.end()) {
     W_MOD("No window \"" << wname << '"');
-    return NULL;
+    return _null;
   }
   auto view = winset->second.viewset.find(vname);
   if (view == winset->second.viewset.end()) {
     W_MOD("No view \"" << vname << '"');
-    return NULL;
+    return _null;
   }
   return view->second.camera;
 }
