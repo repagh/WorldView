@@ -141,8 +141,9 @@ private:
   /** Map with created (due to presence in the world channel)
       objects. They are indexed with channel entry index, and removed
       from the map when the entry is removed from the channel. */
-  typedef std::map<creation_key_t,
-                   boost::intrusive_ptr<VSGObject> > created_objects_t;
+  typedef std::vector<
+    std::map<creation_key_t,
+	     boost::intrusive_ptr<VSGObject> > > created_objects_t;
 
   /** Objects creates automatically */
   created_objects_t active_objects;
@@ -180,7 +181,12 @@ public:
   /** Add a window */
   void addWindow(const WinSpec& window) {winspec.push_back(window);}
 
-  /** set the base camera position */
+  /** Pass the base camera position to the views.
+
+      @param tick  Current DUECA time.
+      @param base  Motion definition of the base observer/vehicle.
+      @param late  Time [s] into current DUECA time tick.
+   */
   void setBase(TimeTickType tick, const BaseObjectMotion& base, double late);
 
   /** Create a controllable object. Object creation depends on class of
@@ -208,10 +214,6 @@ public:
   /** Change the configuration of the scene graph, returns true if
       successful */
   bool adaptSceneGraph(const WorldViewConfig& adapt);
-
-  /** Get back the main camera of a view, for initialisation */
-  vsg::ref_ptr<vsg::Camera> getMainCamera(const std::string& wname,
-                                          const std::string& vname);
 
 protected:
   /** Path to the resources */
