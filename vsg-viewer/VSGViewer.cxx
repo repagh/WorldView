@@ -577,22 +577,3 @@ void VSGViewer::removeControllable(const NameSet& cname, uint32_t creation_id)
 {
   active_objects[std::make_pair(cname.name, creation_id)].reset();
 }
-
-
-vsg::ref_ptr<vsg::Camera>
-VSGViewer::getMainCamera(const std::string& wname,
-                         const std::string& vname)
-{
-  static vsg::ref_ptr<vsg::Camera> _null;
-  auto winset = windows.find(wname);
-  if (winset == windows.end()) {
-    W_MOD("No window \"" << wname << '"');
-    return _null;
-  }
-  auto view = winset->second.viewset.find(vname);
-  if (view == winset->second.viewset.end()) {
-    W_MOD("No view \"" << vname << '"');
-    return _null;
-  }
-  return view->second.camera;
-}

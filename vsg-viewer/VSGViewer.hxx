@@ -139,11 +139,11 @@ private:
   typedef std::list< boost::intrusive_ptr<VSGObject> > ObjectListType;
 
   /** Map with created (due to presence in the world channel)
-      objects. They are indexed with channel entry index, and removed
-      from the map when the entry is removed from the channel. */
-  typedef std::vector<
-    std::map<creation_key_t,
-	     boost::intrusive_ptr<VSGObject> > > created_objects_t;
+      objects. They are indexed with a creation key combining channel
+      name and channel entry index, and removed from the map when the
+      entry is removed from the channel. */
+  typedef std::map<creation_key_t,
+                   boost::intrusive_ptr<VSGObject> > created_objects_t;
 
   /** Objects creates automatically */
   created_objects_t active_objects;

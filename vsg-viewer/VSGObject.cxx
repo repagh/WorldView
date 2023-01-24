@@ -2,9 +2,9 @@
 /*      item            : VsgObject.cxx
         made by         : Rene' van Paassen
         date            : 090617
-	category        : body file 
-        description     : 
-	changes         : 090617 first version
+        category        : body file
+        description     :
+        changes         : 090617 first version
         language        : C++
 */
 
@@ -29,24 +29,17 @@ VSGObject::VSGObject() :
 
 VSGObject::~VSGObject()
 {
-  
+
 }
 
 void VSGObject::init(const vsg::ref_ptr<vsg::Group>& root, VSGViewer* master)
 {
-  // one options pointer is enough
-  static vsg::ref_ptr<vsg::Options> options;
-  if (options.get() == NULL) {
-    options = vsg::Options::create();
-    options->add(vsgXchange::all::create());
-  }
-  
   DEB("Reading file \"" << modelfile << "\"" << endl);
   entity = vsg::read_cast<vsg::Node>(modelfile, options);
   if (!entity.valid()) {
     cerr << "Failed to read " << modelfile << endl;
     return;
-  }  
+  }
   //entity->setDataVariance(vsg::Object::DYNAMIC);
   // entity->setName(this->getName());
   transform = vsg::MatrixTransform::create();
@@ -75,4 +68,3 @@ void VSGObject::visible(bool vis)
   }
 #endif
 }
-      
