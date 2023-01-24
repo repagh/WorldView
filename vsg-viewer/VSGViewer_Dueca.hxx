@@ -1,5 +1,5 @@
 /* ------------------------------------------------------------------   */
-/*      item            : OSGViewer_Dueca.hxx
+/*      item            : VSGViewer_Dueca.hxx
         made by         : rvanpaassen
 	from template   : DuecaHelperTemplate.hxx
         template made by: Rene van Paassen
@@ -11,29 +11,29 @@
         language        : C++
 */
 
-#ifndef OSGViewer_Dueca_hxx
-#define OSGViewer_Dueca_hxx
+#ifndef VSGViewer_Dueca_hxx
+#define VSGViewer_Dueca_hxx
 
 // include the dueca header
 #include <ScriptCreatable.hxx>
 #include <stringoptions.h>
 #include <ParameterTable.hxx>
 #include <dueca_ns.h>
-#include "OSGViewer.hxx"
+#include "VSGViewer.hxx"
 #include "comm-objects.h"
 
 USING_DUECA_NS;
 
-/** This class implements the DUECA interface for the OSGViewer 3D
+/** This class implements the DUECA interface for the VSGViewer 3D
     graphics interface class.
 
-    OSGViewer uses OpenSceneGraph to produce a 3D visualisation. It
+    VSGViewer uses OpenSceneGraph to produce a 3D visualisation. It
     has the following functionalities:
 
     <ol>
     <li> Create a view on a 3D world, following the viewpoint
     controlled by its user. 
-    <li> Add visible objects of class OSGObject to this world. These
+    <li> Add visible objects of class VSGObject to this world. These
     objects can have any form, they may be overlays or 3D models. With
     overlays one can add instrument panels, masks and the like to the
     drawing, and the 3D models may be static or controlled by external
@@ -42,7 +42,7 @@ USING_DUECA_NS;
     </ol>
 
     All object adding uses a standard mechanism. Object creation uses
-    a factory of object types; this OSGViewer implementation comes
+    a factory of object types; this VSGViewer implementation comes
     with a number of standard types, but the factory pattern is
     extensible, and one may, e.g., create a specific instrument
     overlay type.
@@ -55,10 +55,10 @@ USING_DUECA_NS;
 
     * Object match string "static:world", object name "world", 
       with factory type "static", 
-      uses file "schiphol.osg" and is located at coordinates 0 0 0
+      uses file "schiphol.vsg" and is located at coordinates 0 0 0
     
     * Object class string "BaseObjectMotion:KLMBoeing737", object name 
-      "KLM737 #", with factory type "moving", uses file "KLM737.osg", 
+      "KLM737 #", with factory type "moving", uses file "KLM737.vsg", 
       no coordinates given
 
     The static world can be created from the script, using the argument
@@ -77,7 +77,7 @@ USING_DUECA_NS;
     For dynamic objects, the channel "ObjectMotion://world" channel is 
     monitored. If an entry is published in that channel with data class
     BaseObjectMotion and label KLMBoeing737, that entry will match to 
-    the object class name. The corresponding data ("KLM737.osg") is used
+    the object class name. The corresponding data ("KLM737.vsg") is used
     to create the object. Since the name ends with a # token, the name
     will be modified to include an integer suffix, e.g. "KLM737 #1"
 
@@ -93,7 +93,7 @@ USING_DUECA_NS;
     it, program an overlay class, add it to the factory, and use that
     one.
 
-    Some common uses of this OSGViewer interface are the following:
+    Some common uses of this VSGViewer interface are the following:
 
     <ol>
 
@@ -134,34 +134,34 @@ USING_DUECA_NS;
     </ol>
 
     The channel for the "other" objects in the external world that is
-    read by the WorldView module and fed to the OSGViewer module
+    read by the WorldView module and fed to the VSGViewer module
     contains class names for the type of these objects. These objects
     are automatically added to the drawn environment, based on the
     data in the channel. Use 'add-object-class to define these classes
     for simple objects defined by a single 3D file. However, it is
     also possible to add new classes programmatically. For that,
-    include OSGObjectFactory.hxx, and create a SubContractor with the
-    OSG model factory. 
+    include VSGObjectFactory.hxx, and create a SubContractor with the
+    VSG model factory. 
 
     This class has been derived from the ScriptCreatable base class,
     and has a (scheme) script command to create it and optionally add
-    parameters. This class encapsulates the OSGViewer objects, in
+    parameters. This class encapsulates the VSGViewer objects, in
     this way these can be made and specified from a DUECA script.
 
     The instructions to create an object of this class from the Scheme
     script are:
 
-    \verbinclude osg-viewer-dueca.scm
+    \verbinclude vsg-viewer-dueca.scm
  */
-class OSGViewer_Dueca: public ScriptCreatable, public OSGViewer
+class VSGViewer_Dueca: public ScriptCreatable, public VSGViewer
 {
 private: // simulation data
   /** self-define the module type, to ease writing the parameter table */
-  typedef OSGViewer_Dueca _ThisObject_;
+  typedef VSGViewer_Dueca _ThisObject_;
 
 public: // construction and further specification
   /** Constructor. Is normally called from scheme/the creation script. */
-  OSGViewer_Dueca();
+  VSGViewer_Dueca();
 
   /** Continued construction. This is called after all script
       parameters have been read and filled in, according to the
@@ -169,7 +169,7 @@ public: // construction and further specification
   bool complete();
 
   /** Destructor. */
-  ~OSGViewer_Dueca();
+  ~VSGViewer_Dueca();
 
   /** Obtain a pointer to the parameter table. */
   static const ParameterTable* getParameterTable();
@@ -184,11 +184,6 @@ private:
   /** Specification of a visual object in the world */
   WorldDataSpec build_object_spec;
 
-  /** Callback to be attached to the viewport.
-      Not added to ViewSpec because it cannot be communicated
-      over a channel (pointer). */
-  osg::Camera::Camera::DrawCallback *build_callback;
-  
   /** Specify a window */
   bool addWindow(const std::string& window);
 
@@ -231,9 +226,6 @@ private:
   /** Set the fog parameters */
   bool setFog(const std::vector<double>& fog);
 
-  /** Add a callback to the current viewport/camera. */
-  bool addDrawCallback(ScriptCreatable& cb, bool in);
-  
 public:
   /** Default script linkage. */
   SCM_FEATURES_DEF;

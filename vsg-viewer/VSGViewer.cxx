@@ -66,11 +66,29 @@ namespace vsg
 
     void changeExtent(const VkExtent2D&, const VkExtent2D& newExtent) override
     {
-      //aspectRatio = static_cast<double>(newExtent.width) / static_cast<double>(newExtent.height);
+      // no meaningful way to implement this
     }
 
-    void read(Input& input) override;
-    void write(Output& output) const override;
+    void read(Input& input) override
+    {
+      ProjectionMatrix::read(input);
+      input.read("left", left);
+      input.read("right", right);
+      input.read("bottom", bottom);
+      input.read("top", top);
+      input.read("nearDistance", nearDistance);
+      input.read("farDistance", farDistance);
+    }
+    void write(Output& output) const override
+    {
+      ProjectionMatrix::write(output);
+      output.write("left", left);
+      output.write("right", right);
+      output.write("bottom", bottom);
+      output.write("top", top);
+      output.write("nearDistance", nearDistance);
+      output.write("farDistance", farDistance);
+    }
 
     double left;
     double right;
@@ -79,8 +97,10 @@ namespace vsg
     double nearDistance;
     double farDistance;
     };
-  VSG_type_name(vsg::FrustumPerspective);
+  VSG_type_name(vsg::FrustumPerspective);  
 }
+
+
 
 void VSGViewer::ViewSet::init(const ViewSpec& spec, WindowSet& ws,
                               vsg::ref_ptr<vsg::Viewer> viewer,
@@ -117,14 +137,19 @@ void VSGViewer::ViewSet::init(const ViewSpec& spec, WindowSet& ws,
     (spec.portcoords[0],spec.portcoords[1],
      spec.portcoords[2],spec.portcoords[3]);
 
+  // the view matrix transforms to the camera position. At this stage,
+  // assume starting at origin, only component is the eye offset 
+  view_matrix = vsg::LookAt::create();
   if (spec.eye_pos.size() == 0) {
+    // no eye offset
     eye_offset = vsg::t_mat4<double>();
-    view_matrix = vsg::LookAt::create();
   }
   else if (spec.eye_pos.size() == 3) {
     eye_offset = vsg::translate
       (AxisTransform::vsgPos
        (-spec.eye_pos[0], -spec.eye_pos[1], -spec.eye_pos[2]));
+    // only position offset
+    view_matrix->set(eye_offset);
   }
   else if (spec.eye_pos.size() == 6) {
     eye_offset = AxisTransform::vsgRotation
@@ -132,20 +157,26 @@ void VSGViewer::ViewSet::init(const ViewSpec& spec, WindowSet& ws,
       vsg::translate
       (AxisTransform::vsgPos
        (-spec.eye_pos[0], -spec.eye_pos[1], -spec.eye_pos[2]));
+    // position and angle
+    view_matrix->set(eye_offset);
   }
-  camera = vsg::Camera::create(perspective, viewmatrix, viewportstate);
 
+  // create camera and view
+  camera = vsg::Camera::create(perspective, view_matrix, viewportstate);
   view = vsg::View::create(camera, root);
 
+  // render graph seems to be the command structure that is called when
+  // window needs to refres views
   render_graph = vsg::RenderGraph::create(ws.window, view);
   render_graph->clearValues[0].color = {{
       bg_color[0], bg_color[1], bg_color[2], bg_color[3] }};
 
+  // ensure render graph is called 
   ws.command_graph->addChild(render_graph);
 
   if (spec.overlay.size()) {
     cout << "Looking for overlay " << spec.overlay << endl;
-    // not implemented
+    // not yet implemented
   }
 
 }
@@ -303,7 +334,7 @@ void VSGViewer::init(bool waitswap)
       // init view
       ii->second.viewset[viewspec.front().name].init
         (viewspec.front(), ii->second, viewer,
-         root, viewmatrix, bg_color);
+         root, bg_color);
     }
     viewspec.pop_front();
   }

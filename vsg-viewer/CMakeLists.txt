@@ -50,7 +50,7 @@ dueca_add_module(
 
   # optionally specify libraries used for this module
   LIBRARIES
-  ${VSGXCHANGE_LIBRARIES}
+  vsg::vsg vsgXchange::vsgXchange
   
   # give compiler options
   COMPILEOPTIONS ${CUSTOM_OPTIONS}

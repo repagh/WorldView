@@ -125,23 +125,23 @@ protected:
 
       The match is successively tried against the following
 
-      - class with label combination, match against value of dclass:label,
+      - class with label combination, match against value of DCOclass:label,
         as an example, "BaseObjectMotion:737KLM", could be against a
         specification with files giving 737 geometry in KLM livery.
 
       - the same as above, class with label, is repeated for all the base
-        classes of the dataclass. Since e.g., BaseObjectMotion is based
+        classes of the DCO class. Since e.g., BaseObjectMotion is based
         on BaseObjectPosition, that will be tried next if the previous
         match did not succeed.
 
-      - just the class, match against dclass, as an example
+      - just the class, match against DCOclass, as an example
         "SpecificVehicleMotion". In this case the name of the specification
         will be set to the label.
 
-      - afther that all parent classes of the dclass are tried.
+      - afther that all parent classes of the DCO class are tried.
 
       - if all fails, a specification is generated with label as name, and
-        dclass as type. If, in this case, the label/name does not have a
+        DCO class as type. If, in this case, the label/name does not have a
         # suffix, this will be added (see below for the effect)
 
       There are a few special processing cases for the name in the spec:

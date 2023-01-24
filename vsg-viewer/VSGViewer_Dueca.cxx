@@ -47,20 +47,6 @@ const ParameterTable* VSGViewer_Dueca::getParameterTable()
       (&_ThisObject_::resourcepath),
       "set the path to the resources" },
 
-#if 0
-    // disabled, for now
-    { "sync-divisor",
-      new VarProbe<_ThisObject_,int>
-      (&_ThisObject_::glx_sync_divisor),
-      "For video sync wait mode, set the divisor (e.g. 2 means 30 Hz at a\n"
-      "60 Hz refresh rate)" },
-
-    { "sync-offset",
-      new VarProbe<_ThisObject_,int>
-      (&_ThisObject_::glx_sync_offset),
-      "For video sync wait mode, set the offset" },
-#endif
-
     { "keep-cursor",
       new VarProbe<_ThisObject_,bool>
       (&_ThisObject_::keep_pointer),
@@ -69,23 +55,25 @@ const ParameterTable* VSGViewer_Dueca::getParameterTable()
     { "add-window",
       new MemberCall<_ThisObject_,string>
       (&_ThisObject_::addWindow),
-      "Add a window to this Scene drawer. Do not forget to specify\n"
-      "window size and (optionally) position" },
+      "Add a window to this Scene drawer. Give an identifying name for the\n"
+      "window. After this, call 'window-size+pos'" },
 
     { "window-size+pos",
       new MemberCall<_ThisObject_,vector<int> >
       (&_ThisObject_::setWindowPosition),
       "specify width, height and optionally x, y position of a new window" },
 
-    { "window-x-screen",
+    { "window-display",
       new MemberCall<_ThisObject_,string>
       (&_ThisObject_::setWindowXScreen),
-      "Set the display string for this window" },
+      "Set the display string identification for this window" },
 
     { "add-viewport",
        new MemberCall<_ThisObject_,string>
       (&_ThisObject_::addViewport),
-      "Add a viewport to this Scene drawer" },
+      "Add a new viewport. Give an identifying name, then use\n"
+      "'viewport-window' to associate it with a window, and\n"
+      "'viewport-pos+size' to give the position and size of the viewport" },
 
     { "viewport-window",
       new MemberCall<_ThisObject_,string>
@@ -100,13 +88,42 @@ const ParameterTable* VSGViewer_Dueca::getParameterTable()
     { "eye-offset",
       new MemberCall<_ThisObject_,vector<float> >
       (&_ThisObject_::setEyeOffset),
-      "Offset of the eye with respect to sent position; 3 parameters for\n"
-      "x, y and z location, and three parameters for phi, theta, psi [deg]" },
+      "Offset of the eye with respect to sent position for the current\n"
+      "viewport; 3 parameters for x, y and z location, and three parameters\n"
+      "for phi, theta, psi [deg]" },
 
-    { "static-object",
-      new MemberCall<_ThisObject_,vector<string> >
-      (&_ThisObject_::createStatic),
-      "Add a new static object, supply a class match and (optional) name" },
+    { "set-frustum",
+      new MemberCall<_ThisObject_,vector<float> >
+      (&_ThisObject_::setFrustum),
+      "Set view geometry, <near plane> <far plane>, and then either:\n"
+      "<fov y> for specifying viewing with only a field-o-view angle, or\n"
+      "<left> <right> <bottom> <top> of the near frustum plane\n"
+      "in camera coordinates" },
+
+    { "add-object-class",
+      new MemberCall<_ThisObject_,std::vector<std::string> >
+      (&_ThisObject_::addObjectClassData),
+      "Add a class of objects, arguments:\n"
+      " - <matchstring>: The first argument is the match string;\n"
+      "   For objects controlled through a channel, matching is done on the\n"
+      "   basis of the channel entry data type, with the object's label, e.g.\n"
+      "   \"BaseObjectMotion:Cessna 550\". If after that, no match is found\n"
+      "   matching continues with parent classes of the given entry data type\n"
+      "   then matching is done on the data class only.\n"
+      " - <object name>: The object name will be used as name in the VSG\n"
+      "   scene graph. If the last character of the name is a '#', the name\n"
+      "   will be suffixed with the channel entry creation number. When the\n"
+      "   object name consists of two parts with a '/' to separate these, the\n"
+      "   first part denotes the parent node in the scene graph, the second\n"
+      "   becomes the name.\n"
+      " - <factory class>: The type of an added object, currently the\n"
+      "   following are available: 'moving', 'static', 'centered' or 'tiled'\n"
+      "                            'light', 'static-light', 'centered-light\n"
+      "   Note that the factory is extendable, by adding object files with\n"
+      "   factory connections, e.g., to create a HUD overlay\n."
+      " - [<additional strings>]: supply, depending on type of object, \n"
+      "   additional parameters like filenames etc."
+    },
 
     { "add-object-class-coordinates",
       new MemberCall<_ThisObject_,vector<double> >
@@ -135,57 +152,12 @@ const ParameterTable* VSGViewer_Dueca::getParameterTable()
       "- spot cutoff, defines beam width in degrees"
     },
 
-    { "add-object-class-data",
-      new MemberCall<_ThisObject_,std::vector<std::string> >
-      (&_ThisObject_::addObjectClassData),
-      "Add a class of objects, arguments:\n"
-      " - <matchstring>: The first argument is the match string;\n"
-      "   For objects controlled through a channel, matching is done on the\n"
-      "   basis of the channel entry data type, with the object's label, e.g.\n"
-      "   \"BaseObjectMotion:Cessna 550\". If after that, no match is found\n"
-      "   matching continues with parent classes of the given entry data type\n"
-      "   then matching is done on the data class only.\n"
-      " - <object name>: The object name will be used as name in VSG.\n"
-      "   if the last character is a '#', the name will be suffixed with the\n"
-      "   channel entry creation number. The name can also be split into a\n"
-      "   matching and naming section, separated by a ; e.g., \"B737:PHANH\"\n"
-      "   then the matching will be done on the first part, and the objects'\n"
-      "   name is determined by the latter part\n"
-      " - <factory class>: The type of an added object, currently the\n"
-      "   following are available: 'moving', 'static', 'centered' or 'tiled'\n"
-      "                            'light', 'static-light', 'centered-light\n"
-      " - [<additional strings>]: supply, depending on type of object, \n"
-      "   additional parameters like filenames etc."
-    },
-
     { "create-static",
       new MemberCall<_ThisObject_,std::vector<std::string> >
       (&_ThisObject_::createStatic),
       "Create an object through the factory that will not receive a\n"
-      "connection to a channel entry, specify match string and name" },
-
-    { "add-object-class",
-      new MemberCall<_ThisObject_,vector<string> >
-      (&_ThisObject_::addObjectClass),
-      "Create a new class (type) of simple objects, compatible for old\n"
-      "ObjectMotion types. Specify the type name, the name of a model file\n"
-      "Based on the \"klass\"\n"
-      "value in the ObjectMotion object, objects of this type will be\n"
-      "created.\n" },
-
-    { "set-frustum",
-      new MemberCall<_ThisObject_,vector<float> >
-      (&_ThisObject_::setFrustum),
-      "Set frustum geometry, <near plane> <far plane>, and then either:\n"
-      "<fov y> for specifying viewing with only a field-o-view angle, or\n"
-      "<left> <right> <bottom> <top> of the near frustum plane\n"
-      "in camera coordinates" },
-
-    { "add-external-object",
-      new MemberCall2Way<_ThisObject_,ScriptCreatable>
-      (&_ThisObject_::addScriptObject),
-      "Add a graphic object created in the script file. The object must\n"
-      "derive from VSGObject." },
+      "connection to a channel entry, specify match string and optionally\n"
+      "a string to override the name" },
 
     { "set-bg-color",
       new VarProbe<_ThisObject_,std::vector<float> >
@@ -199,20 +171,9 @@ const ParameterTable* VSGViewer_Dueca::getParameterTable()
       "{1|2|3 for linear, exp, exp2}, fog density,\n"
       "fog color (RGBA, 4 elts), fog start, fog end" },
 
-    { "use-compositeviewer",
-      new VarProbe<_ThisObject_,bool>
-      (&_ThisObject_::use_compositeviewer),
-      "Use openscenegraph composite viewer" },
-
     { "allow-unknown",
       new VarProbe<_ThisObject_,bool>(&_ThisObject_::allow_unknown),
-      "ignore unknown or unconnected objects in world information channels" },
-
-    { "add-draw-callback",
-      new MemberCall2Way<_ThisObject_, ScriptCreatable>
-      (&_ThisObject_::addDrawCallback),
-      "Add a (post-draw) callback to the current viewport's camera,\n"
-      "expects an object similar to an VSGCallback" },
+      "Ignore unknown or unconnected objects in world information channels" },
 
       /* The table is closed off with NULL pointers for the variable
        name and MemberCall/VarProbe object. The description is used to
@@ -227,8 +188,7 @@ const ParameterTable* VSGViewer_Dueca::getParameterTable()
 
 // constructor
 VSGViewer_Dueca::VSGViewer_Dueca() :
-  ScriptCreatable(),
-  build_callback(NULL)
+  ScriptCreatable()
 {
 
 }
@@ -251,9 +211,6 @@ bool VSGViewer_Dueca::complete()
   if (build_view_spec.sufficient()) {
     // cout << "adding last viewport specification" << endl;
     VSGViewer::addViewport(build_view_spec);
-
-    VSGViewer::setDrawCallback(build_view_spec.name, build_callback);
-    build_callback = NULL;
 
     build_view_spec = ViewSpec();
   }
@@ -309,10 +266,6 @@ bool VSGViewer_Dueca::addViewport(const std::string& viewport)
   // is complete, and finalize it
   if (build_view_spec.sufficient()) {
     VSGViewer::addViewport(build_view_spec);
-
-    // add current callback to current viewport
-    VSGViewer::setDrawCallback(build_view_spec.name, build_callback);
-    build_callback = NULL;
 
     // prepare the next viewport
     build_view_spec = ViewSpec();
@@ -493,21 +446,6 @@ bool VSGViewer_Dueca::setFog(const std::vector<double>& fog)
   fog_colour.set(fog[2], fog[3], fog[4], fog[5]);
   fog_start = fog[6];
   fog_end = fog[7];
-  return true;
-}
-
-bool VSGViewer_Dueca::addDrawCallback(ScriptCreatable& cb, bool in)
-{
-  // check direction
-  if (!in) return false;
-
-  // try a dynamic cast
-  build_callback = dynamic_cast<osg::Camera::Camera::DrawCallback*> (&cb);
-  if (build_callback == NULL) {
-    E_CNF("must supply an osg DrawCallback for the visual");
-    return false;
-  }
-
   return true;
 }
 
