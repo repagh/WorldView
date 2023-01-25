@@ -20,8 +20,7 @@
 using namespace std;
 using namespace vsg;
 
-VSGObject::VSGObject() :
-  nodemask(0xffffffff)
+VSGObject::VSGObject()
 {
   //
 }
@@ -29,42 +28,49 @@ VSGObject::VSGObject() :
 
 VSGObject::~VSGObject()
 {
-
-}
-
-void VSGObject::init(const vsg::ref_ptr<vsg::Group>& root, VSGViewer* master)
-{
-  DEB("Reading file \"" << modelfile << "\"" << endl);
-  entity = vsg::read_cast<vsg::Node>(modelfile, options);
-  if (!entity.valid()) {
-    cerr << "Failed to read " << modelfile << endl;
-    return;
-  }
-  //entity->setDataVariance(vsg::Object::DYNAMIC);
-  // entity->setName(this->getName());
-  transform = vsg::MatrixTransform::create();
-  transform->addChild(entity);
-  root->addChild(transform);
-  visible(true);
+  //
 }
 
 void VSGObject::unInit(const vsg::ref_ptr<vsg::Group>& root)
 {
-#if 0
-  // apparently not possible
-  root->removeChild(transform);
-#endif
+  // not defined
 }
 
-void VSGObject::visible(bool vis)
+VSGCullGroup::VSGCullGroup() :
+  VSGObject()
 {
-#if 0
-  if (vis && transform->getNodeMask() == 0) {
-    transform->setNodeMask(nodemask);
+  //
+}
+
+VSGCullGroup::~VSGCullGroup()
+{
+  //
+}
+
+std::pair<const std::string, const std::string> nameSplit(const std::string& n)
+{
+  auto split = n.find('|');
+  if (split == std::string::npos) {
+    return std::pair<const std::string, const std::string>(std::string(), n);
   }
-  else if (!vis && transform->getNodeMask() != 0) {
-    nodemask = transform->getNodeMask();
-    transform->setNodeMask(0);
+  return std::pair<const std::string, const std::string>
+    (n.substr(0, split), n.substr(split+1));
+}
+
+vsg::ref_ptr<vsg::Group> findParent(vsg::ref_ptr<vsg::Group> root,
+                                    const std::string& name)
+{
+  std::string iname;
+  vsg::ref_ptr<vsg::Group> sub;
+
+  if (!name.size()) return root;
+  for (auto const &i: root->children) {
+    vsg::ref_ptr<vsg::Group> g = i.cast<vsg::Group>();
+    if (g->getValue("name", iname) && iname == name) {
+      return g;
+    }
+    sub = findParent(g, name);
+    if (sub) return sub;
   }
-#endif
+  return sub;
 }

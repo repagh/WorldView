@@ -30,10 +30,6 @@ class VSGViewer;
 */
 class VSGObject: public WorldObjectBase
 {
-protected:
-  /** The vsg node */
-  vsg::ref_ptr<vsg::Node> node;
-
 public:
   /** Constructor */
   VSGObject();
@@ -41,22 +37,24 @@ public:
   /** Destructor */
   virtual ~VSGObject();
 
-  /** Initialise the avatar with the VSG scene */
-  virtual void init(const vsg::ref_ptr<vsg::Group>& root,
-		    VSGViewer* master) = 0;
-  
-  /** De-initialise the avatar with the VSG scene */
-  virtual void unInit(const vsg::ref_ptr<vsg::Group>& root);
-
-  /** Control visibility */
-  virtual void visible(bool vis);
-
 public:
+
+  /** Initialise the vsg side of the object.
+
+      @param root   Root node of the scene graph
+      @param master Pointer to the viewer.
+   */
+  virtual void init(const vsg::ref_ptr<vsg::Group>& root,
+                    VSGViewer* master) = 0;
+
+  /** Undo the initialisation */
+  virtual void unInit(const vsg::ref_ptr<vsg::Group>& root);
 
   /** Returns true if the object needs drawing post-access */
   virtual bool requirePostDrawAccess() { return false; }
 };
 
+/** Grouping that offers a culling possibility */
 class VSGCullGroup: public VSGObject
 {
 protected:
@@ -69,11 +67,12 @@ public:
 
   /** Destructor */
   virtual ~VSGCullGroup();
-
-public:
-
-  /** Returns true if the object needs drawing post-access */
-  virtual bool requirePostDrawAccess() { return false; }
 };
 
-#endif
+/** Helper, to split a parent|name string into parent - name */
+std::pair<const std::string, const std::string> nameSplit(const std::string& n);
+
+/** Helper, to find a named node in the tree */
+vsg::ref_ptr<vsg::Group> findParent(vsg::ref_ptr<vsg::Group> root,
+                                    const std::string& name);
+

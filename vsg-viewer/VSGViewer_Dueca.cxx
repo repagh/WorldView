@@ -351,69 +351,6 @@ bool VSGViewer_Dueca::setObjectBehavior(const std::string& beh)
   return false;
 }
 
-/** Pre-cooked single-file movable object that can be controlled with
-    a BaseObjectMotion entry. */
-class SimpleVSGObject: public VSGObject
-{
-public:
-  /** Constructor.
-
-      Creates a single-file viewable object.
-
-      @param name      Name of the object.
-      @param filename  3D model to be read.
-  */
-  SimpleVSGObject(const string& name, const string& filename)
-  {
-    this->modelfile = filename;
-    this->name = name;
-  }
-
-  /** Connect to a channel entry
-
-      @param master_id ID for opening a channel reader
-      @param cname     Channel with object data
-      @param entry_id  Entry in the channel
-      @param time_aspect How should the channel data be read. */
-  virtual void connect(const GlobalId& master_id, const NameSet& cname,
-                       entryid_type entry_id,
-                       Channel::EntryTimeAspect time_aspect) {}
-
-  /** Play, update, recalculate, etc. */
-  void iterate(TimeTickType ts, const BaseObjectMotion& base, double late)
-  {}
-};
-
-class SimpleVSGSubcontractor: public SubcontractorBase<VSGObjectTypeKey>
-{
-  /** File with the graphic model */
-  string filename;
-
-public:
-  /** Constructor */
-  SimpleVSGSubcontractor(const string& filename) :
-    filename(filename) { }
-
-  /** create the object */
-  VSGObjectTypeKey::ProductBase create
-  (const VSGObjectTypeKey::Key& key,
-   const VSGObjectTypeKey::SpecBase& spec) {
-    return new SimpleVSGObject(key, filename);
-  }
-};
-
-bool VSGViewer_Dueca::addObjectClass(const std::vector<std::string>& names)
-{
-  if (names.size() != 2) {
-    E_CNF("Specify a class name and a file describing the object");
-    return false;
-  }
-
-  VSGObjectFactory::instance().addSubcontractor
-    (names[0], SubconPtr(new SimpleVSGSubcontractor(names[1])));
-  return true;
-}
-
 bool VSGViewer_Dueca::addObjectClassData(const std::vector<std::string>& names)
 {
   if (names.size() < 3) {
