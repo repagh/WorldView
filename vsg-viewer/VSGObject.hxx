@@ -42,13 +42,33 @@ public:
   virtual ~VSGObject();
 
   /** Initialise the avatar with the VSG scene */
-  virtual void init(const vsg::ref_ptr<vsg::Group>& root, VSGViewer* master) = 0;
-
+  virtual void init(const vsg::ref_ptr<vsg::Group>& root,
+		    VSGViewer* master) = 0;
+  
   /** De-initialise the avatar with the VSG scene */
   virtual void unInit(const vsg::ref_ptr<vsg::Group>& root);
 
   /** Control visibility */
   virtual void visible(bool vis);
+
+public:
+
+  /** Returns true if the object needs drawing post-access */
+  virtual bool requirePostDrawAccess() { return false; }
+};
+
+class VSGCullGroup: public VSGObject
+{
+protected:
+  /** a cullgroup */
+  vsg::ref_ptr<vsg::CullGroup> cullgroup;
+
+public:
+  /** Constructor */
+  VSGCullGroup();
+
+  /** Destructor */
+  virtual ~VSGCullGroup();
 
 public:
 
