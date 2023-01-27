@@ -13,6 +13,7 @@
 #include "AxisTransform.hxx"
 #include <dueca/ChannelReadToken.hxx>
 #include <dueca/debug.h>
+#include "VSGObjectFactory.hxx"
 
 VSGStaticAbsoluteTransform::
 VSGStaticAbsoluteTransform(const WorldDataSpec& data) :
@@ -49,6 +50,11 @@ void VSGStaticAbsoluteTransform::init(const vsg::ref_ptr<vsg::Group>& root,
   root->addChild(transform);
 }
 
+static auto VSGStaticAbsoluteTransform_maker = new
+  SubContractor<VSGObjectTypeKey,VSGStaticAbsoluteTransform>
+  ("static-abs-transform", "Static and absolute transform");
+
+
 VSGStaticMatrixTransform::VSGStaticMatrixTransform(const WorldDataSpec& data) :
    transform(vsg::MatrixTransform::create())
 {
@@ -82,6 +88,10 @@ void VSGStaticMatrixTransform::init(const vsg::ref_ptr<vsg::Group>& root,
   transform->setValue("name", _name.second);
   findParent(root, _name.first)->addChild(transform);
 }
+
+static auto VSGStaticMatrixTransform_maker = new
+  SubContractor<VSGObjectTypeKey,VSGStaticMatrixTransform>
+  ("static-matrix-transform", "Constant matrix transform");
 
 VSGAbsoluteTransform::VSGAbsoluteTransform(const WorldDataSpec& data) :
   transform(vsg::AbsoluteTransform::create())
@@ -144,6 +154,10 @@ void VSGAbsoluteTransform::iterate(TimeTickType ts,
   }
 }
 
+static auto VSGAbsoluteTransform_maker = new
+  SubContractor<VSGObjectTypeKey,VSGAbsoluteTransform>
+  ("absolute-transform", "Controllable absolute transform");
+
 VSGMatrixTransform::VSGMatrixTransform(const WorldDataSpec& data) :
   transform(vsg::MatrixTransform::create())
 {
@@ -204,3 +218,7 @@ void VSGMatrixTransform::iterate(TimeTickType ts,
     }
   }
 }
+
+static auto VSGMatrixTransform_maker = new
+  SubContractor<VSGObjectTypeKey,VSGMatrixTransform>
+  ("matrix-transform", "Controllable matrix (relative) transform");

@@ -46,9 +46,11 @@ class VSGViewer: public WorldViewerBase
   /** A single viewer, matching a single scene */
   vsg::ref_ptr<vsg::Viewer> viewer;
 
+public:
   /** Options object */
   vsg::ref_ptr<vsg::Options> options;
-
+private:
+  
   /** counter dynamical creation */
   unsigned config_dynamic_created;
 

@@ -51,8 +51,9 @@ public:
 
 
 /** Absolute location change base class. */
-class VSGAbsoluteTransform: public VSGObject
+class VSGAbsoluteTransform: virtual public VSGObject
 {
+protected:
   /** VSG transform */
   vsg::ref_ptr<vsg::AbsoluteTransform> transform;
 
@@ -86,6 +87,7 @@ public:
 /** Matrix location change base class. */
 class VSGMatrixTransform: public VSGObject
 {
+protected:
   /** VSG transform */
   vsg::ref_ptr<vsg::MatrixTransform> transform;
 

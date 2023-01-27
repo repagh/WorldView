@@ -88,13 +88,8 @@ if this_node_id == ecs_node:
             claim_thread = claim_graphics_thread,
             set_viewer =
             dueca.VSGViewer().param(
-                ('render-shadows', True),
-                ('set-shadow-technique', "Stencil"),
-                ('set-shadow-far-distance', 100),
-                ('set-shadow-colour', (1.0, 1.0, 1.0)),
                 ('add-window', "front"),
                 ('window-size+pos', (int(1920/f), int(1080/f), 0, 0)),
-                ## one viewport for the front window
                 ('add-viewport', "front"),
                 ('viewport-window', "front"),
                 ('viewport-pos+size', (int(62/f), 0, int(1796/f), int(1080/f))),
@@ -103,7 +98,6 @@ if this_node_id == ecs_node:
                    -1.17137785454, 0.724227595471,
                    -0.479274611399, 0.660621761658)),
                 ('eye-offset', ( 0, 0, 0, 0, 0, 0)),
-                ('viewport-overlay', "HMILabOverlays/MaskFrontSharp"),
 
                  ## window with side views
                 ('add-window', "sides"),
@@ -119,7 +113,6 @@ if this_node_id == ecs_node:
                     1.0, 10000,
                     -0.75011761385, 0.675155946186,
                     -0.376500155079, 0.51895967321)),
-                ('viewport-overlay', "HMILabOverlays/MaskLeftSideSharp"),
                 
                 ('add-viewport', "right side"),
                 ('viewport-window', "sides"),
@@ -130,21 +123,10 @@ if this_node_id == ecs_node:
                     1.0, 10000,
                     -1.21819795407, 0.588489166461,
                     -0.60996297175, 0.840759771872)),
-                ('viewport-overlay', "HMILabOverlays/MaskRightSideSharp"),
 	        
-                ('add-resource-location', ( ".", "FileSystem", "General")),
-                ('load-scene', ( "./sample2.scene", "General")),
-                
-                ('add-object-class-data',
-                 ( "ObjectMotion", "compatible #", "OgreObjectCompatible")),
-                ('add-object-class', ( "houseX", "Barrel.mesh")),
-                ('add-object-class', ( "head", "ogrehead.mesh")),
-                ('add-object-class-data',
-                 ( "manualcreate", "happy", "OgreObjectCarried",
-                   "General/Barrel.mesh")),
-                ('add-object-class-coordinates', (
-                    10.0, 0.0, 0.0, 0.0, 0.0, 0.0)),
-                ('create-static', ( "manualcreate", "happy")),
+                ('add-object-class',
+                 ( "ObjectMotion:barrel", "barrel", "placed-model")),
+
             ).complete(),
             initial_camera = ( 0, 0, -30, 0, 0, 0)
         ))

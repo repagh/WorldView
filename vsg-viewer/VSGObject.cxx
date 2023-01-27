@@ -74,3 +74,8 @@ vsg::ref_ptr<vsg::Group> findParent(vsg::ref_ptr<vsg::Group> root,
   }
   return sub;
 }
+
+void VSGObject::visible(bool vis)
+{
+  // nothing
+}

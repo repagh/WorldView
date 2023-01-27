@@ -8,7 +8,6 @@
         language        : C++
 */
 
-#define WorldObjectBase_cxx
 #include "WorldObjectBase.hxx"
 
 #ifndef USE_BOOST_IRC
@@ -23,20 +22,14 @@ void intrusive_ptr_release(WorldObjectBase* t)
     delete t;
   }
 }
-#endif
 
 WorldObjectBase::WorldObjectBase() :
   intrusive_refcount(0)
 {
 
 }
+#endif
 
-
-WorldObjectBase::~WorldObjectBase()
-{
-
-}
-#if 0
 void WorldObjectBase::connect(const GlobalId& master_id, const NameSet& cname,
                               entryid_type entry_id,
                               Channel::EntryTimeAspect time_aspect)
@@ -44,9 +37,13 @@ void WorldObjectBase::connect(const GlobalId& master_id, const NameSet& cname,
   // no action
 }
 
-void WorldObjectBase::iterate(const TimeSpec& ts,
-			      const BaseObjectMotion& base)
+void WorldObjectBase::iterate(TimeTickType ts, const BaseObjectMotion& base,
+			      double late)
 {
   // no action
 }
-#endif
+
+void WorldObjectBase::visible(bool vis)
+{
+  // no action
+}

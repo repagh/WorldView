@@ -10,7 +10,7 @@
 */
 
 #include "VSGLight.hxx"
-
+#include "VSGObjectFactory.hxx"
 
 VSGAmbientLight::VSGAmbientLight(const WorldDataSpec& data) :
   color(data.coordinates[0], data.coordinates[1], data.coordinates[2]),
@@ -35,6 +35,10 @@ void VSGAmbientLight::init(const vsg::ref_ptr<vsg::Group>& root,
   light->intensity = intensity;
   root->addChild(light);
 }
+
+static auto VSGAmbientLight_maker = new
+  SubContractor<VSGObjectTypeKey,VSGAmbientLight>
+  ("ambient-light", "Ambient light level definitions");
 
 VSGDirectionalLight::VSGDirectionalLight(const WorldDataSpec& data) :
   color(data.coordinates[0], data.coordinates[1], data.coordinates[2]),
@@ -61,6 +65,10 @@ void VSGDirectionalLight::init(const vsg::ref_ptr<vsg::Group>& root,
   light->direction = direction;
   findParent(root, _name.first)->addChild(light);
 }
+
+static auto VSGDirectionalLight_maker = new
+  SubContractor<VSGObjectTypeKey,VSGDirectionalLight>
+  ("directional-light", "Light coming from a specific direction");
 
 VSGPointLight::VSGPointLight(const WorldDataSpec& data) :
   color(data.coordinates[0], data.coordinates[1], data.coordinates[2]),
@@ -93,6 +101,10 @@ void VSGPointLight::init(const vsg::ref_ptr<vsg::Group>& root,
   cull->addChild(light);
   findParent(root, _name.first)->addChild(cull);
 }
+
+static auto VSGPointLight_maker = new
+  SubContractor<VSGObjectTypeKey,VSGPointLight>
+  ("point-light", "Point-type light");
 
 VSGSpotLight::VSGSpotLight(const WorldDataSpec& data) :
   color(data.coordinates[0], data.coordinates[1], data.coordinates[2]),
@@ -128,3 +140,7 @@ void VSGSpotLight::init(const vsg::ref_ptr<vsg::Group>& root,
   cull->addChild(light);
   findParent(root, _name.first)->addChild(cull);
 }
+
+static auto VSGSpotLight_maker = new
+  SubContractor<VSGObjectTypeKey,VSGSpotLight>
+  ("spot-light", "Directed spot light");

@@ -9,6 +9,7 @@
 include(DuecaAddDCO)
 include(DuecaAddModule)
 include(FindPkgConfig)
+include(CheckIncludeFile)
 
 # all local sources, replace by set(SOURCES ...) to be selective
 file(GLOB SOURCES "*.cxx" "*.hxx")
@@ -24,9 +25,13 @@ dueca_add_dco()
 
 # detect any needed libraries here with CMake's mechanisms, such as
 # find_package, pkg_check_modules, or low-level find_path/find_library
+check_include_file(boost/smart_ptr/intrusive_ref_counter.hpp HAVE_BOOST_IRC)
 
 # if you need specific define's for the compilation, give them here
 set(CUSTOM_OPTIONS )
+if (HAVE_BOOST_IRC)
+  set(CUSTOM_OPTIONS -DUSE_BOOST_IRC)
+endif()
 
 # add current module as target, optionally add required dueca components
 dueca_add_module(
