@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	   targetNamespace="https://dueca.tudelft.nl"
-	   xmlns="https://dueca.tudelft.nl"
-	   elementFormDefault="qualified">
+           targetNamespace="https://dueca.tudelft.nl"
+           xmlns="https://dueca.tudelft.nl"
+           elementFormDefault="qualified">
 
   <!-- Main element, graphics world -->
   <xs:element name="world">
@@ -10,12 +10,12 @@
       <xs:sequence>
         <!-- Declarations group the definition of objects in the world -->
         <xs:element name="declaration" type="declaration_t"
-		    maxOccurs="unbounded"/>
-	<!-- Statics group the instantiation of static objects in the world -->
-	<xs:element name="static" type="static_t"
-	            minOccurs="0" maxOccurs="unbounded"/>
+                    maxOccurs="unbounded"/>
+        <!-- Statics group the instantiation of static objects in the world -->
+        <xs:element name="static" type="static_t"
+                    minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
-    <xs:complexType>
+    </xs:complexType>
   </xs:element>
 
   <!-- Each declaration is named, has a type which corresponds to an available
@@ -44,5 +44,5 @@
     <xs:attribute name="parent" type="xs:string"/>
     <xs:attribute name="key" type="xs:string" use="required"/>
   </xs:complexType>
-      
+
 </xs:schema>
