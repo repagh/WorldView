@@ -20,6 +20,7 @@
 #include <ParameterTable.hxx>
 #include <dueca_ns.h>
 #include "VSGViewer.hxx"
+#include "VSGXMLReader.hxx"
 #include "comm-objects.h"
 
 USING_DUECA_NS;
@@ -27,18 +28,23 @@ USING_DUECA_NS;
 /** This class implements the DUECA interface for the VSGViewer 3D
     graphics interface class.
 
-    VSGViewer uses OpenSceneGraph to produce a 3D visualisation. It
+    VSGViewer uses VulkanSceneGraph to produce a 3D visualisation. It
     has the following functionalities:
 
     <ol>
+    
     <li> Create a view on a 3D world, following the viewpoint
     controlled by its user. 
+
     <li> Add visible objects of class VSGObject to this world. These
     objects can have any form, they may be overlays or 3D models. With
     overlays one can add instrument panels, masks and the like to the
-    drawing, and the 3D models may be static or controlled by external
-    data.
+    drawing, and the 3D models may be static, for creating lights and
+    scenery, or controlled by external data, for creating other moving
+    objects in the world.
+
     <li> Report keyboard and cursor events back to the user. 
+
     </ol>
 
     All object adding uses a standard mechanism. Object creation uses
@@ -47,9 +53,12 @@ USING_DUECA_NS;
     extensible, and one may, e.g., create a specific instrument
     overlay type.
 
-    In the script interface, a link is created between an match name, 
-    the factory class type, and supplemental files and coordinates,
-    and put into a "factory inventory".
+    In the script interface, a link is created between a match name,
+    the factory class type, and supplemental files and coordinates.
+    These are stored into a "factory inventory", that can be
+    subsequently used to explicitly create static objects, or its
+    contents may match against entries in DUECA channels for the
+    creation of dynamic, controlled objects.
 
     Two examples:
 
@@ -59,7 +68,8 @@ USING_DUECA_NS;
     
     * Object class string "BaseObjectMotion:KLMBoeing737", object name 
       "KLM737 #", with factory type "moving", uses file "KLM737.vsg", 
-      no coordinates given
+      no coordinates given, since the BaseObjectMotion DCO object in the
+      connected DUECA channel will provide position information.
 
     The static world can be created from the script, using the argument
     "add_static" (Python) or 'add-static (Scheme). e.g.
@@ -82,7 +92,7 @@ USING_DUECA_NS;
     will be modified to include an integer suffix, e.g. "KLM737 #1"
 
     An entry with a class *derived* from BaseObjectMotion will also match, 
-    if it does not find a match with its derived class. 
+    if it does not first find a match with its derived class. 
 
     An entry with a specific label written as "KLMBoeing737|PH-ANH" will
     also match, the match will be on the first part of the label, and the
