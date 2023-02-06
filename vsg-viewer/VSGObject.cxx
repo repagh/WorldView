@@ -8,12 +8,12 @@
         language        : C++
 */
 
-#define VsgObject_cxx
 #include "VSGObject.hxx"
 #include <vsgXchange/all.h>
 #include "AxisTransform.hxx"
 #include <map>
 #include <iostream>
+#include <dueca/debug.h>
 
 #define DEB(A) cout << A << endl;
 
@@ -36,25 +36,17 @@ void VSGObject::unInit(const vsg::ref_ptr<vsg::Group>& root)
   // not defined
 }
 
-VSGCullGroup::VSGCullGroup() :
+VSGCullGroup::VSGCullGroup(const WorldDataSpec& data) :
   VSGObject()
 {
-  //
+  name = data.name;
+  parent = data.parent;
+  D_MOD("Created cull group, name=" << name);
 }
 
 VSGCullGroup::~VSGCullGroup()
 {
-  //
-}
-
-std::pair<const std::string, const std::string> nameSplit(const std::string& n)
-{
-  auto split = n.find('|');
-  if (split == std::string::npos) {
-    return std::pair<const std::string, const std::string>(std::string(), n);
-  }
-  return std::pair<const std::string, const std::string>
-    (n.substr(0, split), n.substr(split+1));
+  D_MOD("Destroying cull group, name=" << name);
 }
 
 vsg::ref_ptr<vsg::Group> findParent(vsg::ref_ptr<vsg::Group> root,

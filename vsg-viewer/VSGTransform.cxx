@@ -34,20 +34,21 @@ VSGStaticAbsoluteTransform(const WorldDataSpec& data) :
       (data.coordinates[0], data.coordinates[1], data.coordinates[2]) *
       transform->matrix;
   }
+  D_MOD("Created static absolute transform, name=" << name);
 }
 
 
 VSGStaticAbsoluteTransform::~VSGStaticAbsoluteTransform()
 {
-  //
+  D_MOD("Destroying static absolute transform, name=" << name);
 }
 
 void VSGStaticAbsoluteTransform::init(const vsg::ref_ptr<vsg::Group>& root,
 				      VSGViewer* master)
 {
-  auto _name = nameSplit(name);
-  transform->setValue("name", _name.second);
+  transform->setValue("name", name);
   root->addChild(transform);
+  D_MOD("VSG create static absolute transform, name=" << name);
 }
 
 static auto VSGStaticAbsoluteTransform_maker = new
@@ -58,7 +59,8 @@ static auto VSGStaticAbsoluteTransform_maker = new
 VSGStaticMatrixTransform::VSGStaticMatrixTransform(const WorldDataSpec& data) :
    transform(vsg::MatrixTransform::create())
 {
-    name = data.name;
+  name = data.name;
+  parent = data.parent;
   if (data.coordinates.size() >= 9) {
     transform->matrix = vsg::scale
       (data.coordinates[6], data.coordinates[7], data.coordinates[8]);
@@ -73,20 +75,26 @@ VSGStaticMatrixTransform::VSGStaticMatrixTransform(const WorldDataSpec& data) :
       (data.coordinates[0], data.coordinates[1], data.coordinates[2]) *
       transform->matrix;
   }
+  D_MOD("Created static matrix transform, name=" << name);
 }
 
 
 VSGStaticMatrixTransform::~VSGStaticMatrixTransform()
 {
-  //
+  D_MOD("Destroying static matrix transform, name=" << name);
 }
 
 void VSGStaticMatrixTransform::init(const vsg::ref_ptr<vsg::Group>& root,
 				    VSGViewer* master)
 {
-  auto _name = nameSplit(name);
-  transform->setValue("name", _name.second);
-  findParent(root, _name.first)->addChild(transform);
+  transform->setValue("name", name);
+  auto par = findParent(root, parent);
+  if (!par) {
+    W_MOD("Cannot find parent, for name=" << name << ", attaching to root");
+    par = root;
+  }
+  par->addChild(transform);
+  D_MOD("VSG create static matrix transform, name=" << name);
 }
 
 static auto VSGStaticMatrixTransform_maker = new
@@ -97,20 +105,21 @@ VSGAbsoluteTransform::VSGAbsoluteTransform(const WorldDataSpec& data) :
   transform(vsg::AbsoluteTransform::create())
 {
   name = data.name;
+  D_MOD("Created absolute transform, name=" << name);
 }
 
 
 VSGAbsoluteTransform::~VSGAbsoluteTransform()
 {
-  //
+  D_MOD("Destroying absolute transform, name=" << name);
 }
 
 void VSGAbsoluteTransform::init(const vsg::ref_ptr<vsg::Group>& root,
 				VSGViewer* master)
 {
-  auto _name = nameSplit(name);
-  transform->setValue("name", _name.second);
+  transform->setValue("name", name);
   root->addChild(transform);
+  D_MOD("VSG create absolute transform, name=" << name);
 }
 
 void VSGAbsoluteTransform::
@@ -162,20 +171,26 @@ VSGMatrixTransform::VSGMatrixTransform(const WorldDataSpec& data) :
   transform(vsg::MatrixTransform::create())
 {
   name = data.name;
+  D_MOD("Created matrix transform, name=" << name);
 }
 
 
 VSGMatrixTransform::~VSGMatrixTransform()
 {
-  //
+  D_MOD("Destroying matrix transform, name=" << name);
 }
 
 void VSGMatrixTransform::init(const vsg::ref_ptr<vsg::Group>& root,
 			      VSGViewer* master)
 {
-  auto _name = nameSplit(name);
-  transform->setValue("name", _name.second);
-  findParent(root, _name.first)->addChild(transform);
+  transform->setValue("name", name);
+  auto par = findParent(root, parent);
+  if (!par) {
+    W_MOD("Cannot find parent, for name=" << name << ", attaching to root");
+    par = root;
+  }
+  par->addChild(transform);
+  D_MOD("VSG create matrix transform, name=" << name);
 }
 
 void VSGMatrixTransform::

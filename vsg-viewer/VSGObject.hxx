@@ -30,6 +30,8 @@ class VSGViewer;
 */
 class VSGObject: public WorldObjectBase
 {
+protected:
+  std::string    parent;
 public:
   /** Constructor */
   VSGObject();
@@ -65,14 +67,11 @@ protected:
 
 public:
   /** Constructor */
-  VSGCullGroup();
+  VSGCullGroup(const WorldDataSpec& data);
 
   /** Destructor */
   virtual ~VSGCullGroup();
 };
-
-/** Helper, to split a parent|name string into parent - name */
-std::pair<const std::string, const std::string> nameSplit(const std::string& n);
 
 /** Helper, to find a named node in the tree */
 vsg::ref_ptr<vsg::Group> findParent(vsg::ref_ptr<vsg::Group> root,

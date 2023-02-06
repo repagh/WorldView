@@ -33,7 +33,7 @@
 
   <!-- modified transform node -->
   <static name="car2base" template-id="carbase">
-    <coordinate name="scale"> 1, 1, 1 </coordinate>
+    <coordinate name="scalexyz"> 1, 1, 1 </coordinate>
     <coordinate name="xyz"> -50, 0, 0 </coordinate>
   </static>
 

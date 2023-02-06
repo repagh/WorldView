@@ -28,7 +28,7 @@ find_package(vsg REQUIRED)
 find_package(vsgXchange REQUIRED)
 
 # if you need specific define's for the compilation, give them here
-set(CUSTOM_OPTIONS )
+set(CUSTOM_OPTIONS -DD_MOD -DI_MOD)
 
 # add current module as target, optionally add required dueca components
 dueca_add_module(

@@ -11,29 +11,31 @@
 
 #include "VSGLight.hxx"
 #include "VSGObjectFactory.hxx"
+#include <dueca/debug.h>
 
 VSGAmbientLight::VSGAmbientLight(const WorldDataSpec& data) :
   color(data.coordinates[0], data.coordinates[1], data.coordinates[2]),
   intensity(data.coordinates[3])
 {
   name = data.name;
+  D_MOD("Created ambient light, name=" << name);
 }
 
 
 VSGAmbientLight::~VSGAmbientLight()
 {
-  //
+  D_MOD("Destroying ambient light, name=" << name);
 }
 
 void VSGAmbientLight::init(const vsg::ref_ptr<vsg::Group>& root,
                            VSGViewer* master)
 {
   light = vsg::AmbientLight::create();
-  auto _name = nameSplit(name);
-  light->name = _name.second;
+  light->name = name;
   light->color = color;
   light->intensity = intensity;
   root->addChild(light);
+  D_MOD("VSG create ambient light, name=" << name);
 }
 
 static auto VSGAmbientLight_maker = new
@@ -46,24 +48,31 @@ VSGDirectionalLight::VSGDirectionalLight(const WorldDataSpec& data) :
   direction(data.coordinates[4], data.coordinates[5], data.coordinates[6])
 {
   name = data.name;
+  parent = data.parent;
+  D_MOD("Created directional light, name=" << name);
 }
 
 
 VSGDirectionalLight::~VSGDirectionalLight()
 {
-  //
+  D_MOD("Destroying directional light, name=" << name);
 }
 
 void VSGDirectionalLight::init(const vsg::ref_ptr<vsg::Group>& root,
                            VSGViewer* master)
 {
   light = vsg::DirectionalLight::create();
-  auto _name = nameSplit(name);
-  light->name = _name.second;
+  light->name = name;
   light->color = color;
   light->intensity = intensity;
   light->direction = direction;
-  findParent(root, _name.first)->addChild(light);
+  auto par = findParent(root, parent);
+  if (!par) {
+    W_MOD("Cannot find parent, for name=" << name << ", attaching to root");
+    par = root;
+  }
+  par->addChild(light);
+  D_MOD("VSG create ambient light, name=" << name);
 }
 
 static auto VSGDirectionalLight_maker = new
@@ -77,12 +86,14 @@ VSGPointLight::VSGPointLight(const WorldDataSpec& data) :
   span(data.coordinates[7])
 {
   name = data.name;
+  parent = data.parent;
+  D_MOD("Created point light, name=" << name);  
 }
 
 
 VSGPointLight::~VSGPointLight()
 {
-  //
+  D_MOD("Destroying point light, name=" << name);
 }
 
 void VSGPointLight::init(const vsg::ref_ptr<vsg::Group>& root,
@@ -91,15 +102,20 @@ void VSGPointLight::init(const vsg::ref_ptr<vsg::Group>& root,
   light = vsg::PointLight::create();
   cull = vsg::CullGroup::create();
 
-  auto _name = nameSplit(name);
-  light->name = _name.second;
+  light->name = name;
   light->color = color;
   light->intensity = intensity;
   light->position = position;
   cull->bound.center = light->position;
   cull->bound.radius = span;
   cull->addChild(light);
-  findParent(root, _name.first)->addChild(cull);
+  auto par = findParent(root, parent);
+  if (!par) {
+    W_MOD("Cannot find parent, for name=" << name << ", attaching to root");
+    par = root;
+  }
+  par->addChild(light);
+  D_MOD("VSG create point light, name=" << name);
 }
 
 static auto VSGPointLight_maker = new
@@ -113,6 +129,8 @@ VSGSpotLight::VSGSpotLight(const WorldDataSpec& data) :
   span(data.coordinates[7])
 {
   name = data.name;
+  parent = data.parent;
+  D_MOD("Created spot light, name=" << name);
 }
 
 
@@ -127,8 +145,7 @@ void VSGSpotLight::init(const vsg::ref_ptr<vsg::Group>& root,
   light = vsg::SpotLight::create();
   cull = vsg::CullGroup::create();
 
-  auto _name = nameSplit(name);
-  light->name = _name.second;
+  light->name = name;
   light->color = color;
   light->intensity = intensity;
   light->position = position;
@@ -138,7 +155,13 @@ void VSGSpotLight::init(const vsg::ref_ptr<vsg::Group>& root,
   cull->bound.center = light->position;
   cull->bound.radius = span;
   cull->addChild(light);
-  findParent(root, _name.first)->addChild(cull);
+  auto par = findParent(root, parent);
+  if (!par) {
+    W_MOD("Cannot find parent, for name=" << name << ", attaching to root");
+    par = root;
+  }
+  par->addChild(light);
+  D_MOD("VSG create spot light, name=" << name);
 }
 
 static auto VSGSpotLight_maker = new
