@@ -123,9 +123,9 @@ if this_node_id == ecs_node:
                     1.0, 10000,
                     -1.21819795407, 0.588489166461,
                     -0.60996297175, 0.840759771872)),
-	        
-                ('add-object-class',
-                 ( "ObjectMotion:barrel", "barrel", "placed-model")),
+                ('set-xml-definitions',
+                 '../../../../WorldView/vsg-viewer/vsgobjects.xml'),
+                ('read-xml-definitions', 'exampleworld.xml'),
 
             ).complete(),
             initial_camera = ( 0, 0, -30, 0, 0, 0)

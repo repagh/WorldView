@@ -194,6 +194,9 @@ private:
   /** Specification of a visual object in the world */
   WorldDataSpec build_object_spec;
 
+  /** Reader for xml definitions */
+  boost::scoped_ptr<VSGXMLReader>   xml_reader;
+
   /** Specify a window */
   bool addWindow(const std::string& window);
 
@@ -235,6 +238,12 @@ private:
 
   /** Set the fog parameters */
   bool setFog(const std::vector<double>& fog);
+
+  /** Create the XML reader */
+  bool setXMLReader(const std::string& definitions);
+
+  /** Read an XML file with object data */
+  bool readModelFromXML(const std::string& file);
 
 public:
   /** Default script linkage. */

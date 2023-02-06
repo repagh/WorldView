@@ -11,25 +11,45 @@
   <type name="directional-light">
     <coordinates name="color" offset="0" size="3"/>
     <coordinates name="intensity" offset="3" size="1"/>
-    <coordinates name="direction" offset="4" size="3"/>
+    <coordinates name="phithetapsi" offset="4" size="3"/>
   </type>
 
   <type name="point-light">
     <coordinates name="color" offset="0" size="3"/>
     <coordinates name="intensity" offset="3" size="1"/>
-    <coordinates name="position" offset="4" size="3"/>
+    <coordinates name="xyz" offset="4" size="3"/>
     <coordinates name="span" offset="7" size="1"/>
   </type>
 
   <type name="spot-light">
     <coordinates name="color" offset="0" size="3"/>
     <coordinates name="intensity" offset="3" size="1"/>
-    <coordinates name="position" offset="4" size="3"/>
+    <coordinates name="xyz" offset="4" size="3"/>
     <coordinates name="span" offset="7" size="1"/>
-    <coordinates name="direction" offset="10" size="3"/>
+    <coordinates name="phithetapsi" offset="10" size="3"/>
     <coordinates name="innerAngle" offset="11" size="1"/>
     <coordinates name="outerAngle" offset="12" size="1"/>
   </type>
 
+  <type name="static-absolute-transform">
+    <coordinates name="xyz" offset="0" size="3"/>
+    <coordinates name="phithetapsi" offset="3" size="3"/>
+    <coordinates name="scalexyz" offset="6" size="3"/>
+  </type>
+
+  <type name="static-matrix-transform">
+    <coordinates name="xyz" offset="0" size="3"/>
+    <coordinates name="phithetapsi" offset="3" size="3"/>
+    <coordinates name="scalexyz" offset="6" size="3"/>
+  </type>
+
+  <type name="absolute-transform">
+    <coordinates name="scalexyz" offset="6" size="3"/>
+  </type>
+
+  <type name="matrix-transform">
+     <coordinates name="scalexyz" offset="6" size="3"/>
+  </type>
+  
 </maps>
      

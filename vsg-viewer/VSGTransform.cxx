@@ -52,7 +52,7 @@ void VSGStaticAbsoluteTransform::init(const vsg::ref_ptr<vsg::Group>& root,
 
 static auto VSGStaticAbsoluteTransform_maker = new
   SubContractor<VSGObjectTypeKey,VSGStaticAbsoluteTransform>
-  ("static-abs-transform", "Static and absolute transform");
+  ("static-absolute-transform", "Static and absolute transform");
 
 
 VSGStaticMatrixTransform::VSGStaticMatrixTransform(const WorldDataSpec& data) :

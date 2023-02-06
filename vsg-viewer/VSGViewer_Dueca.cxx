@@ -175,6 +175,20 @@ const ParameterTable* VSGViewer_Dueca::getParameterTable()
       new VarProbe<_ThisObject_,bool>(&_ThisObject_::allow_unknown),
       "Ignore unknown or unconnected objects in world information channels" },
 
+    { "set-xml-definitions",
+      new MemberCall<_ThisObject_,std::string>(&_ThisObject_::setXMLReader),
+      "Initialise the XML reader, argument is an XML file with mappings\n"
+      "from named coordinates/parameters to ranges in the coordinate vectors.\n"
+      "See 'vsgobjects.xsd' for the format, and 'vsgobjects.xml' for an\n"
+      "example." },
+
+    { "read-xml-definitions",
+      new MemberCall<_ThisObject_,std::string>(&_ThisObject_::readModelFromXML),
+      "Read the graphics models from an XML file definition. See\n"
+      "'vsgworld.xsd' for the format. This provides an alternative to using\n"
+      "the add_object_class, add_object_class_coordinates and static_object\n"
+      "parameters.\n" },
+    
       /* The table is closed off with NULL pointers for the variable
        name and MemberCall/VarProbe object. The description is used to
        give an overall description of the module. */
@@ -386,8 +400,42 @@ bool VSGViewer_Dueca::setFog(const std::vector<double>& fog)
   return true;
 }
 
-// script access macro
-SCM_FEATURES_NOIMPINH(VSGViewer_Dueca, ScriptCreatable, "osg-viewer-dueca");
+bool VSGViewer_Dueca::setXMLReader(const std::string& definitions)
+{
+  if (xml_reader) {
+    E_MOD("Error, second attempt to use set_xml_definitions or use of this "
+	  " call after using read_xml_defintions");
+    return false;
+  }
+  try{
+    xml_reader.reset(new VSGXMLReader(definitions));
+  }
+  catch (const std::exception& e) {
+    E_MOD("Error in initialising XML reader: " << e.what());
+    return false;
+  }
+  return true;
+}
+
+bool VSGViewer_Dueca::readModelFromXML(const std::string& file)
+{
+  try {
+    if (!xml_reader) {
+      I_MOD("Creating default xml reader");
+      xml_reader.reset
+	(new VSGXMLReader("../../../../WorldView/vsg-viewer/vsgobjects.xml"));
+    }
+    xml_reader->readWorld(file, *this);
+    return true;
+  }
+  catch (const std::exception& e) {
+    E_MOD("Error in reading xml definitions from " << file);
+    return false;
+  }
+}
+    
+// script access macro, needed for Scheme implementations
+SCM_FEATURES_NOIMPINH(VSGViewer_Dueca, ScriptCreatable, "vsg-viewer-dueca");
 
 // Make a CoreCreator object for this module, the CoreCreator
 // will check in with the scheme-interpreting code, and enable the

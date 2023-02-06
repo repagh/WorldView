@@ -33,11 +33,15 @@
     <xs:attribute name="key" type="xs:string" use="required"/>
   </xs:complexType>
 
-  <!-- A static instantiates an object of a previously given declaration.
-       The static may override the name, parent, and coordinates. -->
+  <xs:complexType name="coordinate_t">
+    <xs:attribute name="name" type="xs:string"/>
+  </xs:complexType>
+
+  <!-- A static instantiates an object of a previously given declaration,
+       matching with the key.
+       The static provides the name, parent, and may override coordinates. -->
   <xs:complexType name="static_t">
     <xs:sequence>
-      <xs:element name="file" type="xs:string" maxOccurs="unbounded"/>
       <xs:element name="coordinate" type="coordinate_t" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:string"/>
