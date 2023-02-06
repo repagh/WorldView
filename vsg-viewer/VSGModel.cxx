@@ -12,12 +12,15 @@
 #include "VSGModel.hxx"
 #include "VSGViewer.hxx"
 #include "VSGObjectFactory.hxx"
+#include <dueca/debug.h>
 
 VSGStaticModel::VSGStaticModel(const WorldDataSpec& data) :
   model(),
-  modelfile(data.filename[0])
+  modelfile(data.filename.size() ? std::string() : data.filename[0])
 {
-  //
+  if (!data.filename.size()) {
+    W_MOD("Static model needs a model filename");
+  }
 }
 
 

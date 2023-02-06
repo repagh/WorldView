@@ -86,7 +86,7 @@ class SpecificationBase
   /** Remember latest entered */
   std::string latest_classdata;
 
-protected:
+public:
   /** Add specification for an object
 
       When implementing a factory pattern for the creation of graphic
@@ -175,7 +175,6 @@ protected:
   /** Check that the database has a specific specification */
   bool hasFactorySpec(const std::string& match);
 
-public:
   /** Constructor */
   SpecificationBase();
 

@@ -15,7 +15,9 @@
 
 #include <boost/lexical_cast.hpp>
 #include <dueca/DataClassRegistry.hxx>
-#include <debug.h>
+
+#define I_MOD
+#include <dueca/debug.h>
 
 SpecificationBase::SpecificationBase()
 {
@@ -77,7 +79,7 @@ WorldDataSpec SpecificationBase::retrieveFactorySpec
     if (fs != factoryspecs.end()) {
       I_MOD("Found strict specification matching \"" << dclass << "\"")
       obj = fs->second; return obj;
-      }
+    }
     throw (MapSpecificationError(dclass));
   }
 

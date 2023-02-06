@@ -4,52 +4,58 @@
       xsi:schemaLocation="https://dueca.tudelft.nl vsgobjects.xsd">
 
   <type name="ambient-light">
-    <coordinates name="color" offset="0" size="3"/>
-    <coordinates name="intensity" offset="3" size="1"/>
+    <coordinates offset="0" size="3">color</coordinates>
+    <coordinates offset="3" size="1">
+      intensity
+    </coordinates>
   </type>
 
   <type name="directional-light">
-    <coordinates name="color" offset="0" size="3"/>
-    <coordinates name="intensity" offset="3" size="1"/>
-    <coordinates name="phithetapsi" offset="4" size="3"/>
+    <coordinates offset="0" size="3">color</coordinates>
+    <coordinates offset="3" size="1">intensity</coordinates>
+    <coordinates offset="4" size="3">phithetapsi</coordinates>
   </type>
 
   <type name="point-light">
-    <coordinates name="color" offset="0" size="3"/>
-    <coordinates name="intensity" offset="3" size="1"/>
-    <coordinates name="xyz" offset="4" size="3"/>
-    <coordinates name="span" offset="7" size="1"/>
+    <coordinates offset="0" size="3">color</coordinates>
+    <coordinates offset="3" size="1">intensity</coordinates>
+    <coordinates offset="4" size="3">xyz</coordinates>
+    <coordinates offset="7" size="1">span</coordinates>
   </type>
 
   <type name="spot-light">
-    <coordinates name="color" offset="0" size="3"/>
-    <coordinates name="intensity" offset="3" size="1"/>
-    <coordinates name="xyz" offset="4" size="3"/>
-    <coordinates name="span" offset="7" size="1"/>
-    <coordinates name="phithetapsi" offset="10" size="3"/>
-    <coordinates name="innerAngle" offset="11" size="1"/>
-    <coordinates name="outerAngle" offset="12" size="1"/>
+    <coordinates offset="0" size="3">color</coordinates>
+    <coordinates offset="3" size="1">intensity</coordinates>
+    <coordinates offset="4" size="3">xyz</coordinates>
+    <coordinates offset="7" size="1">span</coordinates>
+    <coordinates offset="10" size="3">phithetapsi</coordinates>
+    <coordinates offset="11" size="1">innerAngle</coordinates>
+    <coordinates offset="12" size="1">outerAngle</coordinates>
   </type>
 
   <type name="static-absolute-transform">
-    <coordinates name="xyz" offset="0" size="3"/>
-    <coordinates name="phithetapsi" offset="3" size="3"/>
-    <coordinates name="scalexyz" offset="6" size="3"/>
+    <coordinates offset="0" size="3">xyz</coordinates>
+    <coordinates offset="3" size="3">phithetapsi</coordinates>
+    <coordinates offset="6" size="3">scalexyz</coordinates>
   </type>
 
   <type name="static-matrix-transform">
-    <coordinates name="xyz" offset="0" size="3"/>
-    <coordinates name="phithetapsi" offset="3" size="3"/>
-    <coordinates name="scalexyz" offset="6" size="3"/>
+    <coordinates offset="0" size="3">xyz</coordinates>
+    <coordinates offset="3" size="3">phithetapsi</coordinates>
+    <coordinates offset="6" size="3">scalexyz</coordinates>
   </type>
 
   <type name="absolute-transform">
-    <coordinates name="scalexyz" offset="6" size="3"/>
+    <coordinates offset="6" size="3">scalexyz</coordinates>
   </type>
 
   <type name="matrix-transform">
-     <coordinates name="scalexyz" offset="6" size="3"/>
+     <coordinates offset="6" size="3">scalexyz</coordinates>
   </type>
-  
+
+  <type name="model"></type>
+
+  <type name="static-model"></type>
+
 </maps>
      

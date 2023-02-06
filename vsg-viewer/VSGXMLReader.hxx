@@ -52,7 +52,7 @@ public:
 
   /** Read an XML file with type definitions and optionally static
       object instantiations. */
-  void readWorld(const std::string& file, VSGViewer &viewer);
+  bool readWorld(const std::string& file, VSGViewer &viewer);
 };
 
 

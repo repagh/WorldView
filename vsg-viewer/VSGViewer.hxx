@@ -205,6 +205,9 @@ public:
   /** Create a static (not controlled) controllable object. */
   bool createStatic(const std::vector<std::string>& classname);
 
+  /** Create a static (not controlled) controllable object. */
+  bool createStatic(const WorldDataSpec& spec);
+
   /** Do a re-draw
       \param wait   If true, do now swap the buffers. The application
                     must later wait and swap with the waitSwap function. */

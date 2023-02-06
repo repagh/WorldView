@@ -558,6 +558,11 @@ bool VSGViewer::createStatic(const std::vector<std::string>& name)
   if (name.size() >= 2) {
     obj.name = name[1];
   }
+  return createStatic(obj);
+}
+
+bool VSGViewer::createStatic(const WorldDataSpec& obj)
+{
   try {
     VSGObject* op =
       VSGObjectFactory::instance().create(obj.type, obj);
@@ -567,12 +572,11 @@ bool VSGViewer::createStatic(const std::vector<std::string>& name)
     return true;
   }
   catch (const std::exception& problem) {
-    cerr << "VSGViewer: When trying to create " << obj.type
-         << " encountered: " <<  problem.what() << endl;
+    W_MOD("VSGViewer: When trying to create " << obj.type
+	  << " encountered: " <<  problem.what());
   }
   return false;
 }
-
 void VSGViewer::removeControllable(const NameSet& cname, uint32_t creation_id)
 {
   active_objects[std::make_pair(cname.name, creation_id)].reset();

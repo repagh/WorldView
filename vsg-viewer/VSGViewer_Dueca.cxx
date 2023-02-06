@@ -425,8 +425,7 @@ bool VSGViewer_Dueca::readModelFromXML(const std::string& file)
       xml_reader.reset
 	(new VSGXMLReader("../../../../WorldView/vsg-viewer/vsgobjects.xml"));
     }
-    xml_reader->readWorld(file, *this);
-    return true;
+    return xml_reader->readWorld(file, *this);
   }
   catch (const std::exception& e) {
     E_MOD("Error in reading xml definitions from " << file);

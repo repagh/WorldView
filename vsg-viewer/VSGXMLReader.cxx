@@ -12,6 +12,12 @@
 #include "VSGXMLReader.hxx"
 #include <pugixml.hpp>
 #include <dueca/debug.h>
+#include <exception>
+
+struct error_reading_vsg_xml: public std::exception
+{
+  const char* what() { return "Cannot read XML file"; }
+};
 
 inline void ltrim(std::string &s) {
   s.erase(s.begin(), std::find_if(s.begin(), s.end(),
@@ -38,9 +44,10 @@ inline std::vector<double> getValues(const std::string& s)
 {
   std::stringstream invals(s);
   std::vector<double> res;
-  double tmp; invals >> tmp;
-  while (invals.good()) {
-    res.push_back(tmp); invals >> tmp;
+  double tmp;
+  while (invals >> tmp) {
+    res.push_back(tmp);
+    if (invals.peek() == ',') { invals.ignore(); }
   }
   return res;
 }
@@ -66,7 +73,10 @@ getMapping(unsigned &offset, unsigned &size, const std::string& cname)
 VSGXMLReader::VSGXMLReader(const std::string& definitions)
 {
   // shortcut exit
-  if (!definitions.size()) return;
+  if (!definitions.size()) {
+    W_MOD("Empty definitions file for reader!");
+    return;
+  }
 
   // read the coordinate definitions
   pugi::xml_document doc;
@@ -87,7 +97,7 @@ VSGXMLReader::VSGXMLReader(const std::string& definitions)
 	   _coord = _coord.next_sibling("coordinates")) {
 	unsigned offset = _coord.attribute("offset").as_uint();
 	unsigned nelts = _coord.attribute("size").as_uint(1U);
-	std::string name = trim_copy(_coord.value());
+	std::string name = trim_copy(_coord.child_value());
         nm.first->second.mappings.emplace
 	  (std::piecewise_construct,
 	   std::forward_as_tuple(name),
@@ -95,33 +105,40 @@ VSGXMLReader::VSGXMLReader(const std::string& definitions)
       }
     }
   }
+  else {
+    throw error_reading_vsg_xml();
+  }
 }
 
-void VSGXMLReader::readWorld(const std::string& file, VSGViewer &viewer)
+bool VSGXMLReader::readWorld(const std::string& file, VSGViewer &viewer)
 {
   pugi::xml_document doc;
   auto result = doc.load_file(file.c_str());
+  if (!result) {
+    W_MOD("Cannot read vsg world from " << file);
+    return false;
+  }
   
   // get the container
   auto world = doc.child("world");
 
   // each declaration gets translated in data for a createable object
   // either through direct creation or from a channel entry
-  for (auto def = world.child("definition"); def;
-       def = def.next_sibling("definition")) {
+  for (auto def = world.child("template"); def;
+       def = def.next_sibling("template")) {
 
     // Prepare the data for the object
     WorldDataSpec spec;
 
     // required stuff is key and type
-    auto _key = def.attribute("key");
+    auto _key = def.attribute("id");
     auto _type = def.attribute("type");
     auto _name = def.attribute("name");
     auto _parent = def.attribute("parent");
 
     // test required attributes are there
     if (!_key || !_type) {
-      W_MOD("Skipping definition, missing key and type");
+      W_MOD("Skipping template, missing key and type");
       continue;
     }
 
@@ -133,14 +150,14 @@ void VSGXMLReader::readWorld(const std::string& file, VSGViewer &viewer)
     // get all the files/string data
     for (auto fname = def.child("file"); fname;
          fname = fname.next_sibling("file")) {
-      spec.filename.push_back(trim_copy(fname.value()));
+      spec.filename.push_back(trim_copy(fname.child_value()));
     }
 
     // now get&translate all coordinates
     for (auto coord = def.child("coordinate"); coord;
          coord = coord.next_sibling("coordinate")) {
       std::string _label = coord.attribute("name").value();
-      auto values = getValues(coord.value());
+      auto values = getValues(coord.child_value());
       unsigned offset = 0;
       unsigned n = values.size();
       auto idx = object_mappings.find(spec.type);
@@ -159,5 +176,79 @@ void VSGXMLReader::readWorld(const std::string& file, VSGViewer &viewer)
       }
       spec.setCoordinates(offset, n, values);
     }
+
+    viewer.addFactorySpec(_key.value(), spec);
   }
+
+  // process the statics 
+  for (auto sta = world.child("static"); sta;
+       sta = sta.next_sibling("static")) {
+    
+    auto template_id = sta.attribute("template-id");
+    auto name = sta.attribute("name");
+    auto parent = sta.attribute("parent");
+    auto type = sta.attribute("type");
+    WorldDataSpec spec;
+    
+    if (!template_id && !type) {
+      E_MOD("Need template or type for object '" << name.value() << "'");
+      return false;
+    }
+
+    // if a template supplied, use that as basis
+    if (template_id) {
+      try {
+	spec = viewer.retrieveFactorySpec(template_id.value(), "",
+					  0U, true);
+      }
+      catch (const MapSpecificationError& e) {
+	E_MOD("Cannot find template '" << template_id.value() <<
+	      "' for static '" << name.value() << "'");
+	return false;
+      }
+    }
+    
+    
+    // overwrite with the type if specified
+    if (type) { spec.type = type.value(); }
+
+    // name / parent from default (template, none) or overwritten
+    if (name) { spec.name = name.value(); }
+    if (parent) {spec.parent = parent.value(); }
+    
+    // run the files, overwrite all if available
+    if (sta.child("file")) { spec.filename.clear(); }
+    for (auto fname = sta.child("file"); fname;
+         fname = fname.next_sibling("file")) {
+      spec.filename.push_back(trim_copy(fname.child_value()));
+    }
+
+    // run the coordinates, overwrite or modify
+    for (auto coord = sta.child("coordinate"); coord;
+         coord = coord.next_sibling("coordinate")) {
+      std::string _label = coord.attribute("name").value();
+      auto values = getValues(coord.child_value());
+      unsigned offset = 0;
+      unsigned n = values.size();
+      auto idx = object_mappings.find(spec.type);
+      
+      if (idx != object_mappings.end()) {
+        if (!idx->second.getMapping(offset, n, _label)) {
+	  W_MOD("Coordinate index '" << _label << "' for type '" <<
+		spec.type << "' missing");
+	  continue;
+	}
+      }
+      else if (_label.size()) {
+	W_MOD("Coordinate mappings for type '" << spec.type <<
+	      "' missing");
+	continue;
+      }
+      spec.setCoordinates(offset, n, values);
+    }
+
+    // create the object
+    viewer.createStatic(spec);
+  }
+  return true;
 }

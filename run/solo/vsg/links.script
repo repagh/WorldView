@@ -18,8 +18,9 @@ else
 fi
 
 # run the link script in the hmi lab data dir; the -t is for test files
-../../../../WorldView/HMILabViewFiles/generate -t
+# ../../../../WorldView/HMILabViewFiles/generate -t
 
-# link the example stuff for ogre
-../../../../WorldView/OgreViewer/generate
-
+ln -sf /usr/share/vsgExamples/models/lz.vsgt .
+ln -sf ~/gdapps/VisualModels/VisualModels/landrover/Defender.mtl .
+ln -sf ~/gdapps/VisualModels/VisualModels/landrover/Defender.obj .
+ln -sf ${DATADIR}/vsg/exampleworld.xml .
