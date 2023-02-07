@@ -3,16 +3,17 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="https://dueca.tudelft.nl vsgworld.xsd">
 
+  <!-- base for static objects -->
   <template id="carbase" type="static-absolute-transform">
-    <coordinate name="xyz">
+    <param name="xyz">
       0, 10, 3
-    </coordinate>
-    <coordinate name="scalexyz">
+    </param>
+    <param name="scalexyz">
       1, 2, 3
-    </coordinate>
-    <coordinate name="phithetapsi">
+    </param>
+    <param name="phithetapsi">
       0, 0, 33
-    </coordinate>
+    </param>
   </template>
 	       
   <template id="car" type="model">
@@ -22,7 +23,12 @@
   <template id="world" type="model">
     <file>lz.vsgt</file>
   </template>
-
+  
+  <!-- controlled objects are all of type car? -->
+  <template id="ObjectMotion" type="model" name="car #">
+    <file>Defender.obj</file>
+  </template>
+  
   <!-- static, non-controlled objects -->
 
   <!-- transform node to the car location -->
@@ -33,13 +39,19 @@
 
   <!-- modified transform node -->
   <static name="car2base" template-id="carbase">
-    <coordinate name="scalexyz"> 1, 1, 1 </coordinate>
-    <coordinate name="xyz"> -50, 0, 0 </coordinate>
+    <param name="scalexyz"> 1, 1, 1 </param>
+    <param name="xyz"> -50, 0, 0 </param>
   </static>
 
   <!-- second instance of car -->
   <static name="car2" parent="car2base" type="model">
     <file>Defender.obj</file>
+  </static>
+
+  <!-- simple ambient light -->
+  <static name="ambient" type="ambient-light">
+    <param name="color"> 1, 1, 1</param>
+    <param name="intensity"> 0.8 </param>
   </static>
   
 </world>

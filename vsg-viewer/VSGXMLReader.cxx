@@ -93,8 +93,8 @@ VSGXMLReader::VSGXMLReader(const std::string& definitions)
 	(_type.attribute("name").value(),
 	 ObjectCoordinateMapping());
       
-      for (auto _coord = _type.child("coordinates"); _coord;
-	   _coord = _coord.next_sibling("coordinates")) {
+      for (auto _coord = _type.child("param"); _coord;
+	   _coord = _coord.next_sibling("param")) {
 	unsigned offset = _coord.attribute("offset").as_uint();
 	unsigned nelts = _coord.attribute("size").as_uint(1U);
 	std::string name = trim_copy(_coord.child_value());
@@ -154,8 +154,8 @@ bool VSGXMLReader::readWorld(const std::string& file, VSGViewer &viewer)
     }
 
     // now get&translate all coordinates
-    for (auto coord = def.child("coordinate"); coord;
-         coord = coord.next_sibling("coordinate")) {
+    for (auto coord = def.child("param"); coord;
+         coord = coord.next_sibling("param")) {
       std::string _label = coord.attribute("name").value();
       auto values = getValues(coord.child_value());
       unsigned offset = 0;
@@ -164,13 +164,13 @@ bool VSGXMLReader::readWorld(const std::string& file, VSGViewer &viewer)
       
       if (idx != object_mappings.end()) {
         if (!idx->second.getMapping(offset, n, _label)) {
-	  W_MOD("Coordinate index '" << _label << "' for type '" <<
+	  W_MOD("Param index '" << _label << "' for type '" <<
 		spec.type << "' missing");
 	  continue;
 	}
       }
       else if (_label.size()) {
-	W_MOD("Coordinate mappings for type '" << spec.type <<
+	W_MOD("Param mappings for type '" << spec.type <<
 	      "' missing");
 	continue;
       }
@@ -224,8 +224,8 @@ bool VSGXMLReader::readWorld(const std::string& file, VSGViewer &viewer)
     }
 
     // run the coordinates, overwrite or modify
-    for (auto coord = sta.child("coordinate"); coord;
-         coord = coord.next_sibling("coordinate")) {
+    for (auto coord = sta.child("param"); coord;
+         coord = coord.next_sibling("param")) {
       std::string _label = coord.attribute("name").value();
       auto values = getValues(coord.child_value());
       unsigned offset = 0;
@@ -234,13 +234,13 @@ bool VSGXMLReader::readWorld(const std::string& file, VSGViewer &viewer)
       
       if (idx != object_mappings.end()) {
         if (!idx->second.getMapping(offset, n, _label)) {
-	  W_MOD("Coordinate index '" << _label << "' for type '" <<
+	  W_MOD("Param index '" << _label << "' for type '" <<
 		spec.type << "' missing");
 	  continue;
 	}
       }
       else if (_label.size()) {
-	W_MOD("Coordinate mappings for type '" << spec.type <<
+	W_MOD("Param mappings for type '" << spec.type <<
 	      "' missing");
 	continue;
       }

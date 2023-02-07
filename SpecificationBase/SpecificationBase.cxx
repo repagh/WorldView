@@ -92,6 +92,8 @@ WorldDataSpec SpecificationBase::retrieveFactorySpec
   std::string dataclass = dclass;
 
   // first try to find a specific configuration, with dataclass and match
+  D_MOD("Trying to find a match on '" <<
+	(dataclass + std::string(":") + tomatch) << "'");
   auto fs = tomatch.size() ?
     factoryspecs.find(dataclass + std::string(":") + tomatch) :
     factoryspecs.end();
@@ -100,7 +102,7 @@ WorldDataSpec SpecificationBase::retrieveFactorySpec
   try {
     while (tomatch.size() && fs == factoryspecs.end() && dataclass.size()) {
       I_MOD("Could not find specification for \"" <<
-            dataclass + std::string(":") + tomatch <<
+            (dataclass + std::string(":") + tomatch) <<
             "\", trying parent class \"" <<
             dueca::DataClassRegistry::single().getParent(dataclass) << "\"");
       dataclass = dueca::DataClassRegistry::single().getParent(dataclass);

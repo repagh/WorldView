@@ -512,6 +512,7 @@ bool VSGViewer::createControllable
     op->connect(master_id, cname, entry_id, time_aspect);
     if (root) {
       op->init(root, this);
+      viewer->compile();
     }
     boost::intrusive_ptr<VSGObject> bop(op);
     active_objects[keypair] = bop;

@@ -16,7 +16,7 @@
 
 VSGStaticModel::VSGStaticModel(const WorldDataSpec& data) :
   model(),
-  modelfile(data.filename.size() ? std::string() : data.filename[0])
+  modelfile(data.filename.size() ? data.filename[0] : std::string())
 {
   name = data.name;
   parent = data.parent;
@@ -36,10 +36,15 @@ void VSGStaticModel::init(const vsg::ref_ptr<vsg::Group>& root,
 			  VSGViewer* master)
 {
   model = vsg::read_cast<vsg::Node>(modelfile, master->options);
+  if (!model) {
+    W_MOD("Could not create model, name=" << name << ", file=" << modelfile);
+    return;
+  }
   model->setValue("name", name);
   auto par = findParent(root, parent);
   if (!par) {
-    W_MOD("Cannot find parent, for name=" << name << ", attaching to root");
+    W_MOD("Cannot find parent=" << parent << ", for name=" << name <<
+	  ", attaching to root");
     par = root;
   }
   par->addChild(model);
@@ -69,6 +74,11 @@ void VSGModel::init(const vsg::ref_ptr<vsg::Group>& root,
 {
   model = vsg::read_cast<vsg::Node>(modelfile, master->options);
   VSGAbsoluteTransform::init(root, master);
+
+  if (!model) {
+    W_MOD("Could not create model, name=" << name << ", file=" << modelfile);
+    return;
+  }
   transform->addChild(model);
   D_MOD("VSG create visual model, name=" << name);
 }

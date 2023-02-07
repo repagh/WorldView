@@ -4,53 +4,53 @@
       xsi:schemaLocation="https://dueca.tudelft.nl vsgobjects.xsd">
 
   <type name="ambient-light">
-    <coordinates offset="0" size="3">color</coordinates>
-    <coordinates offset="3" size="1">
+    <param offset="0" size="3">color</param>
+    <param offset="3" size="1">
       intensity
-    </coordinates>
+    </param>
   </type>
 
   <type name="directional-light">
-    <coordinates offset="0" size="3">color</coordinates>
-    <coordinates offset="3" size="1">intensity</coordinates>
-    <coordinates offset="4" size="3">phithetapsi</coordinates>
+    <param offset="0" size="3">color</param>
+    <param offset="3" size="1">intensity</param>
+    <param offset="4" size="3">phithetapsi</param>
   </type>
 
   <type name="point-light">
-    <coordinates offset="0" size="3">color</coordinates>
-    <coordinates offset="3" size="1">intensity</coordinates>
-    <coordinates offset="4" size="3">xyz</coordinates>
-    <coordinates offset="7" size="1">span</coordinates>
+    <param offset="0" size="3">color</param>
+    <param offset="3" size="1">intensity</param>
+    <param offset="4" size="3">xyz</param>
+    <param offset="7" size="1">span</param>
   </type>
 
   <type name="spot-light">
-    <coordinates offset="0" size="3">color</coordinates>
-    <coordinates offset="3" size="1">intensity</coordinates>
-    <coordinates offset="4" size="3">xyz</coordinates>
-    <coordinates offset="7" size="1">span</coordinates>
-    <coordinates offset="10" size="3">phithetapsi</coordinates>
-    <coordinates offset="11" size="1">innerAngle</coordinates>
-    <coordinates offset="12" size="1">outerAngle</coordinates>
+    <param offset="0" size="3">color</param>
+    <param offset="3" size="1">intensity</param>
+    <param offset="4" size="3">xyz</param>
+    <param offset="7" size="1">span</param>
+    <param offset="10" size="3">phithetapsi</param>
+    <param offset="11" size="1">innerAngle</param>
+    <param offset="12" size="1">outerAngle</param>
   </type>
 
   <type name="static-absolute-transform">
-    <coordinates offset="0" size="3">xyz</coordinates>
-    <coordinates offset="3" size="3">phithetapsi</coordinates>
-    <coordinates offset="6" size="3">scalexyz</coordinates>
+    <param offset="0" size="3">xyz</param>
+    <param offset="3" size="3">phithetapsi</param>
+    <param offset="6" size="3">scalexyz</param>
   </type>
 
   <type name="static-matrix-transform">
-    <coordinates offset="0" size="3">xyz</coordinates>
-    <coordinates offset="3" size="3">phithetapsi</coordinates>
-    <coordinates offset="6" size="3">scalexyz</coordinates>
+    <param offset="0" size="3">xyz</param>
+    <param offset="3" size="3">phithetapsi</param>
+    <param offset="6" size="3">scalexyz</param>
   </type>
 
   <type name="absolute-transform">
-    <coordinates offset="6" size="3">scalexyz</coordinates>
+    <param offset="6" size="3">scalexyz</param>
   </type>
 
   <type name="matrix-transform">
-     <coordinates offset="6" size="3">scalexyz</coordinates>
+     <param offset="6" size="3">scalexyz</param>
   </type>
 
   <type name="model"></type>
