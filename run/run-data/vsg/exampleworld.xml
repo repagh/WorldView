@@ -40,7 +40,7 @@
   </static>
 
   <!-- second instance of car -->
-  <static name="car2" parent="car2base" type="model">
+  <static name="car2" parent="car2base" type="static-model">
     <file>Defender.obj</file>
   </static>
 
