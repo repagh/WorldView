@@ -5,7 +5,7 @@
 
 ## in general, it is a good idea to clearly document your set up
 ## this is an excellent place.
-claim_graphics_thread = False
+claim_graphics_thread = True
 f = 4
 ## node set-up
 ecs_node = 0   # dutmms1, send order 3
@@ -114,15 +114,15 @@ if this_node_id == ecs_node:
                     -0.75011761385, 0.675155946186,
                     -0.376500155079, 0.51895967321)),
                 
-                ('add-viewport', "right side"),
-                ('viewport-window', "sides"),
-                ('viewport-pos+size', (
-                    int(2175/f), 0, int(1345/f), int(1080/f))),
-                ('eye-offset', ( 0, 0, 0, 0, 0, 85.113)),
-                ('set-frustum', (
-                    1.0, 10000,
-                    -1.21819795407, 0.588489166461,
-                    -0.60996297175, 0.840759771872)),
+                # ('add-viewport', "right side"),
+                # ('viewport-window', "sides"),
+                # ('viewport-pos+size', (
+                #     int(2175/f), 0, int(1345/f), int(1080/f))),
+                # ('eye-offset', ( 0, 0, 0, 0, 0, 85.113)),
+                # ('set-frustum', (
+                #     1.0, 10000,
+                #     -1.21819795407, 0.588489166461,
+                #     -0.60996297175, 0.840759771872)),
                 ('set-xml-definitions',
                  '../../../../WorldView/vsg-viewer/vsgobjects.xml'),
                 ('read-xml-definitions', 'exampleworld.xml'),

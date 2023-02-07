@@ -57,12 +57,22 @@ vsg::ref_ptr<vsg::Group> findParent(vsg::ref_ptr<vsg::Group> root,
 
   if (!name.size()) return root;
   for (auto const &i: root->children) {
+
+    // treat as a group
     vsg::ref_ptr<vsg::Group> g = i.cast<vsg::Group>();
-    if (g->getValue("name", iname) && iname == name) {
-      return g;
+
+    // only proceed if it is a group
+    if (g) { 
+
+      // check the name
+      if (g->getValue("name", iname) && iname == name) {
+	return g;
+      }
+
+      // name not matching, check children
+      sub = findParent(g, name);
+      if (sub) return sub;
     }
-    sub = findParent(g, name);
-    if (sub) return sub;
   }
   return sub;
 }

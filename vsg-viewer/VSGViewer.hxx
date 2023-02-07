@@ -211,7 +211,7 @@ public:
   /** Do a re-draw
       \param wait   If true, do now swap the buffers. The application
                     must later wait and swap with the waitSwap function. */
-  void redraw(bool wait = false, bool reset_context = false);
+  void redraw(bool wait = false, bool reset_context = false) final;
 
   /** Wait for the swap. */
   void waitSwap();

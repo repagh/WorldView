@@ -489,7 +489,8 @@ void VSGViewer::setBase(TimeTickType tick, const BaseObjectMotion& ownm,
   // update all cameras, as they are in the viewset list
   for (auto &win: windows) {
     for (auto &view: win.second.viewset) {
-      view.second.view_matrix->set(view.second.eye_offset * world2orig);
+      view.second.camera->viewMatrix.cast<vsg::LookAt>()->
+	set(view.second.eye_offset * world2orig);
     }
   }
 
