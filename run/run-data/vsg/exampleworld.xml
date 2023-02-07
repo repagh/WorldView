@@ -19,10 +19,6 @@
   <template id="car" type="model">
     <file>Defender.obj</file>
   </template>
-
-  <template id="world" type="model">
-    <file>lz.vsgt</file>
-  </template>
   
   <!-- controlled objects are all of type car? -->
   <template id="ObjectMotion" type="model" name="car #">
@@ -46,6 +42,12 @@
   <!-- second instance of car -->
   <static name="car2" parent="car2base" type="model">
     <file>Defender.obj</file>
+  </static>
+
+  <!-- world total -->
+  <static name="world" type="static-model">
+    <file>lz.vsgt</file>
+    <param name="xyz"> 0, 0, 30 </param>
   </static>
 
   <!-- simple ambient light -->
