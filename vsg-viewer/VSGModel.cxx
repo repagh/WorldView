@@ -35,7 +35,8 @@ VSGStaticModel::~VSGStaticModel()
 void VSGStaticModel::init(const vsg::ref_ptr<vsg::Group>& root,
 			  VSGViewer* master)
 {
-  model = vsg::read_cast<vsg::Node>(modelfile, master->options);
+  auto object = vsg::read(modelfile, master->options);
+  model = object.cast<vsg::Node>();
   if (!model) {
     W_MOD("Could not create model, name=" << name << ", file=" << modelfile);
     return;

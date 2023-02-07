@@ -132,7 +132,7 @@ if this_node_id == ecs_node:
         ))
 
     mymods.append(dueca.Module(
-        "visual-test-drive", "", admin_priority).param(
+        "visual-test-drive", "test", admin_priority).param(
             ('set-timing', sim_timing),
 	    ('check-timing', (10000, 20000)),
 	    ('add-motion', "myself"),
@@ -151,7 +151,10 @@ if this_node_id == ecs_node:
 	    ('rotation', (1, 1, 10)),
 	    ('dt', 0.1)
         ))
-
+    mymods.append(dueca.Module(
+        "control-view", "", admin_priority).param(
+            ('set-timing', sim_timing)))
+    
     # add a filer in this node for replay support
     # filer = dueca.ReplayFiler("PLHLAB")
 

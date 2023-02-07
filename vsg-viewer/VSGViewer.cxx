@@ -204,6 +204,7 @@ VSGViewer::VSGViewer() :
   fog_end(100000.0)
 {
   bg_color[3] = 1.0;
+  bg_color[2] = 0.45;
   // root is created upon window init
 }
 
@@ -257,7 +258,11 @@ VSGViewer::myCreateWindow(const WinSpec &ws, vsg::ref_ptr<vsg::Group> root,
     res.traits->height = ws.size_and_position[1];
     res.traits->fullscreen = false;
   }
-
+  
+  // double buffer
+  res.traits->swapchainPreferences.imageCount = 2;
+  res.traits->synchronizationLayer = true;
+  
   res.window = vsg::Window::create(res.traits);
   res.command_graph = vsg::CommandGraph::create(res.window);
 
@@ -271,6 +276,9 @@ namespace dueca {
 
 void VSGViewer::init(bool waitswap)
 {
+  // process what is in the commandline
+  vsg::CommandLine arguments(p_argc, *p_argv);
+  
   // create root
   options = vsg::Options::create();
   options->fileCache = vsg::getEnv("VSG_FILE_CACHE");
@@ -278,6 +286,7 @@ void VSGViewer::init(bool waitswap)
 
   // add vsgXchange reading and writing of 3rd party file formats
   options->add(vsgXchange::all::create());
+  arguments.read(options);
 
   // create viewer
   viewer = vsg::Viewer::create();
