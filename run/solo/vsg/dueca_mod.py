@@ -94,9 +94,11 @@ if this_node_id == ecs_node:
                 ('viewport-window', "front"),
                 ('viewport-pos+size', (int(62/f), 0, int(1796/f), int(1080/f))),
                 ('set-frustum',
-                 ( 1.0, 10000, 
-                   -1.17137785454, 0.724227595471,
-                   -0.479274611399, 0.660621761658)),
+#                 ( 1.0, 10000,               # HMILAB window frustum
+#                   -1.17137785454, 0.724227595471,
+#                   -0.479274611399, 0.660621761658)
+                 (1.0, 10000, 40)             # 40 deg fov
+                 ),
                 ('eye-offset', ( 0, 0, 0, 0, 0, 0)),
 
                  ## window with side views

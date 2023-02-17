@@ -141,7 +141,7 @@ void VSGViewer::ViewSet::init(const ViewSpec& spec, WindowSet& ws,
   // assume starting at origin, only component is the eye offset 
   view_matrix = vsg::LookAt::create();
   if (spec.eye_pos.size() == 0) {
-    // no eye offset
+    // no eye offset, this creates a diagonal/unit matrix
     eye_offset = vsg::t_mat4<double>();
   }
   else if (spec.eye_pos.size() == 3) {
@@ -402,24 +402,6 @@ void VSGViewer::waitSwap()
 #endif
 }
 
-#if 0
-template <typename T>
-inline static void updateTransform(vsg::Node* tf, const T& v)
-{
-  vsg::PositionAttitudeTransform* t =
-    dynamic_cast<vsg::PositionAttitudeTransform*>(tf);
-  if (t == NULL) return;
-  if (v.size() >= 3) {
-    t->setPosition(AxisTransform::vsgPos(v.data()));
-  }
-  if (v.size() >= 7) {
-    t->setAttitude(AxisTransform::vsgQuat(v.data()+3));
-  }
-  if (v.size() >= 10) {
-    t->setScale(AxisTransform::vsgScale(v.data()+7));
-  }
-}
-#endif
 
 bool VSGViewer::adaptSceneGraph(const WorldViewConfig& adapt)
 {
@@ -481,11 +463,35 @@ bool VSGViewer::adaptSceneGraph(const WorldViewConfig& adapt)
 void VSGViewer::setBase(TimeTickType tick, const BaseObjectMotion& ownm,
                         double late)
 {
+#if 0
   // transformation from world origin to the base of the vehicle
   auto world2orig =
     vsg::rotate(AxisTransform::vsgQuatInv(ownm.attitude_q)) *
     vsg::translate(-ownm.xyz[1], -ownm.xyz[0], ownm.xyz[2]);
-
+#endif
+#if 0
+  auto orig2world =
+    vsg::rotate(AxisTransform::vsgQuat(ownm.attitude_q)) *
+    vsg::translate(ownm.xyz[1], -ownm.xyz[2], ownm.xyz[0]);
+  auto world2orig = vsg::inverse(orig2world);
+#endif
+#if 0
+  auto world2orig =
+    vsg::rotate(Q2phi(ownm.attitude_q), 0.0, 0.0, 1.0) *
+    vsg::rotate(Q2tht(ownm.attitude_q), 1.0, 0.0, 0.0) *
+    vsg::rotate(Q2psi(ownm.attitude_q), 0.0, 1.0, 0.0) *
+    vsg::translate(-ownm.xyz[1], ownm.xyz[0], -ownm.xyz[2]);
+  //    vsg::rotate(AxisTransform::vsgQuatInv(ownm.attitude_q));
+#endif
+  auto camerapnt =
+    vsg::translate(ownm.xyz[1], -ownm.xyz[0], ownm.xyz[2]) *
+    vsg::rotate(Q2psi(ownm.attitude_q), 0.0, 1.0, 0.0) *
+    vsg::rotate(Q2tht(ownm.attitude_q), 1.0, 0.0, 0.0) *
+    vsg::rotate(Q2phi(ownm.attitude_q), 0.0, 0.0, 1.0);
+  auto world2orig = vsg::inverse(camerapnt);
+ 
+  
+  
   // update all cameras, as they are in the viewset list
   for (auto &win: windows) {
     for (auto &view: win.second.viewset) {

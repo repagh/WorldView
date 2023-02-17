@@ -30,6 +30,9 @@
                        psi: rotation about z axis
                        tht: rotation about x axis
                        phi: rotation about -z axis
+
+    Quaternion dueca:  w, x, y, z
+    Quaternion vsg:    x, y, z, w
 */
 struct AxisTransform
 {
