@@ -94,7 +94,7 @@ struct AxisTransform
     static const vsg::t_vec3<T> zax( 0.0,  0.0, -1.0);
     return vsg::rotate(phi, xax) * vsg::rotate(tht, yax) * vsg::rotate(psi, zax);
   }
-    
+
 };
 
 

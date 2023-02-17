@@ -153,7 +153,9 @@ void VSGViewer::ViewSet::init(const ViewSpec& spec, WindowSet& ws,
   }
   else if (spec.eye_pos.size() == 6) {
     eye_offset = AxisTransform::vsgRotation
-      (-spec.eye_pos[3], -spec.eye_pos[4], -spec.eye_pos[5]) *
+      (-vsg::radians(spec.eye_pos[3]),
+       -vsg::radians(spec.eye_pos[4]),
+       -vsg::radians(spec.eye_pos[5])) *
       vsg::translate
       (AxisTransform::vsgPos
        (-spec.eye_pos[0], -spec.eye_pos[1], -spec.eye_pos[2]));

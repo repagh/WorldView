@@ -105,7 +105,7 @@ if this_node_id == ecs_node:
                 ('add-window', "sides"),
                 ('window-size+pos', (
                     int(3840/f), int(1080/f), 0, 0)),
-                
+
                 ('add-viewport', "left side"),
                 ('viewport-window', "sides"),
                 ('viewport-pos+size', (
@@ -115,7 +115,7 @@ if this_node_id == ecs_node:
                     1.0, 10000,
                     -0.75011761385, 0.675155946186,
                     -0.376500155079, 0.51895967321)),
-                
+
                 # ('add-viewport', "right side"),
                 # ('viewport-window', "sides"),
                 # ('viewport-pos+size', (
@@ -156,13 +156,13 @@ if this_node_id == ecs_node:
     mymods.append(dueca.Module(
         "control-view", "", admin_priority).param(
             ('set-timing', sim_timing)))
-    
+
     # add a filer in this node for replay support
     # filer = dueca.ReplayFiler("PLHLAB")
 
 # then combine in an entity (one "copy" per node)
 if drivemods:
     driveentity = dueca.Entity("drive", drivemods)
-    
+
 if mymods:
     myentity = dueca.Entity("ogre", mymods)
