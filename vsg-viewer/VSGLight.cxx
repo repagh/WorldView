@@ -45,7 +45,7 @@ static auto VSGAmbientLight_maker = new
 VSGDirectionalLight::VSGDirectionalLight(const WorldDataSpec& data) :
   color(data.coordinates[0], data.coordinates[1], data.coordinates[2]),
   intensity(data.coordinates[3]),
-  direction(data.coordinates[4], data.coordinates[5], data.coordinates[6])
+  direction(data.coordinates[5], data.coordinates[4], data.coordinates[6])
 {
   name = data.name;
   parent = data.parent;
@@ -82,7 +82,7 @@ static auto VSGDirectionalLight_maker = new
 VSGPointLight::VSGPointLight(const WorldDataSpec& data) :
   color(data.coordinates[0], data.coordinates[1], data.coordinates[2]),
   intensity(data.coordinates[3]),
-  position(data.coordinates[4], data.coordinates[5], data.coordinates[6]),
+  position(data.coordinates[5], data.coordinates[4], data.coordinates[6]),
   span(data.coordinates[7])
 {
   name = data.name;
@@ -125,8 +125,11 @@ static auto VSGPointLight_maker = new
 VSGSpotLight::VSGSpotLight(const WorldDataSpec& data) :
   color(data.coordinates[0], data.coordinates[1], data.coordinates[2]),
   intensity(data.coordinates[3]),
-  position(data.coordinates[4], data.coordinates[5], data.coordinates[6]),
-  span(data.coordinates[7])
+  position(data.coordinates[5], data.coordinates[4], data.coordinates[6]),
+  span(data.coordinates[7]),
+  innerangle(data.coordinates[10]),
+  outerangle(data.coordinates[11]),
+  direction(data.coordinates[13], data.coordinates[12], data.coordinates[14])
 {
   name = data.name;
   parent = data.parent;

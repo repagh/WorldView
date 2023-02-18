@@ -13,7 +13,7 @@
   <type name="directional-light">
     <param offset="0" size="3">color</param>
     <param offset="3" size="1">intensity</param>
-    <param offset="4" size="3">phithetapsi</param>
+    <param offset="4" size="3">direction</param>
   </type>
 
   <type name="point-light">
@@ -28,9 +28,9 @@
     <param offset="3" size="1">intensity</param>
     <param offset="4" size="3">xyz</param>
     <param offset="7" size="1">span</param>
-    <param offset="10" size="3">phithetapsi</param>
-    <param offset="11" size="1">innerAngle</param>
-    <param offset="12" size="1">outerAngle</param>
+    <param offset="10" size="1">innerAngle</param>
+    <param offset="11" size="1">outerAngle</param>
+    <param offset="12" size="3">direction</param>
   </type>
 
   <type name="static-absolute-transform">
@@ -46,11 +46,11 @@
   </type>
 
   <type name="absolute-transform">
-    <param offset="6" size="3">scalexyz</param>
+    <param offset="0" size="3">scalexyz</param>
   </type>
 
   <type name="matrix-transform">
-     <param offset="6" size="3">scalexyz</param>
+     <param offset="0" size="3">scalexyz</param>
   </type>
 
   <type name="model"></type>

@@ -97,7 +97,7 @@ namespace vsg
     double nearDistance;
     double farDistance;
     };
-  VSG_type_name(vsg::FrustumPerspective);  
+  VSG_type_name(vsg::FrustumPerspective);
 }
 
 
@@ -120,7 +120,7 @@ void VSGViewer::ViewSet::init(const ViewSpec& spec, WindowSet& ws,
   if (spec.frustum_data.size() == 3) {
     // from fov, aspect, near dist, far dist
     perspective = vsg::Perspective::create
-      (spec.frustum_data[2], aspect,
+      (spec.frustum_data[2], 1/aspect,
        spec.frustum_data[0], spec.frustum_data[1]);
   }
 
@@ -138,30 +138,26 @@ void VSGViewer::ViewSet::init(const ViewSpec& spec, WindowSet& ws,
      spec.portcoords[2],spec.portcoords[3]);
 
   // the view matrix transforms to the camera position. At this stage,
-  // assume starting at origin, only component is the eye offset 
+  // assume starting at origin, only component is the eye offset
   view_matrix = vsg::LookAt::create();
   if (spec.eye_pos.size() == 0) {
     // no eye offset, this creates a diagonal/unit matrix
     eye_offset = vsg::t_mat4<double>();
   }
-  else if (spec.eye_pos.size() == 3) {
+  else if (spec.eye_pos.size() >= 3) {
     eye_offset = vsg::translate
       (AxisTransform::vsgPos
-       (-spec.eye_pos[0], -spec.eye_pos[1], -spec.eye_pos[2]));
-    // only position offset
-    view_matrix->set(eye_offset);
+       (-spec.eye_pos[1], spec.eye_pos[2], spec.eye_pos[0]));
   }
-  else if (spec.eye_pos.size() == 6) {
-    eye_offset = AxisTransform::vsgRotation
-      (-vsg::radians(spec.eye_pos[3]),
-       -vsg::radians(spec.eye_pos[4]),
-       -vsg::radians(spec.eye_pos[5])) *
-      vsg::translate
-      (AxisTransform::vsgPos
-       (-spec.eye_pos[0], -spec.eye_pos[1], -spec.eye_pos[2]));
-    // position and angle
-    view_matrix->set(eye_offset);
+  if (spec.eye_pos.size() == 6) {
+    eye_offset =
+      vsg::rotate(double(vsg::radians(spec.eye_pos[3])), 0.0, 0.0, 1.0) *
+      vsg::rotate(-double(vsg::radians(spec.eye_pos[4])), 1.0, 0.0, 0.0) *
+      vsg::rotate(double(vsg::radians(spec.eye_pos[5])), 0.0, 1.0, 0.0) *
+      eye_offset;
   }
+  // initial position and angle
+  view_matrix->set(eye_offset);
 
   // create camera and view
   camera = vsg::Camera::create(perspective, view_matrix, viewportstate);
@@ -169,12 +165,7 @@ void VSGViewer::ViewSet::init(const ViewSpec& spec, WindowSet& ws,
 
   // render graph seems to be the command structure that is called when
   // window needs to refres views
-  render_graph = vsg::RenderGraph::create(ws.window, view);
-  render_graph->clearValues[0].color = {{
-      bg_color[0], bg_color[1], bg_color[2], bg_color[3] }};
-
-  // ensure render graph is called 
-  ws.command_graph->addChild(render_graph);
+  ws.render_graph->addChild(view);
 
   if (spec.overlay.size()) {
     cout << "Looking for overlay " << spec.overlay << endl;
@@ -260,13 +251,20 @@ VSGViewer::myCreateWindow(const WinSpec &ws, vsg::ref_ptr<vsg::Group> root,
     res.traits->height = ws.size_and_position[1];
     res.traits->fullscreen = false;
   }
-  
+
   // double buffer
   res.traits->swapchainPreferences.imageCount = 2;
   res.traits->synchronizationLayer = true;
-  
+
   res.window = vsg::Window::create(res.traits);
   res.command_graph = vsg::CommandGraph::create(res.window);
+
+  res.render_graph =  vsg::RenderGraph::create(res.window);
+  res.render_graph->clearValues[0].color = {{
+      bg_color[0], bg_color[1], bg_color[2], bg_color[3] }};
+
+  // ensure render graph is called
+  res.command_graph->addChild(res.render_graph);
 
   return res;
 }
@@ -280,7 +278,7 @@ void VSGViewer::init(bool waitswap)
 {
   // process what is in the commandline
   vsg::CommandLine arguments(p_argc, *p_argv);
-  
+
   // create root
   options = vsg::Options::create();
   options->fileCache = vsg::getEnv("VSG_FILE_CACHE");
@@ -295,6 +293,7 @@ void VSGViewer::init(bool waitswap)
 
   // create scene graph root
   root = vsg::Group::create();
+  root->setValue("name", "root");
 
   // and the observer/eye group
   observer = vsg::Group::create();
@@ -465,40 +464,20 @@ bool VSGViewer::adaptSceneGraph(const WorldViewConfig& adapt)
 void VSGViewer::setBase(TimeTickType tick, const BaseObjectMotion& ownm,
                         double late)
 {
-#if 0
-  // transformation from world origin to the base of the vehicle
-  auto world2orig =
-    vsg::rotate(AxisTransform::vsgQuatInv(ownm.attitude_q)) *
-    vsg::translate(-ownm.xyz[1], -ownm.xyz[0], ownm.xyz[2]);
-#endif
-#if 0
-  auto orig2world =
-    vsg::rotate(AxisTransform::vsgQuat(ownm.attitude_q)) *
-    vsg::translate(ownm.xyz[1], -ownm.xyz[2], ownm.xyz[0]);
-  auto world2orig = vsg::inverse(orig2world);
-#endif
-#if 0
-  auto world2orig =
-    vsg::rotate(Q2phi(ownm.attitude_q), 0.0, 0.0, 1.0) *
-    vsg::rotate(Q2tht(ownm.attitude_q), 1.0, 0.0, 0.0) *
-    vsg::rotate(Q2psi(ownm.attitude_q), 0.0, 1.0, 0.0) *
-    vsg::translate(-ownm.xyz[1], ownm.xyz[0], -ownm.xyz[2]);
-  //    vsg::rotate(AxisTransform::vsgQuatInv(ownm.attitude_q));
-#endif
   auto camerapnt =
-    vsg::translate(ownm.xyz[1], -ownm.xyz[0], ownm.xyz[2]) *
+    //    vsg::rotate(0.5*vsg::PI, 1.0, 0.0, 0.0) *
+    vsg::rotate(Q2phi(ownm.attitude_q), 0.0, 0.0, 1.0) *
+    vsg::rotate(-Q2tht(ownm.attitude_q), 1.0, 0.0, 0.0) *
     vsg::rotate(Q2psi(ownm.attitude_q), 0.0, 1.0, 0.0) *
-    vsg::rotate(Q2tht(ownm.attitude_q), 1.0, 0.0, 0.0) *
-    vsg::rotate(Q2phi(ownm.attitude_q), 0.0, 0.0, 1.0);
-  auto world2orig = vsg::inverse(camerapnt);
- 
-  
-  
+    vsg::rotate(vsg::PI, 0.0, 0.0, 1.0) *
+    vsg::rotate(0.5*vsg::PI, 1.0, 0.0, 0.0) *
+    vsg::translate(ownm.xyz[1], ownm.xyz[0], ownm.xyz[2]);
+
   // update all cameras, as they are in the viewset list
   for (auto &win: windows) {
     for (auto &view: win.second.viewset) {
-      view.second.camera->viewMatrix.cast<vsg::LookAt>()->
-	set(view.second.eye_offset * world2orig);
+      auto world2orig = vsg::inverse(view.second.eye_offset * camerapnt);
+      view.second.camera->viewMatrix.cast<vsg::LookAt>()->set(world2orig);
     }
   }
 

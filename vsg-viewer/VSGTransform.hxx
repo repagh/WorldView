@@ -57,6 +57,9 @@ protected:
   /** VSG transform */
   vsg::ref_ptr<vsg::AbsoluteTransform> transform;
 
+  /** Scale */
+  vsg::ref_ptr<vsg::t_mat4<double> >   scale;
+
   /** Channel read token for motion input */
   boost::scoped_ptr<ChannelReadToken>     r_motion;
 
@@ -67,7 +70,7 @@ public:
   /** Destructor */
   virtual ~VSGAbsoluteTransform();
 
-  /** Connect to a channel entry 
+  /** Connect to a channel entry
       @param master_id ID for opening a channel reader
       @param cname     Channel with object data
       @param entry_id  Entry in the channel */
@@ -91,9 +94,12 @@ protected:
   /** VSG transform */
   vsg::ref_ptr<vsg::MatrixTransform> transform;
 
+  /** Scale */
+  vsg::ref_ptr<vsg::t_mat4<double> >   scale;
+
   /** Channel read token for motion input */
   boost::scoped_ptr<ChannelReadToken>     r_motion;
-  
+
 public:
   /** Constructor */
   VSGMatrixTransform(const WorldDataSpec& data);
@@ -101,7 +107,7 @@ public:
   /** Destructor */
   ~VSGMatrixTransform();
 
-  /** Connect to a channel entry 
+  /** Connect to a channel entry
       @param master_id ID for opening a channel reader
       @param cname     Channel with object data
       @param entry_id  Entry in the channel */

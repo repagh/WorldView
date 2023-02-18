@@ -79,8 +79,6 @@ private:
         distance or both) */
     vsg::t_mat4<double> eye_offset;
 
-    /** A rendergraph */
-    vsg::ref_ptr<vsg::RenderGraph> render_graph;
 
     /** Constructor */
     ViewSet();
@@ -122,6 +120,9 @@ private:
 
     /** Each window has a command graph */
     vsg::ref_ptr<vsg::CommandGraph> command_graph;
+
+    /** And a rendergraph?*/
+    vsg::ref_ptr<vsg::RenderGraph> render_graph;
 
     /** A list of view sets; these represent the different render
         areas within the window */

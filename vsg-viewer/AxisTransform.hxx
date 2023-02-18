@@ -31,6 +31,23 @@
                        tht: rotation about x axis
                        phi: rotation about -z axis
 
+    Vehicle Models:    -y front
+                       -x right
+                       z  up
+
+    Scenery models have the same orientation, drawn on the x y plane, with
+    z indicating height.
+
+    To avoid confusion with the model worlds, the base viewpoint is
+    rotated, to align x/north in aerospace, with -y in model space.
+
+    Transformations made to models:
+
+    aerospace                         model space
+    +x                                -y
+    +y                                -x
+    +z                                -z
+
     Quaternion dueca:  w, x, y, z
     Quaternion vsg:    x, y, z, w
 */
@@ -65,8 +82,7 @@ struct AxisTransform
   template <typename T>
   static inline vsg::t_vec3<T> vsgPos(const T x, const T y, const T z)
   {
-    vsg::t_vec3<T> vec(y, x, -z);
-    return vec;
+    return vsg::t_vec3<T>(-y, -x, -z);
   }
 
   /** Calculate from a position aircraft earth-fixed, earth
@@ -75,7 +91,14 @@ struct AxisTransform
   template <typename T>
   static inline vsg::t_vec3<typename T::value_type> vsgPos(const T xyz)
   {
-    return vsgPos(xyz[0], xyz[1], xyz[2]);
+    return vsg::t_vec3<T>(-xyz[1], -xyz[0], xyz[2]);
+  }
+
+  /** Switch the scaling to the proper dimensions */
+  template <typename T>
+  static inline vsg::t_vec3<T> vsgScale(const T x, const T y, const T z)
+  {
+    return vsg::t_vec3(y, x, z);
   }
 
   /** Switch the scaling to the proper dimensions */

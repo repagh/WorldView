@@ -94,10 +94,10 @@ if this_node_id == ecs_node:
                 ('viewport-window', "front"),
                 ('viewport-pos+size', (int(62/f), 0, int(1796/f), int(1080/f))),
                 ('set-frustum',
-#                 ( 1.0, 10000,               # HMILAB window frustum
-#                   -1.17137785454, 0.724227595471,
-#                   -0.479274611399, 0.660621761658)
-                 (1.0, 10000, 40)             # 40 deg fov
+                 ( 1.0, 10000,               # HMILAB window frustum
+                   -1.17137785454, 0.724227595471,
+                   -0.479274611399, 0.660621761658)
+#                 (1.0, 10000, 40)             # 40 deg fov
                  ),
                 ('eye-offset', ( 0, 0, 0, 0, 0, 0)),
 
@@ -116,15 +116,16 @@ if this_node_id == ecs_node:
                     -0.75011761385, 0.675155946186,
                     -0.376500155079, 0.51895967321)),
 
-                # ('add-viewport', "right side"),
-                # ('viewport-window', "sides"),
-                # ('viewport-pos+size', (
-                #     int(2175/f), 0, int(1345/f), int(1080/f))),
-                # ('eye-offset', ( 0, 0, 0, 0, 0, 85.113)),
-                # ('set-frustum', (
-                #     1.0, 10000,
-                #     -1.21819795407, 0.588489166461,
-                #     -0.60996297175, 0.840759771872)),
+                ('add-viewport', "right side"),
+                ('viewport-window', "sides"),
+                ('viewport-pos+size', (
+                    int(2175/f), 0, int(1345/f), int(1080/f))),
+                ('eye-offset', ( 0, 0, 0, 0, 0, 85.113)),
+                ('set-frustum', (
+                    1.0, 10000,
+                    -1.21819795407, 0.588489166461,
+                    -0.60996297175, 0.840759771872)),
+                
                 ('set-xml-definitions',
                  '../../../../WorldView/vsg-viewer/vsgobjects.xml'),
                 ('read-xml-definitions', 'exampleworld.xml'),
