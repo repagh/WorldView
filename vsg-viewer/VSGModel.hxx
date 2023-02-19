@@ -15,38 +15,44 @@
 #include "VSGObjectFactory.hxx"
 #include "VSGTransform.hxx"
 
-class VSGStaticModel: virtual public VSGObject
-{
-protected:
-  /** Single 3D model */
-  vsg::ref_ptr<vsg::Node> model;
+namespace vsgviewer {
 
-  /** Filename */
-  std::string modelfile;
-  
-public:
-  /** Constructor */
-  VSGStaticModel(const WorldDataSpec& data);
+  class VSGViewer;
 
-  /** Destructor */
-  ~VSGStaticModel();
+  class VSGStaticModel: virtual public VSGObject
+  {
+  protected:
+    /** Single 3D model */
+    vsg::ref_ptr<vsg::Node> model;
 
-  /** Initialise the model with the VSG scene */
-  void init(const vsg::ref_ptr<vsg::Group>& root,
-	    VSGViewer* master) override;
-};
+    /** Filename */
+    std::string modelfile;
 
-class VSGModel: public VSGStaticModel, public VSGAbsoluteTransform
-{
-  
-public:
-  /** Constructor */
-  VSGModel(const WorldDataSpec& data);
+  public:
+    /** Constructor */
+    VSGStaticModel(const WorldDataSpec& data);
 
-  /** Destructor */
-  ~VSGModel();
+    /** Destructor */
+    ~VSGStaticModel();
 
-  /** Initialise the model with the VSG scene */
-  void init(const vsg::ref_ptr<vsg::Group>& root,
-	    VSGViewer* master) final;
-};
+    /** Initialise the model with the VSG scene */
+    void init(const vsg::ref_ptr<vsg::Group>& root,
+              VSGViewer* master) override;
+  };
+
+  class VSGModel: public VSGStaticModel, public VSGAbsoluteTransform
+  {
+
+  public:
+    /** Constructor */
+    VSGModel(const WorldDataSpec& data);
+
+    /** Destructor */
+    ~VSGModel();
+
+    /** Initialise the model with the VSG scene */
+    void init(const vsg::ref_ptr<vsg::Group>& root,
+              VSGViewer* master) final;
+  };
+
+}; // namespace

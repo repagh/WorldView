@@ -1,13 +1,13 @@
 /* ------------------------------------------------------------------   */
 /*      item            : VSGViewer_Dueca.hxx
         made by         : rvanpaassen
-	from template   : DuecaHelperTemplate.hxx
+        from template   : DuecaHelperTemplate.hxx
         template made by: Rene van Paassen
         date            : Tue Jan 26 15:25:27 2010
-	category        : header file 
-        description     : 
-	changes         : Tue Jan 26 15:25:27 2010 first version
-	template changes: 050825 RvP Added template creation comment
+        category        : header file
+        description     :
+        changes         : Tue Jan 26 15:25:27 2010 first version
+        template changes: 050825 RvP Added template creation comment
         language        : C++
 */
 
@@ -25,230 +25,234 @@
 
 USING_DUECA_NS;
 
-/** This class implements the DUECA interface for the VSGViewer 3D
-    graphics interface class.
+namespace vsgviewer {
 
-    VSGViewer uses VulkanSceneGraph to produce a 3D visualisation. It
-    has the following functionalities:
+  /** This class implements the DUECA interface for the VSGViewer 3D
+      graphics interface class.
 
-    <ol>
-    
-    <li> Create a view on a 3D world, following the viewpoint
-    controlled by its user. 
+      VSGViewer uses VulkanSceneGraph to produce a 3D visualisation. It
+      has the following functionalities:
 
-    <li> Add visible objects of class VSGObject to this world. These
-    objects can have any form, they may be overlays or 3D models. With
-    overlays one can add instrument panels, masks and the like to the
-    drawing, and the 3D models may be static, for creating lights and
-    scenery, or controlled by external data, for creating other moving
-    objects in the world.
+      <ol>
 
-    <li> Report keyboard and cursor events back to the user. 
+      <li> Create a view on a 3D world, following the viewpoint
+      controlled by its user.
 
-    </ol>
+      <li> Add visible objects of class VSGObject to this world. These
+      objects can have any form, they may be overlays or 3D models. With
+      overlays one can add instrument panels, masks and the like to the
+      drawing, and the 3D models may be static, for creating lights and
+      scenery, or controlled by external data, for creating other moving
+      objects in the world.
 
-    All object adding uses a standard mechanism. Object creation uses
-    a factory of object types; this VSGViewer implementation comes
-    with a number of standard types, but the factory pattern is
-    extensible, and one may, e.g., create a specific instrument
-    overlay type.
+      <li> Report keyboard and cursor events back to the user.
 
-    In the script interface, a link is created between a match name,
-    the factory class type, and supplemental files and coordinates.
-    These are stored into a "factory inventory", that can be
-    subsequently used to explicitly create static objects, or its
-    contents may match against entries in DUECA channels for the
-    creation of dynamic, controlled objects.
+      </ol>
 
-    Two examples:
+      All object adding uses a standard mechanism. Object creation uses
+      a factory of object types; this VSGViewer implementation comes
+      with a number of standard types, but the factory pattern is
+      extensible, and one may, e.g., create a specific instrument
+      overlay type.
 
-    * Object match string "static:world", object name "world", 
-      with factory type "static", 
+      In the script interface, a link is created between a match name,
+      the factory class type, and supplemental files and coordinates.
+      These are stored into a "factory inventory", that can be
+      subsequently used to explicitly create static objects, or its
+      contents may match against entries in DUECA channels for the
+      creation of dynamic, controlled objects.
+
+      Two examples:
+
+      * Object match string "static:world", object name "world",
+      with factory type "static",
       uses file "schiphol.vsg" and is located at coordinates 0 0 0
-    
-    * Object class string "BaseObjectMotion:KLMBoeing737", object name 
-      "KLM737 #", with factory type "moving", uses file "KLM737.vsg", 
+
+      * Object class string "BaseObjectMotion:KLMBoeing737", object name
+      "KLM737 #", with factory type "moving", uses file "KLM737.vsg",
       no coordinates given, since the BaseObjectMotion DCO object in the
       connected DUECA channel will provide position information.
 
-    The static world can be created from the script, using the argument
-    "add_static" (Python) or 'add-static (Scheme). e.g.
+      The static world can be created from the script, using the argument
+      "add_static" (Python) or 'add-static (Scheme). e.g.
 
-    @code
-    'add-static "static:world"
-    @endcode
-    
-    In this case, the factory inventory is searched for the class
-    "static:world". The parameters for that class are found and used to
-    create a static object, with the name given ("world"). It is also 
-    possible to add a second argument to 'add-static, to override the 
-    name, e.g. to make a row of houses and give them all different names. 
+      @code
+      'add-static "static:world"
+      @endcode
 
-    For dynamic objects, the channel "ObjectMotion://world" channel is 
-    monitored. If an entry is published in that channel with data class
-    BaseObjectMotion and label KLMBoeing737, that entry will match to 
-    the object class name. The corresponding data ("KLM737.vsg") is used
-    to create the object. Since the name ends with a # token, the name
-    will be modified to include an integer suffix, e.g. "KLM737 #1"
+      In this case, the factory inventory is searched for the class
+      "static:world". The parameters for that class are found and used to
+      create a static object, with the name given ("world"). It is also
+      possible to add a second argument to 'add-static, to override the
+      name, e.g. to make a row of houses and give them all different names.
 
-    An entry with a class *derived* from BaseObjectMotion will also match, 
-    if it does not first find a match with its derived class. 
+      For dynamic objects, the channel "ObjectMotion://world" channel is
+      monitored. If an entry is published in that channel with data class
+      BaseObjectMotion and label KLMBoeing737, that entry will match to
+      the object class name. The corresponding data ("KLM737.vsg") is used
+      to create the object. Since the name ends with a # token, the name
+      will be modified to include an integer suffix, e.g. "KLM737 #1"
 
-    An entry with a specific label written as "KLMBoeing737|PH-ANH" will
-    also match, the match will be on the first part of the label, and the
-    name will be overwritten as "PH-ANH". 
+      An entry with a class *derived* from BaseObjectMotion will also match,
+      if it does not first find a match with its derived class.
 
-    Note that you are not limited to working with BaseObjectMotion or
-    similar classes. You could easily add an entry with "MyHUDData" in
-    it, program an overlay class, add it to the factory, and use that
-    one.
+      An entry with a specific label written as "KLMBoeing737|PH-ANH" will
+      also match, the match will be on the first part of the label, and the
+      name will be overwritten as "PH-ANH".
 
-    Some common uses of this VSGViewer interface are the following:
+      Note that you are not limited to working with BaseObjectMotion or
+      similar classes. You could easily add an entry with "MyHUDData" in
+      it, program an overlay class, add it to the factory, and use that
+      one.
 
-    <ol>
+      Some common uses of this VSGViewer interface are the following:
 
-    <li> Adding windows and specifying viewports in the interface, see
-    add-window and add-viewport, and the instructions below. Each
-    viewport can have its own frustum or view defined, and each can
-    also have an eye offset, defining the position and orientation of
-    the eye with respect to the own vehicle position or base pilot
-    position.
+      <ol>
 
-    <li> Adding static objects in the world. Use the 'load-object
-    specification, specify a name for the object and a 3d file, and
-    use 'object-type "static".
-    
-    <li> Adding objects that stay centered on the observer, like a
-    skydome. Use 'object-type "centered", and 'object-coordinates . 
-    the object coordinates that are true 0.0 stay centered, the others
-    are fixed to the world. E.g., with coordinates 0.0, 0.0, 1e-20 you 
-    can create a skydome that moves with the observer in x and y 
-    coordinates, but keeps its height.
-    
-    <li> Adding objects that stay centered on the observer with a
-    tiling step, for example a tiled floor, a repeating grassland
-    pattern, etc. See the description below for the interpretation
-    of coordinates. 
+      <li> Adding windows and specifying viewports in the interface, see
+      add-window and add-viewport, and the instructions below. Each
+      viewport can have its own frustum or view defined, and each can
+      also have an eye offset, defining the position and orientation of
+      the eye with respect to the own vehicle position or base pilot
+      position.
 
-    <li> Adding overlays, give the object a name and a file name, and
-    use 'object-coordinates to specify a list with viewports the overlay
-    should be on. 
+      <li> Adding static objects in the world. Use the 'load-object
+      specification, specify a name for the object and a 3d file, and
+      use 'object-type "static".
 
-    <li> Adding a class of simple objects that can be represented by a
-    single 3d model, use 'add-object-class with the name for the class
-    and a name for the model file. This adds to the "repertoire" of
-    objects that can be created. 
+      <li> Adding objects that stay centered on the observer, like a
+      skydome. Use 'object-type "centered", and 'object-coordinates .
+      the object coordinates that are true 0.0 stay centered, the others
+      are fixed to the world. E.g., with coordinates 0.0, 0.0, 1e-20 you
+      can create a skydome that moves with the observer in x and y
+      coordinates, but keeps its height.
 
-    <li> Add another object alltogether, with the 
-    
-    </ol>
+      <li> Adding objects that stay centered on the observer with a
+      tiling step, for example a tiled floor, a repeating grassland
+      pattern, etc. See the description below for the interpretation
+      of coordinates.
 
-    The channel for the "other" objects in the external world that is
-    read by the WorldView module and fed to the VSGViewer module
-    contains class names for the type of these objects. These objects
-    are automatically added to the drawn environment, based on the
-    data in the channel. Use 'add-object-class to define these classes
-    for simple objects defined by a single 3D file. However, it is
-    also possible to add new classes programmatically. For that,
-    include VSGObjectFactory.hxx, and create a SubContractor with the
-    VSG model factory. 
+      <li> Adding overlays, give the object a name and a file name, and
+      use 'object-coordinates to specify a list with viewports the overlay
+      should be on.
 
-    This class has been derived from the ScriptCreatable base class,
-    and has a (scheme) script command to create it and optionally add
-    parameters. This class encapsulates the VSGViewer objects, in
-    this way these can be made and specified from a DUECA script.
+      <li> Adding a class of simple objects that can be represented by a
+      single 3d model, use 'add-object-class with the name for the class
+      and a name for the model file. This adds to the "repertoire" of
+      objects that can be created.
 
-    The instructions to create an object of this class from the Scheme
-    script are:
+      <li> Add another object alltogether, with the
 
-    \verbinclude vsg-viewer-dueca.scm
- */
-class VSGViewer_Dueca: public ScriptCreatable, public VSGViewer
-{
-private: // simulation data
-  /** self-define the module type, to ease writing the parameter table */
-  typedef VSGViewer_Dueca _ThisObject_;
+      </ol>
 
-public: // construction and further specification
-  /** Constructor. Is normally called from scheme/the creation script. */
-  VSGViewer_Dueca();
+      The channel for the "other" objects in the external world that is
+      read by the WorldView module and fed to the VSGViewer module
+      contains class names for the type of these objects. These objects
+      are automatically added to the drawn environment, based on the
+      data in the channel. Use 'add-object-class to define these classes
+      for simple objects defined by a single 3D file. However, it is
+      also possible to add new classes programmatically. For that,
+      include VSGObjectFactory.hxx, and create a SubContractor with the
+      VSG model factory.
 
-  /** Continued construction. This is called after all script
-      parameters have been read and filled in, according to the
-      parameter table. */
-  bool complete();
+      This class has been derived from the ScriptCreatable base class,
+      and has a (scheme) script command to create it and optionally add
+      parameters. This class encapsulates the VSGViewer objects, in
+      this way these can be made and specified from a DUECA script.
 
-  /** Destructor. */
-  ~VSGViewer_Dueca();
+      The instructions to create an object of this class from the Scheme
+      script are:
 
-  /** Obtain a pointer to the parameter table. */
-  static const ParameterTable* getParameterTable();
+      \verbinclude vsg-viewer-dueca.scm
+  */
+  class VSGViewer_Dueca: public ScriptCreatable, public VSGViewer
+  {
+  private: // simulation data
+    /** self-define the module type, to ease writing the parameter table */
+    typedef VSGViewer_Dueca _ThisObject_;
 
-private:
-  /** Specification of a viewport */
-  ViewSpec   build_view_spec;
+  public: // construction and further specification
+    /** Constructor. Is normally called from scheme/the creation script. */
+    VSGViewer_Dueca();
 
-  /** Specification of a window */
-  WinSpec    build_win_spec;
+    /** Continued construction. This is called after all script
+        parameters have been read and filled in, according to the
+        parameter table. */
+    bool complete();
 
-  /** Specification of a visual object in the world */
-  WorldDataSpec build_object_spec;
+    /** Destructor. */
+    ~VSGViewer_Dueca();
 
-  /** Reader for xml definitions */
-  boost::scoped_ptr<VSGXMLReader>   xml_reader;
+    /** Obtain a pointer to the parameter table. */
+    static const ParameterTable* getParameterTable();
 
-  /** Specify a window */
-  bool addWindow(const std::string& window);
+  private:
+    /** Specification of a viewport */
+    ViewSpec   build_view_spec;
 
-  /** Window position */
-  bool setWindowPosition(const std::vector<int>& pos);
+    /** Specification of a window */
+    WinSpec    build_win_spec;
 
-  /** X screen selection */
-  bool setWindowXScreen(const std::string& scr);
- 
-  /** Specify a viewport */
-  bool addViewport(const std::string& viewport);
-  
-  /** Viewport window */
-  bool setViewportWindow(const std::string& vp_window);
-  
-  /** Viewport size */
-  bool setViewportSize(const std::vector<int>& vpwin_size);
+    /** Specification of a visual object in the world */
+    WorldDataSpec build_object_spec;
 
-  /** frustum data */
-  bool setFrustum(const std::vector<float>& frustum);
+    /** Reader for xml definitions */
+    boost::scoped_ptr<VSGXMLReader>   xml_reader;
 
-  /** eye offset data */
-  bool setEyeOffset(const std::vector<float>& frustum);
+    /** Specify a window */
+    bool addWindow(const std::string& window);
 
-  /** Add an object in the world. */
-  bool addScriptObject(ScriptCreatable& ava, bool in);
-  
-  /** Set the coordinates for an object in the world */
-  bool setObjectCoordinates(const std::vector<double>& coord);
+    /** Window position */
+    bool setWindowPosition(const std::vector<int>& pos);
 
-  /** Define the behaviour wrt the observer */
-  bool setObjectBehavior(const std::string& beh);
+    /** X screen selection */
+    bool setWindowXScreen(const std::string& scr);
 
-  /** Add a possible class of object to the world. */
-  bool addObjectClass(const std::vector<std::string>& names);
+    /** Specify a viewport */
+    bool addViewport(const std::string& viewport);
 
-  /** Add a possible class of object to the world. */
-  bool addObjectClassData(const std::vector<std::string>& names);
+    /** Viewport window */
+    bool setViewportWindow(const std::string& vp_window);
 
-  /** Set the fog parameters */
-  bool setFog(const std::vector<double>& fog);
+    /** Viewport size */
+    bool setViewportSize(const std::vector<int>& vpwin_size);
 
-  /** Create the XML reader */
-  bool setXMLReader(const std::string& definitions);
+    /** frustum data */
+    bool setFrustum(const std::vector<float>& frustum);
 
-  /** Read an XML file with object data */
-  bool readModelFromXML(const std::string& file);
+    /** eye offset data */
+    bool setEyeOffset(const std::vector<float>& frustum);
 
-public:
-  /** Default script linkage. */
-  SCM_FEATURES_DEF;
- 
-};
+    /** Add an object in the world. */
+    bool addScriptObject(ScriptCreatable& ava, bool in);
+
+    /** Set the coordinates for an object in the world */
+    bool setObjectCoordinates(const std::vector<double>& coord);
+
+    /** Define the behaviour wrt the observer */
+    bool setObjectBehavior(const std::string& beh);
+
+    /** Add a possible class of object to the world. */
+    bool addObjectClass(const std::vector<std::string>& names);
+
+    /** Add a possible class of object to the world. */
+    bool addObjectClassData(const std::vector<std::string>& names);
+
+    /** Set the fog parameters */
+    bool setFog(const std::vector<double>& fog);
+
+    /** Create the XML reader */
+    bool setXMLReader(const std::string& definitions);
+
+    /** Read an XML file with object data */
+    bool readModelFromXML(const std::string& file);
+
+  public:
+    /** Default script linkage. */
+    SCM_FEATURES_DEF;
+
+  };
+
+} // namespace
 
 #endif

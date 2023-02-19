@@ -12,6 +12,8 @@
 #pragma once
 #include "VSGObject.hxx"
 
+namespace vsgviewer {
+
 /** Ambient lighting definition */
 class VSGAmbientLight: public VSGObject
 {
@@ -134,3 +136,4 @@ public:
                     VSGViewer* master) override;
 };
 
+}; // namespace

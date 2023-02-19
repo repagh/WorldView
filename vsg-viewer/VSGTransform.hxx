@@ -12,6 +12,8 @@
 #pragma once
 #include "VSGObject.hxx"
 
+namespace vsgviewer {
+
 /** Absolute location change base class. */
 class VSGStaticAbsoluteTransform: public VSGObject
 {
@@ -58,7 +60,7 @@ protected:
   vsg::ref_ptr<vsg::AbsoluteTransform> transform;
 
   /** Scale */
-  vsg::ref_ptr<vsg::t_mat4<double> >   scale;
+  vsg::t_mat4<double>                  scale;
 
   /** Channel read token for motion input */
   boost::scoped_ptr<ChannelReadToken>     r_motion;
@@ -95,7 +97,7 @@ protected:
   vsg::ref_ptr<vsg::MatrixTransform> transform;
 
   /** Scale */
-  vsg::ref_ptr<vsg::t_mat4<double> >   scale;
+  vsg::t_mat4<double>                scale;
 
   /** Channel read token for motion input */
   boost::scoped_ptr<ChannelReadToken>     r_motion;
@@ -122,3 +124,5 @@ public:
   virtual void init(const vsg::ref_ptr<vsg::Group>& root,
                     VSGViewer* master) override;
 };
+
+}; // namespace

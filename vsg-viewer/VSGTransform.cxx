@@ -15,6 +15,8 @@
 #include <dueca/debug.h>
 #include "VSGObjectFactory.hxx"
 
+namespace vsgviewer {
+
 VSGStaticAbsoluteTransform::
 VSGStaticAbsoluteTransform(const WorldDataSpec& data) :
   transform(vsg::AbsoluteTransform::create())
@@ -22,10 +24,10 @@ VSGStaticAbsoluteTransform(const WorldDataSpec& data) :
   name = data.name;
   if (data.coordinates.size() >= 9) {
     transform->matrix =
-      vsg::scale(AxisTransform::vsgScale(&data.coordinates[6]));
+      vsg::scale(vsgScale(vrange(data.coordinates, 6, 3)));
   }
   if (data.coordinates.size() >= 6) {
-    transform->matrix = AxisTransform::vsgRotation
+    transform->matrix = vsgRotation
       (vsg::radians(data.coordinates[3]),
        vsg::radians(data.coordinates[4]),
        vsg::radians(data.coordinates[5])) *
@@ -33,7 +35,7 @@ VSGStaticAbsoluteTransform(const WorldDataSpec& data) :
   }
   if (data.coordinates.size() >= 3) {
     transform->matrix = vsg::translate
-      (data.coordinates[1], data.coordinates[0], data.coordinates[2]) *
+      (vsgPos(vrange(data.coordinates, 0, 3))) *
       transform->matrix;
   }
   D_MOD("Created static absolute transform, name=" << name);
@@ -64,11 +66,10 @@ VSGStaticMatrixTransform::VSGStaticMatrixTransform(const WorldDataSpec& data) :
   name = data.name;
   parent = data.parent;
   if (data.coordinates.size() >= 9) {
-    transform->matrix = vsg::scale
-      (data.coordinates[7], data.coordinates[6], data.coordinates[8]);
+    transform->matrix = vsg::scale(vsgPos(vrange(data.coordinates, 6, 3)));
   }
   if (data.coordinates.size() >= 6) {
-    transform->matrix = AxisTransform::vsgRotation
+    transform->matrix = vsgRotation
       (vsg::radians(data.coordinates[3]),
        vsg::radians(data.coordinates[4]),
        vsg::radians(data.coordinates[5])) *
@@ -76,7 +77,7 @@ VSGStaticMatrixTransform::VSGStaticMatrixTransform(const WorldDataSpec& data) :
   }
   if (data.coordinates.size() >= 3) {
     transform->matrix = vsg::translate
-      (data.coordinates[1], data.coordinates[0], data.coordinates[2]) *
+      (vsgPos(vrange(data.coordinates, 0, 3))) *
       transform->matrix;
   }
   D_MOD("Created static matrix transform, name=" << name);
@@ -94,7 +95,8 @@ void VSGStaticMatrixTransform::init(const vsg::ref_ptr<vsg::Group>& root,
   transform->setValue("name", name);
   auto par = findParent(root, parent);
   if (!par) {
-    W_MOD("Cannot find parent, for name=" << name << ", attaching to root");
+    W_MOD("Cannot find parent='" << parent << "', for name=" << name <<
+          ", attaching to root");
     par = root;
   }
   par->addChild(transform);
@@ -152,12 +154,12 @@ void VSGAbsoluteTransform::iterate(TimeTickType ts,
         if (textra > 0.0) {
           o2.extrapolate(textra);
         }
-        transform->matrix = vsg::translate(AxisTransform::vsgPos(o2.xyz)) *
-          vsg::rotate(AxisTransform::vsgQuat(o2.attitude_q));
+        transform->matrix = vsg::translate(vsgPos(o2.xyz)) *
+          vsg::rotate(vsgQuat(o2.attitude_q));
       }
       else {
-        transform->matrix = vsg::translate(AxisTransform::vsgPos(r.data().xyz)) *
-          vsg::rotate(AxisTransform::vsgQuat(r.data().attitude_q));
+        transform->matrix = vsg::translate(vsgPos(r.data().xyz)) *
+          vsg::rotate(vsgQuat(r.data().attitude_q));
       }
     }
     catch (const std::exception& e) {
@@ -173,7 +175,7 @@ static auto VSGAbsoluteTransform_maker = new
 
 VSGMatrixTransform::VSGMatrixTransform(const WorldDataSpec& data) :
   transform(vsg::MatrixTransform::create()),
-  scale(vsg::scale(data.coordinates[
+  scale(vsg::scale(vsgPos(vrange(data.coordinates, 0, 3))))
 {
   name = data.name;
   D_MOD("Created matrix transform, name=" << name);
@@ -191,7 +193,8 @@ void VSGMatrixTransform::init(const vsg::ref_ptr<vsg::Group>& root,
   transform->setValue("name", name);
   auto par = findParent(root, parent);
   if (!par) {
-    W_MOD("Cannot find parent, for name=" << name << ", attaching to root");
+    W_MOD("Cannot find parent='" << parent << "', for name=" << name <<
+          ", attaching to root");
     par = root;
   }
   par->addChild(transform);
@@ -224,12 +227,12 @@ void VSGMatrixTransform::iterate(TimeTickType ts,
         if (textra > 0.0) {
           o2.extrapolate(textra);
         }
-        transform->matrix = vsg::rotate(AxisTransform::vsgQuat(o2.attitude_q)) *
-          vsg::translate(AxisTransform::vsgPos(o2.xyz));
+        transform->matrix = vsg::rotate(vsgQuat(o2.attitude_q)) *
+          vsg::translate(vsgPos(o2.xyz));
       }
       else {
-        transform->matrix = vsg::translate(AxisTransform::vsgPos(r.data().xyz)) *
-          vsg::rotate(AxisTransform::vsgQuat(r.data().attitude_q));
+        transform->matrix = vsg::translate(vsgPos(r.data().xyz)) *
+          vsg::rotate(vsgQuat(r.data().attitude_q));
       }
     }
     catch (const std::exception& e) {
@@ -242,3 +245,5 @@ void VSGMatrixTransform::iterate(TimeTickType ts,
 static auto VSGMatrixTransform_maker = new
   SubContractor<VSGObjectTypeKey,VSGMatrixTransform>
   ("matrix-transform", "Controllable matrix (relative) transform");
+
+}; // namespace

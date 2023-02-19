@@ -13,6 +13,8 @@
 #include <WorldObjectBase.hxx>
 #include <string>
 
+namespace vsgviewer {
+
 class VSGViewer;
 
 /** Base class for OpenSceneGraph objects that are controlled from the
@@ -77,3 +79,4 @@ public:
 vsg::ref_ptr<vsg::Group> findParent(vsg::ref_ptr<vsg::Group> root,
                                     const std::string& name);
 
+};

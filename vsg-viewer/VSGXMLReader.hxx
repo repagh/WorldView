@@ -14,6 +14,8 @@
 #include <string>
 #include "VSGViewer.hxx"
 
+namespace vsgviewer {
+
 /** Reads an XML file with type definitions and optionally static
     object instatiations. An xml file may be queried to provide a
     translation of XML tags to standard coordinate input. */
@@ -55,4 +57,4 @@ public:
   bool readWorld(const std::string& file, VSGViewer &viewer);
 };
 
-
+}; // namespace

@@ -17,8 +17,10 @@
 
 #define DEB(A) cout << A << endl;
 
-using namespace std;
-using namespace vsg;
+//using namespace std;
+//using namespace vsg;
+
+namespace vsgviewer {
 
 VSGObject::VSGObject()
 {
@@ -49,35 +51,55 @@ VSGCullGroup::~VSGCullGroup()
   D_MOD("Destroying cull group, name=" << name);
 }
 
-vsg::ref_ptr<vsg::Group> findParent(vsg::ref_ptr<vsg::Group> root,
-                                    const std::string& name)
-{
-  std::string iname;
-  vsg::ref_ptr<vsg::Group> sub;
 
-  if (!name.size()) return root;
-  for (auto const &i: root->children) {
+  static vsg::ref_ptr<vsg::Group> _findParent(vsg::ref_ptr<vsg::Group> node,
+                                              const std::string& name)
+  {
+    std::string iname;
+    vsg::ref_ptr<vsg::Group> res;
 
-    // treat as a group
-    vsg::ref_ptr<vsg::Group> g = i.cast<vsg::Group>();
-
-    // only proceed if it is a group
-    if (g) { 
-
-      // check the name
-      if (g->getValue("name", iname) && iname == name) {
-	return g;
-      }
-
-      // name not matching, check children
-      sub = findParent(g, name);
-      if (sub) return sub;
+    if (node->getValue("name", iname) && iname == name) {
+      return node;
     }
+    for (auto const &i: node->children) {
+      vsg::ref_ptr<vsg::Group> g = i.cast<vsg::Group>();
+      if (g) {
+        res = _findParent(g, name);
+        if (res) return res;
+      }
+    }
+    return res;
   }
-  return sub;
-}
+
+  vsg::ref_ptr<vsg::Group> findParent(vsg::ref_ptr<vsg::Group> root,
+                                      const std::string& name)
+  {
+    std::string iname;
+    vsg::ref_ptr<vsg::Group> res;
+
+    if (!name.size()) {
+      D_MOD("Searching for parent with empty name, assume root");
+      return root;
+    }
+    if (root->getValue("name", iname) && iname == name) {
+      return root;
+    }
+
+    for (auto const &i: root->children) {
+      vsg::ref_ptr<vsg::Group> g = i.cast<vsg::Group>();
+      if (g) {
+        res = _findParent(g, name);
+        if (res) return res;
+      }
+    }
+
+    D_MOD("Could not find node '" << name << "', attaching to root");
+    return root;
+  }
 
 void VSGObject::visible(bool vis)
 {
   // nothing
 }
+
+}; // namespace
