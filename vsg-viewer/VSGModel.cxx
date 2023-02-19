@@ -60,7 +60,7 @@ namespace vsgviewer {
 
   VSGModel::VSGModel(const WorldDataSpec& data) :
   VSGStaticModel(data),
-  VSGAbsoluteTransform(data)
+  VSGMatrixTransform(data)
   {
     name = data.name;
     D_MOD("Created static model, name=" << name);
@@ -76,7 +76,7 @@ namespace vsgviewer {
                       VSGViewer* master)
   {
     model = vsg::read_cast<vsg::Node>(modelfile, master->options);
-    VSGAbsoluteTransform::init(root, master);
+    VSGMatrixTransform::init(root, master);
 
     if (!model) {
       W_MOD("Could not create model, name=" << name << ", file=" << modelfile);

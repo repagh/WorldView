@@ -90,7 +90,7 @@ public:
 };
 
 /** Matrix location change base class. */
-class VSGMatrixTransform: public VSGObject
+class VSGMatrixTransform: virtual public VSGObject
 {
 protected:
   /** VSG transform */

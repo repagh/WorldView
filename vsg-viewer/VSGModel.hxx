@@ -40,9 +40,9 @@ namespace vsgviewer {
               VSGViewer* master) override;
   };
 
-  class VSGModel: public VSGStaticModel, public VSGAbsoluteTransform
+  class VSGModel: public VSGStaticModel, public VSGMatrixTransform
   {
-
+    
   public:
     /** Constructor */
     VSGModel(const WorldDataSpec& data);
