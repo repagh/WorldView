@@ -10,3 +10,5 @@ find . -type l -exec rm {} \;
 # clean the user's stuff (that's you, you have to add your commands here!)
 rm -f hmilabmask*.warp
 rm -f hmilabmask*.png
+rm -f *.vsgb
+rm -f *.dae
