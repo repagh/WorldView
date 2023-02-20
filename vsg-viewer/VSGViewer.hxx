@@ -21,7 +21,7 @@
 #include <WorldViewerBase.hxx>
 #include "VSGObjectFactory.hxx"
 
-#define RG_PER_VIEWSET
+//#define RG_PER_VIEWSET
 
 // Used the vsgwindows example as inspiration
 
@@ -125,6 +125,11 @@ namespace vsgviewer {
 
       /** Traits of the window */
       vsg::ref_ptr<vsg::WindowTraits> traits;
+
+#ifndef RG_PER_VIEWSET
+      /** And a rendergraph?*/
+      vsg::ref_ptr<vsg::RenderGraph> render_graph;
+#endif
 
       /** Each window has a command graph */
       vsg::ref_ptr<vsg::CommandGraph> command_graph;

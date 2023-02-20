@@ -16,7 +16,7 @@
 #include <unistd.h>
 #include <cmath>
 #include <deque>
-#define D_MOD
+
 #define W_MOD
 #define E_MOD
 #include <debug.h>
@@ -501,7 +501,7 @@ namespace vsgviewer {
     for (auto &win: windows) {
       for (auto &view: win.second.viewset) {
         auto world2orig = vsg::inverse(view.second.eye_offset * camerapnt);
-        D_MOD("Setting view " << view.second.name << " to " << world2orig);
+        // D_MOD("Setting view " << view.second.name << " to " << world2orig);
         view.second.camera->viewMatrix.cast<vsg::LookAt>()->set(world2orig);
       }
     }

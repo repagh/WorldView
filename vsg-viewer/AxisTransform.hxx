@@ -120,7 +120,7 @@ namespace vsgviewer {
   template <typename T>
    inline vsg::t_vec3<typename T::value_type> vsgPos(const T xyz)
   {
-    return vsg::t_vec3<typename T::value_type>(-xyz[1], -xyz[0], xyz[2]);
+    return vsg::t_vec3<typename T::value_type>(-xyz[1], -xyz[0], -xyz[2]);
   }
 
   /** Switch the scaling to the proper dimensions */
@@ -141,8 +141,8 @@ namespace vsgviewer {
    inline vsg::t_mat4<T> vsgRotation(const T phi, const T tht, const T psi)
   {
     // not sure abt order of axes and angles
-    static const vsg::t_vec3<T> xax( 0.0,  1.0,  0.0);
-    static const vsg::t_vec3<T> yax( 1.0,  0.0,  0.0);
+    static const vsg::t_vec3<T> xax( 0.0, -1.0,  0.0);
+    static const vsg::t_vec3<T> yax(-1.0,  0.0,  0.0);
     static const vsg::t_vec3<T> zax( 0.0,  0.0, -1.0);
     return vsg::rotate(phi, xax) * vsg::rotate(tht, yax) * vsg::rotate(psi, zax);
   }

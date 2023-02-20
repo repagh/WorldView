@@ -37,10 +37,10 @@ namespace vsgviewer {
   void VSGStaticModel::init(const vsg::ref_ptr<vsg::Group>& root,
                             VSGViewer* master)
   {
-    auto object = vsg::read(modelfile, master->options);
-    model = object.cast<vsg::Node>();
+    auto model = vsg::read_cast<vsg::Node>(modelfile, master->options);
     if (!model) {
-      W_MOD("Could not create model, name=" << name << ", file=" << modelfile);
+      W_MOD("Could not create static model, name=" << name << ", file="
+	    << modelfile);
       return;
     }
     model->setValue("name", name);

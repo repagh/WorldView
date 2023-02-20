@@ -66,7 +66,7 @@ VSGStaticMatrixTransform::VSGStaticMatrixTransform(const WorldDataSpec& data) :
   name = data.name;
   parent = data.parent;
   if (data.coordinates.size() >= 9) {
-    transform->matrix = vsg::scale(vsgPos(vrange(data.coordinates, 6, 3)));
+    transform->matrix = vsg::scale(vsgScale(vrange(data.coordinates, 6, 3)));
   }
   if (data.coordinates.size() >= 6) {
     transform->matrix = vsgRotation
@@ -155,11 +155,11 @@ void VSGAbsoluteTransform::iterate(TimeTickType ts,
           o2.extrapolate(textra);
         }
         transform->matrix = vsg::translate(vsgPos(o2.xyz)) *
-          vsg::rotate(vsgQuat(o2.attitude_q));
+          vsg::rotate(vsgQuat(o2.attitude_q)) * scale;
       }
       else {
         transform->matrix = vsg::translate(vsgPos(r.data().xyz)) *
-          vsg::rotate(vsgQuat(r.data().attitude_q));
+          vsg::rotate(vsgQuat(r.data().attitude_q)) * scale;
       }
     }
     catch (const std::exception& e) {
@@ -175,8 +175,11 @@ static auto VSGAbsoluteTransform_maker = new
 
 VSGMatrixTransform::VSGMatrixTransform(const WorldDataSpec& data) :
   transform(vsg::MatrixTransform::create()),
-  scale(vsg::scale(vsgPos(vrange(data.coordinates, 0, 3))))
+  scale()
 {
+  if (data.coordinates.size() >= 3) {
+    scale = vsg::scale(vsgScale(vrange(data.coordinates, 0, 3)));
+  }
   name = data.name;
   D_MOD("Created matrix transform, name=" << name);
 }
@@ -227,12 +230,12 @@ void VSGMatrixTransform::iterate(TimeTickType ts,
         if (textra > 0.0) {
           o2.extrapolate(textra);
         }
-        transform->matrix = vsg::rotate(vsgQuat(o2.attitude_q)) *
-          vsg::translate(vsgPos(o2.xyz));
+        transform->matrix = vsg::translate(vsgPos(o2.xyz)) *
+	  vsg::rotate(vsgQuat(o2.attitude_q)) * scale;
       }
       else {
         transform->matrix = vsg::translate(vsgPos(r.data().xyz)) *
-          vsg::rotate(vsgQuat(r.data().attitude_q));
+          vsg::rotate(vsgQuat(r.data().attitude_q)) * scale;
       }
     }
     catch (const std::exception& e) {
