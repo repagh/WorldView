@@ -211,7 +211,8 @@ namespace vsgviewer {
     fog_density(0.0),
     fog_colour(1.0, 1.0, 1.0, 0.001),
     fog_start(10000.0),
-    fog_end(100000.0)
+    fog_end(100000.0),
+    buffer_nsamples(8)
   {
     bg_color[3] = 1.0;
     bg_color[2] = 0.45;
@@ -236,7 +237,8 @@ namespace vsgviewer {
   WindowSet(const WinSpec &ws,
             vsg::ref_ptr<vsg::Group> root,
             const std::map<std::string,WindowSet>& windows,
-            std::vector<float> bg_color) :
+            std::vector<float> bg_color,
+            unsigned buffer_nsamples) :
     name(ws.name),
     display(ws.display),
     window(),
@@ -277,6 +279,11 @@ namespace vsgviewer {
     // double buffer
     traits->swapchainPreferences.imageCount = 2;
     traits->synchronizationLayer = true;
+
+    // multi sampling options
+    for (unsigned sbits = 0; sbits < buffer_nsamples; sbits++) {
+      traits->samples != (1U << sbits);
+    }
 
     window = vsg::Window::create(traits);
     command_graph = vsg::CommandGraph::create(window);
@@ -342,7 +349,8 @@ namespace vsgviewer {
         windows.emplace(std::piecewise_construct,
                         std::forward_as_tuple(winspec.front().name),
                         std::forward_as_tuple
-                        (winspec.front(), root, windows, bg_color));
+                        (winspec.front(), root, windows, bg_color,
+                         buffer_nsamples));
       if (newwin.second == false) {
         throw(DuecaVSGConfigError());
       }

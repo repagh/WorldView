@@ -32,8 +32,8 @@ ln -sf ${DATADIR}/vsg/exampleworld.xml .
 VISMODELS="orientation/arrows landrover/Defender"
 for VM in $VISMODELS; do
     NAME=`basename $VM`
-    if [ \! -f ${NAME}.dae ]; then
-	blender --python ~/gdapps/VisualModels/VisualModels/${VM}.py
+    if [ \! -f ${NAME}.glb ]; then
+        blender --python ~/gdapps/VisualModels/VisualModels/${VM}.py
     fi
-    vsgconvd ${NAME}.dae ${NAME}.vsgb
+    vsgconvd ${NAME}.glb ${NAME}.vsgb
 done

@@ -141,7 +141,8 @@ namespace vsgviewer {
       /** Constructor */
       WindowSet(const WinSpec &ws, vsg::ref_ptr<vsg::Group> root,
                 const std::map<std::string,WindowSet>& windows,
-                std::vector<float> bg_color);
+                std::vector<float> bg_color,
+                unsigned buffer_nsamples);
     };
 
     /** Map of windows */
@@ -168,9 +169,6 @@ namespace vsgviewer {
 
     /** Objects that need post-draw access */
     ObjectListType post_draw;
-
-    /** Helper */
-    WindowSet myCreateWindow();
 
     /** List of specifications for the wiews, will be applied later */
     std::list<ViewSpec> viewspec;
@@ -261,6 +259,9 @@ namespace vsgviewer {
 
     /** Fog start and end */
     double fog_start, fog_end;
+
+    /** Multi-sampling */
+    unsigned buffer_nsamples;
   };
 };
 

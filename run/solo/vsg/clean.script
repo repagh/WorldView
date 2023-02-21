@@ -11,4 +11,4 @@ find . -type l -exec rm {} \;
 rm -f hmilabmask*.warp
 rm -f hmilabmask*.png
 rm -f *.vsgb
-rm -f *.dae
+rm -f *.glb

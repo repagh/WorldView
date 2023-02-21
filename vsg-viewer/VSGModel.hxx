@@ -42,7 +42,6 @@ namespace vsgviewer {
 
   class VSGModel: public VSGStaticModel, public VSGMatrixTransform
   {
-    
   public:
     /** Constructor */
     VSGModel(const WorldDataSpec& data);
