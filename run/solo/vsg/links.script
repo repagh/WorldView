@@ -33,7 +33,8 @@ VISMODELS="orientation/arrows landrover/Defender"
 for VM in $VISMODELS; do
     NAME=`basename $VM`
     if [ \! -f ${NAME}.glb ]; then
-        blender --python ~/gdapps/VisualModels/VisualModels/${VM}.py
+        blender --python ~/gdapps/VisualModels/VisualModels/bake-a-blend.py \
+		-- ~/gdapps/VisualModels/VisualModels/${VM}.blend glb
     fi
     vsgconvd ${NAME}.glb ${NAME}.vsgb
 done
