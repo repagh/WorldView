@@ -257,7 +257,7 @@ namespace vsgviewer {
       if (ow.second.display == ws.display) {
         I_MOD("VSG window '" << ws.name << "' shares with '" <<
               ow.second.name << "'");
-        traits->shareWindow = ow.second.window;
+        // traits->shareWindow = ow.second.window;
       }
     }
 
@@ -282,7 +282,7 @@ namespace vsgviewer {
 
     // multi sampling options
     for (unsigned sbits = 0; sbits < buffer_nsamples; sbits++) {
-      traits->samples != (1U << sbits);
+      traits->samples |= (1U << sbits);
     }
 
     window = vsg::Window::create(traits);
@@ -344,6 +344,8 @@ namespace vsgviewer {
       if (windows.find(winspec.front().name) != windows.end()) {
         cerr << "Already specified a window " << winspec.front().name
              << " ignoring second one" << endl;
+        winspec.pop_front();
+        continue;
       }
       auto newwin =
         windows.emplace(std::piecewise_construct,
