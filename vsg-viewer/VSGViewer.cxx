@@ -257,7 +257,7 @@ namespace vsgviewer {
       if (ow.second.display == ws.display) {
         I_MOD("VSG window '" << ws.name << "' shares with '" <<
               ow.second.name << "'");
-        // traits->shareWindow = ow.second.window;
+        traits->device = ow.second.window->getOrCreateDevice();
       }
     }
 
@@ -347,16 +347,22 @@ namespace vsgviewer {
         winspec.pop_front();
         continue;
       }
-      auto newwin =
-        windows.emplace(std::piecewise_construct,
-                        std::forward_as_tuple(winspec.front().name),
-                        std::forward_as_tuple
-                        (winspec.front(), root, windows, bg_color,
-                         buffer_nsamples));
-      if (newwin.second == false) {
-        throw(DuecaVSGConfigError());
+      try {
+        auto newwin =
+          windows.emplace(std::piecewise_construct,
+                          std::forward_as_tuple(winspec.front().name),
+                          std::forward_as_tuple
+                          (winspec.front(), root, windows, bg_color,
+                           buffer_nsamples));
+       if (newwin.second == false) {
+          throw(DuecaVSGConfigError());
+        }
+        viewer->addWindow(newwin.first->second.window);
       }
-      viewer->addWindow(newwin.first->second.window);
+      catch (const vsg::Exception & ve) {
+        E_MOD("Trying to create window '" << winspec.front().name << 
+              "' vsg error: " << ve.message);
+      }
       winspec.pop_front();
     }
 
@@ -373,18 +379,32 @@ namespace vsgviewer {
               "\" in window \"" << viewspec.front().winname << '"');
       }
       else {
-        ii->second.viewset[viewspec.front().name] = ViewSet();
+        try {
+          ii->second.viewset[viewspec.front().name] = ViewSet();
 
-        // init view
-        ii->second.viewset[viewspec.front().name].init
-          (viewspec.front(), ii->second, viewer,
-           root, bg_color);
+          // init view
+          ii->second.viewset[viewspec.front().name].init
+            (viewspec.front(), ii->second, viewer,
+             root, bg_color);
+        }
+        catch (const vsg::Exception& ve) {
+          E_MOD("Trying to create view '" << viewspec.front().name << 
+                "' vsg error: " << ve.message);
+        }
       }
       viewspec.pop_front();
     }
 
     // if applicable, initialize static objects and dynamic objects
-    for (auto &ao: active_objects) { ao.second->init(root, this); }
+    for (auto &ao: active_objects) { 
+      try {
+        ao.second->init(root, this); 
+      }
+      catch (const vsg::Exception& ve) {
+        E_MOD("Trying to create object '" << ao.first << 
+              "' vsg error: " << ve.message);
+      }
+    }
     for (auto &so: static_objects) { so->init(root, this); }
 
     // add it all to the viewer
