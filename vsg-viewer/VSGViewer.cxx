@@ -8,10 +8,12 @@
         language        : C++
 */
 
+#include <vsg/utils/ShaderSet.h>
 #define VSGViewer_cxx
 #include "VSGViewer.hxx"
 #include "WorldObjectBase.hxx"
 #include "AxisTransform.hxx"
+#include "VSGPBRShaderSet.hxx"
 #include <boost/lexical_cast.hpp>
 #include <unistd.h>
 #include <cmath>
@@ -188,50 +190,6 @@ namespace vsgviewer {
       cout << "Looking for overlay " << spec.overlay << endl;
       // not yet implemented
     }
-
-
-    // if blending is requested setup appropriate colorblendstate
-    vsg::ColorBlendState::ColorBlendAttachments colorBlendAttachments;
-    VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
-    colorBlendAttachment.blendEnable = VK_FALSE;
-    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT |
-                                          VK_COLOR_COMPONENT_G_BIT |
-                                          VK_COLOR_COMPONENT_B_BIT |
-                                          VK_COLOR_COMPONENT_A_BIT;
-
-    if (true /* shaderModeMask & BLEND */)
-    {
-      colorBlendAttachment.blendEnable = VK_TRUE;
-      colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-      colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-      colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
-      colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-      colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-      colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
-    }
-
-    colorBlendAttachments.push_back(colorBlendAttachment);
-
-    // shaders
-    
-    
-    // customize the pipeline with colorBlend, others default
-    vsg::GraphicsPipelineStates pipelineStates{
-      vsg::VertexInputState::create(),
-      vsg::InputAssemblyState::create(),
-      vsg::RasterizationState::create(),
-      vsg::MultisampleState::create(),
-      vsg::ColorBlendState::create(colorBlendAttachments),
-      vsg::DepthStencilState::create()};
-
-    //
-    // set up graphics pipeline
-    //
-    vsg::ref_ptr<vsg::GraphicsPipeline>
-      graphicsPipeline = vsg::GraphicsPipeline::create
-      (pipelineLayout, shaders, pipelineStates);
-    auto bindGraphicsPipeline = vsg::BindGraphicsPipeline::create
-      (graphicsPipeline);
   }
 
   VSGViewer::VSGViewer() :
@@ -357,6 +315,69 @@ namespace vsgviewer {
 
     // create viewer
     viewer = vsg::Viewer::create();
+
+
+    // if blending is requested setup appropriate colorblendstate
+    vsg::ColorBlendState::ColorBlendAttachments colorBlendAttachments;
+    VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
+    colorBlendAttachment.blendEnable = VK_FALSE;
+    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT |
+                                          VK_COLOR_COMPONENT_G_BIT |
+                                          VK_COLOR_COMPONENT_B_BIT |
+                                          VK_COLOR_COMPONENT_A_BIT;
+    // need, load GLTF shader, 
+    // https://github.com/KhronosGroup/glTF-Sample-Viewer/blob/main/source/Renderer/shaders
+    // or https://github.com/bwasty/gltf-viewer/tree/master/src/shaders
+
+    // standard shaders in vsg apparently?
+    // vsgExamples: standard.vert, standard_pbr.frag
+    // look in vsgshaderset/pbr.cpp
+
+    // modify the pipeline?
+    if (true /* shaderModeMask & BLEND */)
+    {
+      colorBlendAttachment.blendEnable = VK_TRUE;
+      colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+      colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+      colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+      colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+      colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+      colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+    }
+
+    colorBlendAttachments.push_back(colorBlendAttachment);
+
+    vsg::PushConstantRanges pushConstantRanges{
+      //{VK_SHADER_STAGE_MESH_BIT_EXT, 0, 128}
+    };
+
+    vsg::DescriptorSetLayoutBindings descriptorBindings{};
+    auto descriptorSetLayout = vsg::DescriptorSetLayout::create
+      (descriptorBindings);
+
+    // customize the pipeline with colorBlend, others default
+    vsg::GraphicsPipelineStates pipelineStates{
+      vsg::VertexInputState::create(),
+      vsg::InputAssemblyState::create(),
+      vsg::RasterizationState::create(),
+      vsg::MultisampleState::create(),
+      vsg::ColorBlendState::create(colorBlendAttachments),
+      vsg::DepthStencilState::create()};
+
+    auto pipelineLayout = vsg::PipelineLayout::create(
+      vsg::DescriptorSetLayouts{descriptorSetLayout}, pushConstantRanges);
+    
+    //
+    // set up graphics pipeline
+    //
+    auto options = vsg::Options::create();
+    auto shaders = vsg::createPhysicsBasedRenderingShaderSet(options);
+    options->shaderSets["pbr"] = shaders; //vsgPBRShaderSet(vsg::ref_ptr<const vsg::Options>)
+    
+    auto graphicsPipeline = vsg::GraphicsPipeline::create
+      (pipelineLayout, shaders->stages, pipelineStates);
+    auto bindGraphicsPipeline = vsg::BindGraphicsPipeline::create
+      (graphicsPipeline);
 
     // create scene graph root
     root = vsg::Group::create();
