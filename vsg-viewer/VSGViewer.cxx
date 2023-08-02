@@ -384,6 +384,9 @@ namespace vsgviewer {
     root->setValue("name", std::string("root"));
     D_MOD("VSG create root node");
 
+    // does not work, figure out what to do with this
+    root->add(bindGraphicsPipeline);
+
     // and the observer/eye group
     observer = vsg::Group::create();
     std::list<vsg::ref_ptr<vsg::Group> > observer_path;
