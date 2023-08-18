@@ -25,6 +25,10 @@
 
 // Used the vsgwindows example as inspiration
 
+// resources:
+// https://github.com/SaschaWillems/Vulkan
+// 
+
 namespace vsgviewer {
 
   /** This is a wrapper that can load and display VSG scenes, optionally

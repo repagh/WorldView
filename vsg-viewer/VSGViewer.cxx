@@ -30,6 +30,7 @@ namespace dueca {
 
 namespace vsg
 {
+  /** Could not initially find one? Frustum projection for VSG */
   class VSG_DECLSPEC FrustumPerspective :
     public Inherit<ProjectionMatrix, FrustumPerspective>
   {
