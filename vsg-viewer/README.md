@@ -13,6 +13,10 @@ Lights are -- depending on their type -- with included positioning coordinates.
 
 To move around models, we use transform nodes as intermediate
 
+### Adding simple fog?
+
+The current code loads the standard VSG pbr shaders. To add fog or the like, custom shaders should be used? Shader example code in vsgExamples/data/shaders.
+
 
 ## References
 
@@ -25,3 +29,7 @@ A project using Vulkan with a lot of experimental steps [Flower](https://github.
 (Vulkan Guide)[https://vkguide.dev/]
 
 (Learn Vulkan)[https://www.vulkan.org/learn]
+
+(Vulkan Examples)[https://github.com/SaschaWillems/Vulkan]
+
+(Godot as alternative)[https://github.com/Calinou/godot-reflection]
