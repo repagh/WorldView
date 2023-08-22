@@ -8,6 +8,8 @@
         language        : C++
 */
 
+
+
 #include <vsg/utils/ShaderSet.h>
 #define VSGViewer_cxx
 #include "VSGViewer.hxx"
@@ -372,7 +374,11 @@ namespace vsgviewer {
     // set up graphics pipeline
     //
     auto options = vsg::Options::create();
+    
+    // these are default pbr shaders. probably equal to
+    // vsgExamples/data/shaders/standard_pbr.frag and standard.vert ?
     auto shaders = vsg::createPhysicsBasedRenderingShaderSet(options);
+    shaderSet->optionalDefines = { "VSG_INSTANCE_POSITIONS" };
     options->shaderSets["pbr"] = shaders; //vsgPBRShaderSet(vsg::ref_ptr<const vsg::Options>)
     
     auto graphicsPipeline = vsg::GraphicsPipeline::create
