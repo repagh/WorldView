@@ -10,12 +10,10 @@
 
 
 
-#include <vsg/utils/ShaderSet.h>
 #define VSGViewer_cxx
 #include "VSGViewer.hxx"
 #include "WorldObjectBase.hxx"
 #include "AxisTransform.hxx"
-#include "VSGPBRShaderSet.hxx"
 #include <boost/lexical_cast.hpp>
 #include <unistd.h>
 #include <cmath>
@@ -328,7 +326,7 @@ namespace vsgviewer {
                                           VK_COLOR_COMPONENT_G_BIT |
                                           VK_COLOR_COMPONENT_B_BIT |
                                           VK_COLOR_COMPONENT_A_BIT;
-    // need, load GLTF shader, 
+    // need, load GLTF shader,
     // https://github.com/KhronosGroup/glTF-Sample-Viewer/blob/main/source/Renderer/shaders
     // or https://github.com/bwasty/gltf-viewer/tree/master/src/shaders
 
@@ -369,18 +367,21 @@ namespace vsgviewer {
 
     auto pipelineLayout = vsg::PipelineLayout::create(
       vsg::DescriptorSetLayouts{descriptorSetLayout}, pushConstantRanges);
-    
+
     //
     // set up graphics pipeline
     //
     auto options = vsg::Options::create();
-    
+
     // these are default pbr shaders. probably equal to
     // vsgExamples/data/shaders/standard_pbr.frag and standard.vert ?
-    auto shaders = vsg::createPhysicsBasedRenderingShaderSet(options);
-    shaderSet->optionalDefines = { "VSG_INSTANCE_POSITIONS" };
-    options->shaderSets["pbr"] = shaders; //vsgPBRShaderSet(vsg::ref_ptr<const vsg::Options>)
-    
+    auto fogref = vsg::ref_ptr(reinterpret_cast<vsg::Data*>(&the_fog));
+    auto shaders = vsgPBRShaderSet(options, fogref);
+
+    // ensure pbr use my new set of shaders.
+    options->shaderSets["pbr"] = shaders;
+
+    // does this do shader compilation?
     auto graphicsPipeline = vsg::GraphicsPipeline::create
       (pipelineLayout, shaders->stages, pipelineStates);
     auto bindGraphicsPipeline = vsg::BindGraphicsPipeline::create
@@ -434,7 +435,7 @@ namespace vsgviewer {
         viewer->addWindow(newwin.first->second.window);
       }
       catch (const vsg::Exception & ve) {
-        E_MOD("Trying to create window '" << winspec.front().name << 
+        E_MOD("Trying to create window '" << winspec.front().name <<
               "' vsg error: " << ve.message);
       }
       winspec.pop_front();
@@ -462,7 +463,7 @@ namespace vsgviewer {
              root, bg_color);
         }
         catch (const vsg::Exception& ve) {
-          E_MOD("Trying to create view '" << viewspec.front().name << 
+          E_MOD("Trying to create view '" << viewspec.front().name <<
                 "' vsg error: " << ve.message);
         }
       }
@@ -470,12 +471,12 @@ namespace vsgviewer {
     }
 
     // if applicable, initialize static objects and dynamic objects
-    for (auto &ao: active_objects) { 
+    for (auto &ao: active_objects) {
       try {
-        ao.second->init(root, this); 
+        ao.second->init(root, this);
       }
       catch (const vsg::Exception& ve) {
-        E_MOD("Trying to create object '" << ao.first << 
+        E_MOD("Trying to create object '" << ao.first <<
               "' vsg error: " << ve.message);
       }
     }

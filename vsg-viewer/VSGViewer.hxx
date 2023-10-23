@@ -20,6 +20,7 @@
 #include <vsgXchange/all.h>
 #include <WorldViewerBase.hxx>
 #include "VSGObjectFactory.hxx"
+#include "VSGPBRShaderSet.hxx"
 
 //#define RG_PER_VIEWSET
 
@@ -27,7 +28,7 @@
 
 // resources:
 // https://github.com/SaschaWillems/Vulkan
-// 
+//
 
 namespace vsgviewer {
 
@@ -53,6 +54,9 @@ namespace vsgviewer {
 
     /** A single viewer, matching a single scene */
     vsg::ref_ptr<vsg::Viewer> viewer;
+
+    /** Fog definition */
+    FogData the_fog;
 
   public:
     /** Options object */

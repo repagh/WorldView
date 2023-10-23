@@ -12,17 +12,19 @@
 #include "VSGPBRShaderSet.hxx"
 #include <vsg/io/read.h>
 #include <dueca/debug.h>
+#include <vsg/state/material.h>
 
 namespace vsgviewer {
 
   vsg::ref_ptr<vsg::ShaderSet> vsgPBRShaderSet
-    (vsg::ref_ptr<const vsg::Options> options)
+  (vsg::ref_ptr<const vsg::Options> options,
+   vsg::ref_ptr<vsg::Data> thefog)
   {
     auto vertexShader = vsg::read_cast<vsg::ShaderStage>
       ("shaders/standard.vert", options);
     auto fragmentShader = vsg::read_cast<vsg::ShaderStage>
       ("shaders/standard_pbr.frag", options);
-    
+
     // check these were found
     if (!vertexShader || !fragmentShader) {
         E_MOD("Could not load shaders.");
@@ -34,17 +36,17 @@ namespace vsgviewer {
       (vsg::ShaderStages{vertexShader, fragmentShader});
 
     // bindings?
-    shaderSet->addAttributeBinding("vsg_Vertex", "", 0,
-                                   VK_FORMAT_R32G32B32_SFLOAT, 
-                                   vsg::vec3Array::create(1));
     shaderSet->addAttributeBinding
-      ("vsg_Normal", "", 1, 
+      ("vsg_Vertex", "", 0,
+       VK_FORMAT_R32G32B32_SFLOAT, vsg::vec3Array::create(1));
+    shaderSet->addAttributeBinding
+      ("vsg_Normal", "", 1,
        VK_FORMAT_R32G32B32_SFLOAT, vsg::vec3Array::create(1));
     shaderSet->addAttributeBinding
       ("vsg_TexCoord0", "", 2,
        VK_FORMAT_R32G32_SFLOAT, vsg::vec2Array::create(1));
     shaderSet->addAttributeBinding
-      ("vsg_Color", "", 3, 
+      ("vsg_Color", "", 3,
        VK_FORMAT_R32G32B32A32_SFLOAT, vsg::vec4Array::create(1));
 
     shaderSet->addAttributeBinding
@@ -54,52 +56,58 @@ namespace vsgviewer {
       ("vsg_position_scaleDistance", "VSG_BILLBOARD", 4,
        VK_FORMAT_R32G32B32A32_SFLOAT, vsg::vec4Array::create(1));
 
-    shaderSet->addUniformBinding
+    shaderSet->addDescriptorBinding
       ("displacementMap", "VSG_DISPLACEMENT_MAP", 0, 6,
-       VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, 
-       VK_SHADER_STAGE_VERTEX_BIT, 
+       VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
+       VK_SHADER_STAGE_VERTEX_BIT,
        vsg::floatArray2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R32_SFLOAT}));
-    shaderSet->addUniformBinding
+    shaderSet->addDescriptorBinding
       ("diffuseMap", "VSG_DIFFUSE_MAP", 0, 0,
        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
-       VK_SHADER_STAGE_FRAGMENT_BIT, 
+       VK_SHADER_STAGE_FRAGMENT_BIT,
        vsg::ubvec4Array2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R8G8B8A8_UNORM}));
-    shaderSet->addUniformBinding
+    shaderSet->addDescriptorBinding
       ("mrMap", "VSG_METALLROUGHNESS_MAP", 0, 1,
        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
        VK_SHADER_STAGE_FRAGMENT_BIT,
        vsg::vec2Array2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R32G32_SFLOAT}));
-    shaderSet->addUniformBinding
+    shaderSet->addDescriptorBinding
       ("normalMap", "VSG_NORMAL_MAP", 0, 2,
        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
-       VK_SHADER_STAGE_FRAGMENT_BIT, 
+       VK_SHADER_STAGE_FRAGMENT_BIT,
        vsg::vec3Array2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R32G32B32_SFLOAT}));
-    shaderSet->addUniformBinding
+    shaderSet->addDescriptorBinding
       ("aoMap", "VSG_LIGHTMAP_MAP", 0, 3,
        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
-       VK_SHADER_STAGE_FRAGMENT_BIT, 
+       VK_SHADER_STAGE_FRAGMENT_BIT,
        vsg::floatArray2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R32_SFLOAT}));
-    shaderSet->addUniformBinding
+    shaderSet->addDescriptorBinding
       ("emissiveMap", "VSG_EMISSIVE_MAP", 0, 4,
        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
-       VK_SHADER_STAGE_FRAGMENT_BIT, 
+       VK_SHADER_STAGE_FRAGMENT_BIT,
        vsg::ubvec4Array2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R8G8B8A8_UNORM}));
-    shaderSet->addUniformBinding
+    shaderSet->addDescriptorBinding
       ("specularMap", "VSG_SPECULAR_MAP", 0, 5,
        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
-       VK_SHADER_STAGE_FRAGMENT_BIT, 
+       VK_SHADER_STAGE_FRAGMENT_BIT,
        vsg::ubvec4Array2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R8G8B8A8_UNORM}));
-    shaderSet->addUniformBinding
+    shaderSet->addDescriptorBinding
       ("material", "", 0, 10,
       VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
       vsg::PbrMaterialValue::create());
-    shaderSet->addUniformBinding
-      ("lightData", "", 1, 0, 
+    shaderSet->addDescriptorBinding
+      ("lightData", "", 1, 0,
       VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1,
       VK_SHADER_STAGE_FRAGMENT_BIT, vsg::vec4Array::create(64));
 
+    // fog addition
+    shaderSet->addDescriptorBinding
+      ("gl_Fog", "WORLDVIEW_SIMPLEFOG", 0, 11,
+       VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
+       thefog);
+
     // additional defines
-    shaderSet->optionalDefines = 
+    shaderSet->optionalDefines =
       {"VSG_GREYSACLE_DIFFUSE_MAP", "VSG_TWO_SIDED_LIGHTING", "VSG_WORKFLOW_SPECGLOSS"};
 
     shaderSet->addPushConstantRange
@@ -112,7 +120,7 @@ namespace vsgviewer {
       (vsg::DefinesArrayState{{"VSG_INSTANCE_POSITIONS"},
                                 vsg::PositionArrayState::create()});
     shaderSet->definesArrayStates.push_back
-      (vsg::DefinesArrayState{{"VSG_DISPLACEMENT_MAP"}, 
+      (vsg::DefinesArrayState{{"VSG_DISPLACEMENT_MAP"},
        vsg::DisplacementMapArrayState::create()});
     shaderSet->definesArrayStates.push_back
       (vsg::DefinesArrayState{{"VSG_BILLBOARD"},
@@ -121,6 +129,6 @@ namespace vsgviewer {
     shaderSet->customDescriptorSetBindings.push_back(vsg::ViewDependentStateBinding::create(1));
 
     return shaderSet;
-  } 
+  }
 
 } // namespace vsgviewer

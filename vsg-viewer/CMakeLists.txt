@@ -26,6 +26,7 @@ dueca_add_dco()
 # find_package, pkg_check_modules, or low-level find_path/find_library
 find_package(vsg REQUIRED)
 find_package(vsgXchange REQUIRED)
+find_package(glm REQUIRED)
 
 # if you need specific define's for the compilation, give them here
 set(CUSTOM_OPTIONS -DD_MOD -DI_MOD)
@@ -51,6 +52,7 @@ dueca_add_module(
   # optionally specify libraries used for this module
   LIBRARIES
   vsg::vsg vsgXchange::vsgXchange
+  glm::glm
   
   # give compiler options
   COMPILEOPTIONS ${CUSTOM_OPTIONS}
