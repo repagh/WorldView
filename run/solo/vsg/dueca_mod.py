@@ -129,7 +129,7 @@ if this_node_id == ecs_node:
                 ('set-xml-definitions',
                  '../../../../WorldView/vsg-viewer/vsgobjects.xml'),
                 ('read-xml-definitions', 'exampleworld.xml'),
-
+                ('set-fog', (0.2, 0.5, 0.5, 0.5, 0.5))
             ).complete(),
             initial_camera = ( 0, 0, -30, 0, 0, 0)
         ))

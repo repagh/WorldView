@@ -209,11 +209,8 @@ namespace vsgviewer {
     resourcepath(),
     keep_pointer(false),
     bg_color(4, 0.0),
-    fog_mode(Off),
-    fog_density(0.0),
-    fog_colour(1.0, 1.0, 1.0, 0.001),
-    fog_start(10000.0),
-    fog_end(100000.0),
+    the_fog(),
+    enable_simple_fog(false),
     buffer_nsamples(8)
   {
     bg_color[3] = 1.0;
@@ -386,9 +383,9 @@ namespace vsgviewer {
       (pipelineLayout, shaders->stages, pipelineStates);
     auto bindGraphicsPipeline = vsg::BindGraphicsPipeline::create
       (graphicsPipeline);
-
+    
     // create scene graph root
-    root = vsg::Group::create();
+    root = vsg::StateGroup::create();
     root->setValue("name", std::string("root"));
     D_MOD("VSG create root node");
 

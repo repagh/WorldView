@@ -43,20 +43,16 @@ namespace vsgviewer {
     // Advance definition, collection of data for a viewport
     struct Private;
 
-    /** Specification for the render windows. */
     std::list<WinSpec> winspec;
 
     /** scene manager */
-    vsg::ref_ptr<vsg::Group>  root;
+    vsg::ref_ptr<vsg::StateGroup>  root;
 
     /** observer is a node in the scene */
     vsg::ref_ptr<vsg::Group>  observer;
 
     /** A single viewer, matching a single scene */
     vsg::ref_ptr<vsg::Viewer> viewer;
-
-    /** Fog definition */
-    FogData the_fog;
 
   public:
     /** Options object */
@@ -248,25 +244,11 @@ namespace vsgviewer {
     /** background/clear color */
     std::vector<float> bg_color;
 
-    /** fog */
-    enum FogMode {
-      Off,
-      Linear,
-      Exponential,
-      Exponential2
-    };
+    /** Generic, simple fog definition */
+    FogData the_fog;
 
-    /** Fog mode */
-    FogMode fog_mode;
-
-    /** Fog density */
-    double fog_density;
-
-    /** Fog colour */
-    vsg::dvec4 fog_colour;
-
-    /** Fog start and end */
-    double fog_start, fog_end;
+    /** Enable simple fog. */
+    bool enable_simple_fog;
 
     /** Multi-sampling */
     unsigned buffer_nsamples;

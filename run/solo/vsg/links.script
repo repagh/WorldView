@@ -28,6 +28,7 @@ fi
 #ln -sf ~/gdapps/VisualModels/VisualModels/landrover/Defender.mtl .
 #ln -sf ~/gdapps/VisualModels/VisualModels/landrover/Defender.obj .
 ln -sf ${DATADIR}/vsg/exampleworld.xml .
+ln -sf ../../../../WorldView/vsg-viewer/shaders .
 
 VISMODELS="orientation/arrows landrover/Defender"
 for VM in $VISMODELS; do

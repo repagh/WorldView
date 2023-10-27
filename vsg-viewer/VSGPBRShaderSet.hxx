@@ -17,12 +17,23 @@
 namespace vsgviewer {
 
   struct FogData {
+    /// Color of the fog, RGBA
     glm::vec4 color;
+
+    /// Density, determines depth.
     float density;
+
+    /// Constructor to initialize
+    FogData();
   };
 
-  // load and generate set of shaders
+  /** load and generate set of shaders
+
+    @param opt   Generic vsg options
+    @param data  Pointer to any shared data between shaders and application
+  */
   vsg::ref_ptr<vsg::ShaderSet> vsgPBRShaderSet
-  (vsg::ref_ptr<const vsg::Options>, vsg::ref_ptr<vsg::Data>);
+    (vsg::ref_ptr<const vsg::Options> opt, 
+     vsg::ref_ptr<vsg::Data> data);
 
 } // namespace vsgviewer

@@ -59,16 +59,16 @@ layout(location = 5) in vec3 viewDir;
 
 layout(location = 0) out vec4 outColor;
 
-#ifdef WORLDVIEW_SIMPLEFOG
+//#ifdef WORLDVIEW_SIMPLEFOG
 // simple fog code
 // https://stackoverflow.com/questions/22554631/accessing-the-depth-buffer-from-a-fragment-shader
 layout(binding = 11) uniform FogData
 {
    vec4 color;
    float density;
-} gl_Fog;
+} wv_Fog;
 in vec4 gl_FragCoord;
-#endif
+//#endif
 
 // Encapsulate the various inputs used by the various functions in the shading equation
 // We store values in this struct to simplify the integration of alternative implementations
@@ -529,15 +529,16 @@ void main()
         }
     }
 
-#ifdef WORLDVIEW_SIMPLEFOG
+//#ifdef WORLDVIEW_SIMPLEFOG
     // simple fog code
     const float LOG2 = 1.442695;
-    float zd = gl_Fog.density * gl_FragCoord.z / gl_FragCoord.w;
-    float fogFactor = exp2( -zd * zd * LOG2 );
-    fogFactor = clamp(fogFactor, 0.0, 1.0);
-    outColor = LINEARtoSRGB(
-        mix(gl_Fog.color, vec4(color, baseColor.a), fogFactor));
-#else
-    outColor = LINEARtoSRGB(vec4(color, baseColor.a));
-#endif
+    float zd = wv_Fog.density * gl_FragCoord.z / gl_FragCoord.w;
+    float fogFactor = 0.0; //exp2( -zd * zd * LOG2 );
+    fogFactor = 0.3; // clamp(fogFactor, 0.0, 1.0);
+        //mix(wv_Fog.color, vec4(color, baseColor.a), fogFactor));
+    //outColor = LINEARtoSRGB(
+    //    mix(vec4(0.9, 0.2, 0.2, 0.5), vec4(color, baseColor.a), fogFactor));
+//#else
+//    outColor = LINEARtoSRGB(vec4(color, baseColor.a));
+//#endif
 }
