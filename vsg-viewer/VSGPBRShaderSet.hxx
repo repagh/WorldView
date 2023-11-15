@@ -16,6 +16,7 @@
 
 namespace vsgviewer {
 
+  /** Object to pass simple fog data to shaders */
   struct FogData {
     /// Color of the fog, RGBA
     glm::vec4 color;
@@ -33,7 +34,13 @@ namespace vsgviewer {
     @param data  Pointer to any shared data between shaders and application
   */
   vsg::ref_ptr<vsg::ShaderSet> vsgPBRShaderSet
-    (vsg::ref_ptr<const vsg::Options> opt, 
+    (vsg::ref_ptr<const vsg::Options> opt,
+     vsg::ref_ptr<vsg::Data> data);
+  vsg::ref_ptr<vsg::ShaderSet> vsgFlatShaderSet
+    (vsg::ref_ptr<const vsg::Options> opt,
+     vsg::ref_ptr<vsg::Data> data);
+  vsg::ref_ptr<vsg::ShaderSet> vsgPhongShaderSet
+    (vsg::ref_ptr<const vsg::Options> opt,
      vsg::ref_ptr<vsg::Data> data);
 
 } // namespace vsgviewer

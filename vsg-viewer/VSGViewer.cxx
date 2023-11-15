@@ -306,6 +306,7 @@ namespace vsgviewer {
     options = vsg::Options::create();
     options->fileCache = vsg::getEnv("VSG_FILE_CACHE");
     options->paths = vsg::getEnvPaths("VSG_FILE_PATH");
+    options->sharedObjects = vsg::SharedObjects::create();
 
     // add vsgXchange reading and writing of 3rd party file formats
     options->add(vsgXchange::all::create());
@@ -314,7 +315,7 @@ namespace vsgviewer {
     // create viewer
     viewer = vsg::Viewer::create();
 
-
+#if 0
     // if blending is requested setup appropriate colorblendstate
     vsg::ColorBlendState::ColorBlendAttachments colorBlendAttachments;
     VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
@@ -364,33 +365,37 @@ namespace vsgviewer {
 
     auto pipelineLayout = vsg::PipelineLayout::create(
       vsg::DescriptorSetLayouts{descriptorSetLayout}, pushConstantRanges);
-
+#endif
     //
-    // set up graphics pipeline
+    // modify graphics pipeline
     //
-    auto options = vsg::Options::create();
 
     // these are default pbr shaders. probably equal to
     // vsgExamples/data/shaders/standard_pbr.frag and standard.vert ?
     auto fogref = vsg::ref_ptr(reinterpret_cast<vsg::Data*>(&the_fog));
-    auto shaders = vsgPBRShaderSet(options, fogref);
 
     // ensure pbr use my new set of shaders.
-    options->shaderSets["pbr"] = shaders;
+    options->shaderSets["pbr"] = vsgPBRShaderSet(options, fogref);
+    options->shaderSets["flat"] = vsgFlatShaderSet(options, fogref);
+    options->shaderSets["phong"] = vsgPhongShaderSet(options, fogref);
 
+#if 0
     // does this do shader compilation?
     auto graphicsPipeline = vsg::GraphicsPipeline::create
       (pipelineLayout, shaders->stages, pipelineStates);
     auto bindGraphicsPipeline = vsg::BindGraphicsPipeline::create
       (graphicsPipeline);
-    
+#endif
+
     // create scene graph root
     root = vsg::StateGroup::create();
     root->setValue("name", std::string("root"));
     D_MOD("VSG create root node");
 
+#if 0
     // does not work, figure out what to do with this
     root->add(bindGraphicsPipeline);
+#endif
 
     // and the observer/eye group
     observer = vsg::Group::create();
@@ -483,15 +488,15 @@ namespace vsgviewer {
     //vsgUtil::Optimizer optimizer;
     //optimizer.optimize(root);
 
-    // viewer->setSceneData(root);
-    // viewer->setThreadingModel(vsg::Viewer::SingleThreaded);
-    // viewer->setReleaseContextAtEndOfFrameHint(true);
+  #if 1
+    // if not created, windows are not drawn
     CommandGraphs cgs;
     for (auto const &win: windows) {
       cgs.push_back(win.second.command_graph);
     }
 
     viewer->assignRecordAndSubmitTaskAndPresentation(cgs);
+  #endif
     viewer->compile();
   }
 
