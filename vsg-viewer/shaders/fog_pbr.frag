@@ -1,6 +1,9 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
-#pragma import_defines (VSG_DIFFUSE_MAP, VSG_GREYSCALE_DIFFUSE_MAP, VSG_EMISSIVE_MAP, VSG_LIGHTMAP_MAP, VSG_NORMAL_MAP, VSG_METALLROUGHNESS_MAP, VSG_SPECULAR_MAP, VSG_TWO_SIDED_LIGHTING, VSG_WORKFLOW_SPECGLOSS, SHADOWMAP_DEBUG, WORLDVIEW_SIMPLEFOG)
+#pragma import_defines (VSG_DIFFUSE_MAP, VSG_GREYSCALE_DIFFUSE_MAP, VSG_EMISSIVE_MAP, VSG_LIGHTMAP_MAP, VSG_NORMAL_MAP, VSG_METALLROUGHNESS_MAP, VSG_SPECULAR_MAP, VSG_TWO_SIDED_LIGHTING, VSG_WORKFLOW_SPECGLOSS, SHADOWMAP_DEBUG)
+
+#define VIEW_DESCRIPTOR_SET 0
+#define MATERIAL_DESCRIPTOR_SET 1
 
 const float PI = 3.14159265359;
 const float RECIPROCAL_PI = 0.31830988618;
@@ -9,30 +12,30 @@ const float EPSILON = 1e-6;
 const float c_MinRoughness = 0.04;
 
 #ifdef VSG_DIFFUSE_MAP
-layout(binding = 0) uniform sampler2D diffuseMap;
+layout(set = MATERIAL_DESCRIPTOR_SET, binding = 0) uniform sampler2D diffuseMap;
 #endif
 
 #ifdef VSG_METALLROUGHNESS_MAP
-layout(binding = 1) uniform sampler2D mrMap;
+layout(set = MATERIAL_DESCRIPTOR_SET, binding = 1) uniform sampler2D mrMap;
 #endif
 
 #ifdef VSG_NORMAL_MAP
-layout(binding = 2) uniform sampler2D normalMap;
+layout(set = MATERIAL_DESCRIPTOR_SET, binding = 2) uniform sampler2D normalMap;
 #endif
 
 #ifdef VSG_LIGHTMAP_MAP
-layout(binding = 3) uniform sampler2D aoMap;
+layout(set = MATERIAL_DESCRIPTOR_SET, binding = 3) uniform sampler2D aoMap;
 #endif
 
 #ifdef VSG_EMISSIVE_MAP
-layout(binding = 4) uniform sampler2D emissiveMap;
+layout(set = MATERIAL_DESCRIPTOR_SET, binding = 4) uniform sampler2D emissiveMap;
 #endif
 
 #ifdef VSG_SPECULAR_MAP
-layout(binding = 5) uniform sampler2D specularMap;
+layout(set = MATERIAL_DESCRIPTOR_SET, binding = 5) uniform sampler2D specularMap;
 #endif
 
-layout(binding = 10) uniform PbrData
+layout(set = MATERIAL_DESCRIPTOR_SET, binding = 10) uniform PbrData
 {
     vec4 baseColorFactor;
     vec4 emissiveFactor;
@@ -44,12 +47,26 @@ layout(binding = 10) uniform PbrData
     float alphaMaskCutoff;
 } pbr;
 
-layout(set = 1, binding = 0) uniform LightData
+// ViewDependentState
+layout(set = VIEW_DESCRIPTOR_SET, binding = 0) uniform LightData
 {
     vec4 values[2048];
 } lightData;
 
-layout(set = 1, binding = 2) uniform sampler2DArrayShadow shadowMaps;
+layout(set = VIEW_DESCRIPTOR_SET, binding = 2) uniform sampler2DArrayShadow shadowMaps;
+
+#ifdef WORLDVIEW_SIMPLEFOG
+// simple fog code
+// https://stackoverflow.com/questions/22554631/accessing-the-depth-buffer-from-a-fragment-shader
+layout(set = VIEW_DESCRIPTOR_SET, binding = 11) uniform FogData
+{
+   vec3 color;
+   float density;
+} wv_Fog;
+
+in vec4 gl_FragCoord;
+#endif
+
 
 layout(location = 0) in vec3 eyePos;
 layout(location = 1) in vec3 normalDir;
@@ -59,16 +76,6 @@ layout(location = 5) in vec3 viewDir;
 
 layout(location = 0) out vec4 outColor;
 
-#ifdef WORLDVIEW_SIMPLEFOG
-// simple fog code
-// https://stackoverflow.com/questions/22554631/accessing-the-depth-buffer-from-a-fragment-shader
-layout(binding = 11) uniform FogData
-{
-   vec4 color;
-   float density;
-} wv_Fog;
-in vec4 gl_FragCoord;
-#endif
 
 // Encapsulate the various inputs used by the various functions in the shading equation
 // We store values in this struct to simplify the integration of alternative implementations
@@ -530,19 +537,25 @@ void main()
     }
 
 #ifdef WORLDVIEW_SIMPLEFOG
+
+#if 0
     // simple fog code
     const float LOG2 = 1.442695;
     //float zd = wv_Fog.density * gl_FragCoord.z / gl_FragCoord.w;
     float zd = 0.1 * gl_FragCoord.z / gl_FragCoord.w;
     float fogFactor = exp2( -zd * zd * LOG2 );
     fogFactor = clamp(fogFactor, 0.0, 1.0);
-    //outColor = LINEARtoSRGB(
-    //    mix(wv_Fog.color, vec4(color, baseColor.a), fogFactor));
     outColor = LINEARtoSRGB(
-        vec4(
-            mix(vec3(0.8, 0.8, 0.8), color, fogFactor), baseColor.a));
-    //outColor = LINEARtoSRGB(vec4(0.5, 0.1, 0.1, 0.5));
+        vec4(mix(wv_Fog.color, color, fogFactor), baseColor.a));
+#else
+    // faking, but using fogfactor?
+    outColor = LINEARtoSRGB(
+        vec4(fogFactor, fogFactor, fogFactor, baseColor.a));
+
+#endif
 #else
     outColor = LINEARtoSRGB(vec4(color, baseColor.a));
 #endif
+
+//    outColor = LINEARtoSRGB(vec4(color, baseColor.a));
 }

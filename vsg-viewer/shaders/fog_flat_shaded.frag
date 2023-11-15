@@ -30,7 +30,7 @@ layout(location = 3) in vec2 texCoord0;
 // https://stackoverflow.com/questions/22554631/accessing-the-depth-buffer-from-a-fragment-shader
 layout(set=VIEW_DESCRIPTOR_SET, binding = 11) uniform FogData
 {
-   vec4 color;
+   vec3 color;
    float density;
 } wv_Fog;
 in vec4 gl_FragCoord;
@@ -69,7 +69,8 @@ void main()
     float zd = wv_Fog.density * gl_FragCoord.z / gl_FragCoord.w;
     float fogFactor = exp2( -zd * zd * LOG2 );
     fogFactor = clamp(fogFactor, 0.0, 1.0);
-    outColor = mix(wv_Fog.color, diffuseColor, fogFactor);
+    outColor.rgb = mix(wv_Fog.color, diffuseColor.rgb, fogFactor);
+    outColor.a = diffuseColor.a;
 #else
     outColor = diffuseColor;
 #endif

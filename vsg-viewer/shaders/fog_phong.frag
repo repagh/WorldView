@@ -325,10 +325,8 @@ void main()
     outColor.rgb = mix(wv_Fog.color.rgb,
                        (color * ambientOcclusion) + emissiveColor.rgb,
                        fogFactor);
-    outColor.rgb = vec3(0.1, 0.1, 0.5);
 #else
     outColor.rgb = (color * ambientOcclusion) + emissiveColor.rgb;
-    outColor.rgb = vec3(0.1, 0.1, 0.5);
 #endif
 
     outColor.a = diffuseColor.a;

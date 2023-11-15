@@ -10,6 +10,7 @@
 */
 
 #include "VSGPBRShaderSet.hxx"
+#include <vsg/core/Array.h>
 #include <vsg/io/read.h>
 #include <dueca/debug.h>
 #include <vsg/state/material.h>
@@ -71,46 +72,46 @@ namespace vsgviewer {
        VK_FORMAT_R32G32B32A32_SFLOAT, vsg::vec4Array::create(1));
 
     pbr->addDescriptorBinding
-      ("displacementMap", "VSG_DISPLACEMENT_MAP", 0, 6,
+      ("displacementMap", "VSG_DISPLACEMENT_MAP", MATERIAL_DESCRIPTOR_SET, 6,
        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
        VK_SHADER_STAGE_VERTEX_BIT,
        vsg::floatArray2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R32_SFLOAT}));
     pbr->addDescriptorBinding
-      ("diffuseMap", "VSG_DIFFUSE_MAP", 0, 0,
+      ("diffuseMap", "VSG_DIFFUSE_MAP", MATERIAL_DESCRIPTOR_SET, 0,
        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
        VK_SHADER_STAGE_FRAGMENT_BIT,
        vsg::ubvec4Array2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R8G8B8A8_UNORM}));
     pbr->addDescriptorBinding
-      ("mrMap", "VSG_METALLROUGHNESS_MAP", 0, 1,
+      ("mrMap", "VSG_METALLROUGHNESS_MAP", MATERIAL_DESCRIPTOR_SET, 1,
        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
        VK_SHADER_STAGE_FRAGMENT_BIT,
        vsg::vec2Array2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R32G32_SFLOAT}));
     pbr->addDescriptorBinding
-      ("normalMap", "VSG_NORMAL_MAP", 0, 2,
+      ("normalMap", "VSG_NORMAL_MAP", MATERIAL_DESCRIPTOR_SET, 2,
        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
        VK_SHADER_STAGE_FRAGMENT_BIT,
        vsg::vec3Array2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R32G32B32_SFLOAT}));
     pbr->addDescriptorBinding
-      ("aoMap", "VSG_LIGHTMAP_MAP", 0, 3,
+      ("aoMap", "VSG_LIGHTMAP_MAP", MATERIAL_DESCRIPTOR_SET, 3,
        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
        VK_SHADER_STAGE_FRAGMENT_BIT,
        vsg::floatArray2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R32_SFLOAT}));
     pbr->addDescriptorBinding
-      ("emissiveMap", "VSG_EMISSIVE_MAP", 0, 4,
+      ("emissiveMap", "VSG_EMISSIVE_MAP", MATERIAL_DESCRIPTOR_SET, 4,
        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
        VK_SHADER_STAGE_FRAGMENT_BIT,
        vsg::ubvec4Array2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R8G8B8A8_UNORM}));
     pbr->addDescriptorBinding
-      ("specularMap", "VSG_SPECULAR_MAP", 0, 5,
+      ("specularMap", "VSG_SPECULAR_MAP", MATERIAL_DESCRIPTOR_SET, 5,
        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
        VK_SHADER_STAGE_FRAGMENT_BIT,
        vsg::ubvec4Array2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R8G8B8A8_UNORM}));
     pbr->addDescriptorBinding
-      ("material", "", 0, 10,
+      ("material", "", MATERIAL_DESCRIPTOR_SET, 10,
       VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
       vsg::PbrMaterialValue::create());
     pbr->addDescriptorBinding
-      ("lightData", "", 1, 0,
+      ("lightData", "", VIEW_DESCRIPTOR_SET, 0,
       VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1,
       VK_SHADER_STAGE_FRAGMENT_BIT, vsg::vec4Array::create(64));
     pbr->addDescriptorBinding("viewportData", "", VIEW_DESCRIPTOR_SET,
@@ -123,9 +124,9 @@ namespace vsgviewer {
 
     // fog addition
     pbr->addDescriptorBinding
-      ("gl_Fog", "WORLDVIEW_SIMPLEFOG", 0, 11,
+      ("gl_Fog", "WORLDVIEW_SIMPLEFOG", VIEW_DESCRIPTOR_SET, 11,
        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
-       thefog);
+       vsg::vec4Array::create(1));
 
 
     // additional defines
@@ -201,22 +202,22 @@ vsg::ref_ptr<vsg::ShaderSet> vsgFlatShaderSet
        VK_FORMAT_R32G32B32A32_SFLOAT, vsg::vec4Array::create(1));
 
     flat->addDescriptorBinding
-      ("displacementMap", "VSG_DISPLACEMENT_MAP", 0, 6,
+      ("displacementMap", "VSG_DISPLACEMENT_MAP", MATERIAL_DESCRIPTOR_SET, 6,
        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
        VK_SHADER_STAGE_VERTEX_BIT,
        vsg::floatArray2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R32_SFLOAT}));
     flat->addDescriptorBinding
-      ("diffuseMap", "VSG_DIFFUSE_MAP", 0, 0,
+      ("diffuseMap", "VSG_DIFFUSE_MAP", MATERIAL_DESCRIPTOR_SET, 0,
        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
        VK_SHADER_STAGE_FRAGMENT_BIT,
        vsg::ubvec4Array2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R8G8B8A8_UNORM}));
 
     flat->addDescriptorBinding
-      ("material", "", 0, 10,
+      ("material", "", MATERIAL_DESCRIPTOR_SET, 10,
       VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
       vsg::PhongMaterialValue::create());
     flat->addDescriptorBinding
-      ("lightData", "", 1, 0,
+      ("lightData", "", VIEW_DESCRIPTOR_SET, 0,
       VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1,
       VK_SHADER_STAGE_FRAGMENT_BIT, vsg::vec4Array::create(64));
     flat->addDescriptorBinding("viewportData", "", VIEW_DESCRIPTOR_SET,
@@ -231,7 +232,7 @@ vsg::ref_ptr<vsg::ShaderSet> vsgFlatShaderSet
     flat->addDescriptorBinding
       ("gl_Fog", "WORLDVIEW_SIMPLEFOG", VIEW_DESCRIPTOR_SET, 11,
        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
-       thefog);
+       vsg::vec4Array::create(1));
 
     // additional defines
     flat->optionalDefines =
@@ -304,12 +305,12 @@ vsg::ref_ptr<vsg::ShaderSet> vsgPhongShaderSet
        VK_FORMAT_R32G32B32A32_SFLOAT, vsg::vec4Array::create(1));
 
     phong->addDescriptorBinding
-      ("displacementMap", "VSG_DISPLACEMENT_MAP", 0, 6,
+      ("displacementMap", "VSG_DISPLACEMENT_MAP", MATERIAL_DESCRIPTOR_SET, 6,
        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
        VK_SHADER_STAGE_VERTEX_BIT,
        vsg::floatArray2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R32_SFLOAT}));
     phong->addDescriptorBinding
-      ("diffuseMap", "VSG_DIFFUSE_MAP", 0, 0,
+      ("diffuseMap", "VSG_DIFFUSE_MAP", MATERIAL_DESCRIPTOR_SET, 0,
        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
        VK_SHADER_STAGE_FRAGMENT_BIT,
        vsg::ubvec4Array2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R8G8B8A8_UNORM}));
@@ -317,15 +318,17 @@ vsg::ref_ptr<vsg::ShaderSet> vsgPhongShaderSet
       MATERIAL_DESCRIPTOR_SET, 2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
       1, VK_SHADER_STAGE_FRAGMENT_BIT,
       vsg::vec3Array2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R32G32B32_SFLOAT}));
-    phong->addDescriptorBinding("aoMap", "VSG_LIGHTMAP_MAP", MATERIAL_DESCRIPTOR_SET, 3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, vsg::vec4Array2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R32_SFLOAT}));
-    phong->addDescriptorBinding("emissiveMap", "VSG_EMISSIVE_MAP", MATERIAL_DESCRIPTOR_SET, 4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, vsg::vec4Array2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R8G8B8A8_UNORM}));
+    phong->addDescriptorBinding("aoMap", "VSG_LIGHTMAP_MAP",
+      MATERIAL_DESCRIPTOR_SET, 3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, vsg::vec4Array2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R32_SFLOAT}));
+    phong->addDescriptorBinding("emissiveMap", "VSG_EMISSIVE_MAP",
+      MATERIAL_DESCRIPTOR_SET, 4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, vsg::vec4Array2D::create(1, 1, vsg::Data::Properties{VK_FORMAT_R8G8B8A8_UNORM}));
 
     phong->addDescriptorBinding
-      ("material", "", 0, 10,
+      ("material", "", MATERIAL_DESCRIPTOR_SET, 10,
       VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
       vsg::PhongMaterialValue::create());
     phong->addDescriptorBinding
-      ("lightData", "", 1, 0,
+      ("lightData", "", VIEW_DESCRIPTOR_SET, 0,
       VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1,
       VK_SHADER_STAGE_FRAGMENT_BIT, vsg::vec4Array::create(64));
     phong->addDescriptorBinding("viewportData", "", VIEW_DESCRIPTOR_SET,
@@ -340,7 +343,7 @@ vsg::ref_ptr<vsg::ShaderSet> vsgPhongShaderSet
     phong->addDescriptorBinding
       ("gl_Fog", "WORLDVIEW_SIMPLEFOG", VIEW_DESCRIPTOR_SET, 11,
        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
-       thefog);
+       vsg::vec4Array::create(1));
 
     // additional defines
     phong->optionalDefines =
