@@ -19,7 +19,7 @@ namespace vsgviewer {
   /** Object to pass simple fog data to shaders */
   struct FogData {
     /// Color of the fog, RGBA
-    glm::vec4 color;
+    glm::vec3 color;
 
     /// Density, determines depth.
     float density;

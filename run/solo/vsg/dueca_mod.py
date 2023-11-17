@@ -5,7 +5,7 @@
 
 ## in general, it is a good idea to clearly document your set up
 ## this is an excellent place.
-claim_graphics_thread = True
+claim_graphics_thread = False
 f = 4
 ## node set-up
 ecs_node = 0   # dutmms1, send order 3
@@ -129,7 +129,7 @@ if this_node_id == ecs_node:
                 ('set-xml-definitions',
                  '../../../../WorldView/vsg-viewer/vsgobjects.xml'),
                 ('read-xml-definitions', 'exampleworld.xml'),
-                ('set-fog', (0.2, 0.5, 0.5, 0.5, 1.0))
+                ('set-fog', (0.02, 0.5, 0.5, 1.0))
             ).complete(),
             initial_camera = ( 0, 0, -30, 0, 0, 0)
         ))
@@ -166,4 +166,4 @@ if drivemods:
     driveentity = dueca.Entity("drive", drivemods)
 
 if mymods:
-    myentity = dueca.Entity("ogre", mymods)
+    myentity = dueca.Entity("vsg", mymods)

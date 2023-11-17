@@ -23,7 +23,7 @@
 namespace vsgviewer {
 
   FogData::FogData() :
-    color(0.0f),
+    color(0.5f),
     density(0.0f)
   { }
 
