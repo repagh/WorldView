@@ -315,26 +315,25 @@ namespace vsgviewer {
     options->add(vsgXchange::all::create());
     arguments.read(options);
 
-    // create viewer
-    viewer = vsg::Viewer::create();
-
     // ensure pbr use my new set of shaders.
     auto pbr = vsgPBRShaderSet(options);
     options->shaderSets["pbr"] = pbr;
 
+#if 0
     // set initial fog value
     auto& fogBinding =
       pbr->getDescriptorBinding("Fog");
     if (fogBinding.name == "Fog") {
       fogBinding.data = the_fog;
     }
+#endif
 
     // create scene graph root
     root = vsg::StateGroup::create();
     root->setValue("name", std::string("root"));
     D_MOD("VSG create root node");
 
-#if 0
+#if 1
     // the "inherit option in customshaderset"
     auto layout = pbr->createPipelineLayout({}, {0, 2});
 
@@ -356,6 +355,9 @@ namespace vsgviewer {
     observer_path.push_back(observer);
 
     auto viewmatrix = vsg::TrackingViewMatrix::create(observer_path);
+
+    // create viewer
+    viewer = vsg::Viewer::create();
 
     // If no window specified, give a dummy default specification
     if (winspec.empty()) {
