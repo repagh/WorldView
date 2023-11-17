@@ -210,7 +210,7 @@ namespace vsgviewer {
     resourcepath(),
     keep_pointer(false),
     bg_color(4, 0.0),
-    the_fog(),
+    the_fog(FogValue::create()),
     enable_simple_fog(false),
     buffer_nsamples(8)
   {
@@ -300,6 +300,8 @@ namespace vsgviewer {
 
   void VSGViewer::init(bool waitswap)
   {
+    // based on vsgcustomshaderset
+
     // process what is in the commandline
     vsg::CommandLine arguments(p_argc, *p_argv);
 
@@ -316,81 +318,16 @@ namespace vsgviewer {
     // create viewer
     viewer = vsg::Viewer::create();
 
-#if 0
-    // if blending is requested setup appropriate colorblendstate
-    vsg::ColorBlendState::ColorBlendAttachments colorBlendAttachments;
-    VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
-    colorBlendAttachment.blendEnable = VK_FALSE;
-    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT |
-                                          VK_COLOR_COMPONENT_G_BIT |
-                                          VK_COLOR_COMPONENT_B_BIT |
-                                          VK_COLOR_COMPONENT_A_BIT;
-    // need, load GLTF shader,
-    // https://github.com/KhronosGroup/glTF-Sample-Viewer/blob/main/source/Renderer/shaders
-    // or https://github.com/bwasty/gltf-viewer/tree/master/src/shaders
-
-    // standard shaders in vsg apparently?
-    // vsgExamples: standard.vert, standard_pbr.frag
-    // look in vsgshaderset/pbr.cpp
-
-    // modify the pipeline?
-    if (true /* shaderModeMask & BLEND */)
-    {
-      colorBlendAttachment.blendEnable = VK_TRUE;
-      colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-      colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-      colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
-      colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-      colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-      colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
-    }
-
-    colorBlendAttachments.push_back(colorBlendAttachment);
-
-    vsg::PushConstantRanges pushConstantRanges{
-      //{VK_SHADER_STAGE_MESH_BIT_EXT, 0, 128}
-    };
-
-    vsg::DescriptorSetLayoutBindings descriptorBindings{};
-    auto descriptorSetLayout = vsg::DescriptorSetLayout::create
-      (descriptorBindings);
-
-    // customize the pipeline with colorBlend, others default
-    vsg::GraphicsPipelineStates pipelineStates{
-      vsg::VertexInputState::create(),
-      vsg::InputAssemblyState::create(),
-      vsg::RasterizationState::create(),
-      vsg::MultisampleState::create(),
-      vsg::ColorBlendState::create(colorBlendAttachments),
-      vsg::DepthStencilState::create()};
-
-    auto pipelineLayout = vsg::PipelineLayout::create(
-      vsg::DescriptorSetLayouts{descriptorSetLayout}, pushConstantRanges);
-#endif
-    //
-    // modify graphics pipeline
-    //
-
-    // fog addition
-    // fog_data = vsg::vec4Value::create(0.0, 0.0, 0.0, 0.0);
-    fog_data = vsg::Value<FogData>::create();
-    fog_data->properties.dataVariance = vsg::DYNAMIC_DATA_TRANSFER_AFTER_RECORD;
-    fog_data_buffer_info = vsg::BufferInfo::create(fog_data.get());
-
-    fog_data->dirty();
-
     // ensure pbr use my new set of shaders.
-    options->shaderSets["pbr"] = vsgPBRShaderSet(options, fog_data);
-    options->shaderSets["flat"] = vsgFlatShaderSet(options, fog_data);
-    options->shaderSets["phong"] = vsgPhongShaderSet(options, fog_data);
+    auto pbr = vsgPBRShaderSet(options);
+    options->shaderSets["pbr"] = pbr;
 
-#if 0
-    // does this do shader compilation?
-    auto graphicsPipeline = vsg::GraphicsPipeline::create
-      (pipelineLayout, shaders->stages, pipelineStates);
-    auto bindGraphicsPipeline = vsg::BindGraphicsPipeline::create
-      (graphicsPipeline);
-#endif
+    // set initial fog value
+    auto& fogBinding =
+      pbr->getDescriptorBinding("Fog");
+    if (fogBinding.name == "Fog") {
+      fogBinding.data = the_fog;
+    }
 
     // create scene graph root
     root = vsg::StateGroup::create();
@@ -398,8 +335,19 @@ namespace vsgviewer {
     D_MOD("VSG create root node");
 
 #if 0
-    // does not work, figure out what to do with this
-    root->add(bindGraphicsPipeline);
+    // the "inherit option in customshaderset"
+    auto layout = pbr->createPipelineLayout({}, {0, 2});
+
+    uint32_t vds_set = 1;
+    root->add(vsg::BindViewDescriptorSets::create(VK_PIPELINE_BIND_POINT_GRAPHICS, layout, vds_set));
+    uint32_t cm_set = 0;
+    auto cm_dsl = pbr->createDescriptorSetLayout({}, cm_set);
+    auto cm_db = vsg::DescriptorBuffer::create(the_fog);
+    auto cm_ds = vsg::DescriptorSet::create(cm_dsl, vsg::Descriptors{cm_db});
+    auto cm_bds = vsg::BindDescriptorSet::create(VK_PIPELINE_BIND_POINT_GRAPHICS, layout, cm_ds);
+    root->add(cm_bds);
+
+    options->inheritedState = root->stateCommands;
 #endif
 
     // and the observer/eye group

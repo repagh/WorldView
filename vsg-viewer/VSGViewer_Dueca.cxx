@@ -169,9 +169,12 @@ namespace vsgviewer {
       { "set-fog",
         new MemberCall<_ThisObject_, std::vector<double> >
         (&_ThisObject_::setFog),
-        "Set fog parameters, expects 4 numbers:\n"
+        "Set fog parameters, expects 7 numbers:\n"
         "fog density,\n"
-        "fog color (RGB, 3 elts)" },
+        "fog color (RGB, 3 elts)\n"
+        "fog start (when linear)\n"
+        "fog end\n"
+        "fog exponent" },
 
       { "allow-unknown",
         new VarProbe<_ThisObject_,bool>(&_ThisObject_::allow_unknown),
@@ -387,12 +390,26 @@ namespace vsgviewer {
 
   bool VSGViewer_Dueca::setFog(const std::vector<double>& fog)
   {
-    if (fog.size() != 4) {
-      E_CNF("Specify 4 numbers for fog");
+    auto &thefog = the_fog->value();
+    if (fog.size() >= 1) {
+      thefog.density = fog[0];
+    }
+    else if (fog.size() >= 4) {
+      thefog.color = {float(fog[1]), float(fog[2]), float(fog[3]) };
+    }
+    else if (fog.size() >= 5) {
+      thefog.start = fog[4];
+    }
+    else if (fog.size() >= 6) {
+      thefog.start = fog[5];
+    }
+    else if (fog.size() == 7) {
+      thefog.exponent = fog[6];
+    }
+    else {
+      E_CNF("Wrong number of arguments for for fog");
       return false;
     }
-    the_fog.density = fog[0];
-    the_fog.color = {fog[1], fog[2], fog[3]};
     enable_simple_fog = true;
     return true;
   }

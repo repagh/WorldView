@@ -2,8 +2,9 @@
 #extension GL_ARB_separate_shader_objects : enable
 #pragma import_defines (VSG_DIFFUSE_MAP, VSG_GREYSCALE_DIFFUSE_MAP, VSG_EMISSIVE_MAP, VSG_LIGHTMAP_MAP, VSG_NORMAL_MAP, VSG_METALLROUGHNESS_MAP, VSG_SPECULAR_MAP, VSG_TWO_SIDED_LIGHTING, VSG_WORKFLOW_SPECGLOSS, SHADOWMAP_DEBUG)
 
-#define VIEW_DESCRIPTOR_SET 0
-#define MATERIAL_DESCRIPTOR_SET 1
+#define VIEW_DESCRIPTOR_SET 1
+#define MATERIAL_DESCRIPTOR_SET 2
+#define CUSTOM_DESCRIPTOR_SET 0
 
 const float PI = 3.14159265359;
 const float RECIPROCAL_PI = 0.31830988618;
@@ -55,18 +56,15 @@ layout(set = VIEW_DESCRIPTOR_SET, binding = 0) uniform LightData
 
 layout(set = VIEW_DESCRIPTOR_SET, binding = 2) uniform sampler2DArrayShadow shadowMaps;
 
-#ifdef WORLDVIEW_SIMPLEFOG
-// simple fog code
-// https://stackoverflow.com/questions/22554631/accessing-the-depth-buffer-from-a-fragment-shader
-layout(set = VIEW_DESCRIPTOR_SET, binding = 11) uniform FogData
+// Custom state
+layout(set = CUSTOM_DESCRIPTOR_SET, binding = 0) uniform Fog
 {
-   vec3 color;
-   float density;
-} wv_Fog;
-
-in vec4 gl_FragCoord;
-#endif
-
+    vec3 color;
+    float density;
+    float start;
+    float end;
+    float exponent;
+} fog;
 
 layout(location = 0) in vec3 eyePos;
 layout(location = 1) in vec3 normalDir;
@@ -536,19 +534,30 @@ void main()
         }
     }
 
-#ifdef WORLDVIEW_SIMPLEFOG
-    // simple fog code
-    const float LOG2 = 1.442695;
-    float zd = wv_Fog.density * gl_FragCoord.z / gl_FragCoord.w;
-    //float zd = 0.1 * gl_FragCoord.z / gl_FragCoord.w;
-    float fogFactor = exp2( -zd * zd * LOG2 );
-    fogFactor = clamp(fogFactor, 0.0, 1.0);
-    outColor = LINEARtoSRGB(
-        vec4(mix(wv_Fog.color, color, fogFactor), baseColor.a));
-#error "case not foreseen"
-#else
-    outColor = LINEARtoSRGB(vec4(color, baseColor.a));
-#endif
+    if (fog.exponent != 0.0)
+    {
+        float fogCoord = -eyePos.z;
+        const float e = 2.71828;
+        float f = pow(e, -fog.density * pow(fogCoord, fog.exponent));
+        color = mix(fog.color, color, f);
+    }
+    else
+    {
+        // linear
+        float fogCoord = -eyePos.z;
+        if (fogCoord > fog.start)
+        {
+            if (fogCoord < fog.end)
+            {
+                float f = (fog.end - fogCoord) / (fog.end - fog.start);
+                color = mix(fog.color, color, f);
+            }
+            else
+            {
+                color = fog.color;
+            }
+        }
+    }
 
-//    outColor = LINEARtoSRGB(vec4(color, baseColor.a));
+    outColor = LINEARtoSRGB(vec4(color, baseColor.a)) ;
 }
