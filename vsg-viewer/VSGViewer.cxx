@@ -10,6 +10,7 @@
 
 
 
+#include "VSGPBRShaderSet.hxx"
 #define VSGViewer_cxx
 #include "VSGViewer.hxx"
 #include "WorldObjectBase.hxx"
@@ -370,14 +371,18 @@ namespace vsgviewer {
     // modify graphics pipeline
     //
 
-    // these are default pbr shaders. probably equal to
-    // vsgExamples/data/shaders/standard_pbr.frag and standard.vert ?
-    auto fogref = vsg::ref_ptr(reinterpret_cast<vsg::Data*>(&the_fog));
+    // fog addition
+    // fog_data = vsg::vec4Value::create(0.0, 0.0, 0.0, 0.0);
+    fog_data = vsg::Value<FogData>::create();
+    fog_data->properties.dataVariance = vsg::DYNAMIC_DATA_TRANSFER_AFTER_RECORD;
+    fog_data_buffer_info = vsg::BufferInfo::create(fog_data.get());
+
+    fog_data->dirty();
 
     // ensure pbr use my new set of shaders.
-    options->shaderSets["pbr"] = vsgPBRShaderSet(options, fogref);
-    options->shaderSets["flat"] = vsgFlatShaderSet(options, fogref);
-    options->shaderSets["phong"] = vsgPhongShaderSet(options, fogref);
+    options->shaderSets["pbr"] = vsgPBRShaderSet(options, fog_data);
+    options->shaderSets["flat"] = vsgFlatShaderSet(options, fog_data);
+    options->shaderSets["phong"] = vsgPhongShaderSet(options, fog_data);
 
 #if 0
     // does this do shader compilation?

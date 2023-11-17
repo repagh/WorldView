@@ -35,12 +35,12 @@ namespace vsgviewer {
   */
   vsg::ref_ptr<vsg::ShaderSet> vsgPBRShaderSet
     (vsg::ref_ptr<const vsg::Options> opt,
-     vsg::ref_ptr<vsg::Data> data);
+     vsg::ref_ptr<vsg::Data> fog_data);
   vsg::ref_ptr<vsg::ShaderSet> vsgFlatShaderSet
     (vsg::ref_ptr<const vsg::Options> opt,
-     vsg::ref_ptr<vsg::Data> data);
+     vsg::ref_ptr<vsg::Data> fog_data);
   vsg::ref_ptr<vsg::ShaderSet> vsgPhongShaderSet
     (vsg::ref_ptr<const vsg::Options> opt,
-     vsg::ref_ptr<vsg::Data> data);
+     vsg::ref_ptr<vsg::Data> fog_data);
 
 } // namespace vsgviewer

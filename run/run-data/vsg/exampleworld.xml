@@ -17,12 +17,12 @@
   </template>
 
   <template id="car" type="model">
-    <file>Defender.glb</file>
+    <file>Defender.vsgb</file>
   </template>
 
   <!-- controlled objects are all of type car? -->
   <template id="ObjectMotion" type="model" name="car #">
-    <file>Defender.glb</file>
+    <file>Defender.vsgb</file>
   </template>
 
   <!-- static, non-controlled objects -->
@@ -55,7 +55,7 @@
     <param name="xyz"> 0, 0, 0 </param>
     <param name="phithetapsi">0, 0, 0 </param>
   </static>
-  
+
   <static name="world" parent="world-base" type="static-model">
     <file>lz.vsgt</file>
   </static>
@@ -64,7 +64,7 @@
   <static name="arrows" parent="arrow-base" type="static-model">
     <file>arrows.vsgb</file>
   </static>
-  
+
   <!-- simple ambient light -->
   <static name="ambient" type="ambient-light">
     <param name="color"> 1, 1, 1</param>

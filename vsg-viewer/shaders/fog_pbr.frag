@@ -537,22 +537,15 @@ void main()
     }
 
 #ifdef WORLDVIEW_SIMPLEFOG
-
-#if 0
     // simple fog code
     const float LOG2 = 1.442695;
-    //float zd = wv_Fog.density * gl_FragCoord.z / gl_FragCoord.w;
-    float zd = 0.1 * gl_FragCoord.z / gl_FragCoord.w;
+    float zd = wv_Fog.density * gl_FragCoord.z / gl_FragCoord.w;
+    //float zd = 0.1 * gl_FragCoord.z / gl_FragCoord.w;
     float fogFactor = exp2( -zd * zd * LOG2 );
     fogFactor = clamp(fogFactor, 0.0, 1.0);
     outColor = LINEARtoSRGB(
         vec4(mix(wv_Fog.color, color, fogFactor), baseColor.a));
-#else
-    // faking, but using fogfactor?
-    outColor = LINEARtoSRGB(
-        vec4(fogFactor, fogFactor, fogFactor, baseColor.a));
-
-#endif
+#error "case not foreseen"
 #else
     outColor = LINEARtoSRGB(vec4(color, baseColor.a));
 #endif

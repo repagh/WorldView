@@ -17,6 +17,9 @@
 #include "VSGObject.hxx"
 
 #include <vsg/all.h>
+#include <vsg/core/Array.h>
+#include <vsg/core/ref_ptr.h>
+#include <vsg/state/BufferInfo.h>
 #include <vsgXchange/all.h>
 #include <WorldViewerBase.hxx>
 #include "VSGObjectFactory.hxx"
@@ -245,6 +248,12 @@ namespace vsgviewer {
     std::vector<float> bg_color;
 
     /** Generic, simple fog definition */
+    vsg::ref_ptr<vsg::Value<FogData> > fog_data;
+
+    /** Buffer for fog data */
+    vsg::ref_ptr<vsg::BufferInfo> fog_data_buffer_info;
+
+    /** Fog object */
     FogData the_fog;
 
     /** Enable simple fog. */

@@ -11,6 +11,7 @@
 
 #include "VSGPBRShaderSet.hxx"
 #include <vsg/core/Array.h>
+#include <vsg/core/Data.h>
 #include <vsg/io/read.h>
 #include <dueca/debug.h>
 #include <vsg/state/material.h>
@@ -28,7 +29,7 @@ namespace vsgviewer {
 
   vsg::ref_ptr<vsg::ShaderSet> vsgPBRShaderSet
   (vsg::ref_ptr<const vsg::Options> options,
-   vsg::ref_ptr<vsg::Data> thefog)
+   vsg::ref_ptr<vsg::Data> fog_data)
   {
     auto pbr_vertexShader = vsg::read_cast<vsg::ShaderStage>
       ("shaders/standard.vert", options);
@@ -122,12 +123,12 @@ namespace vsgviewer {
       VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
       vsg::floatArray3D::create(1, 1, 1, vsg::Data::Properties{VK_FORMAT_R32_SFLOAT}));
 
-    // fog addition
+#if 1
     pbr->addDescriptorBinding
       ("gl_Fog", "WORLDVIEW_SIMPLEFOG", VIEW_DESCRIPTOR_SET, 11,
        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
-       vsg::vec4Array::create(1));
-
+       fog_data);
+#endif
 
     // additional defines
     pbr->optionalDefines =
@@ -156,7 +157,7 @@ namespace vsgviewer {
 
 vsg::ref_ptr<vsg::ShaderSet> vsgFlatShaderSet
   (vsg::ref_ptr<const vsg::Options> options,
-   vsg::ref_ptr<vsg::Data> thefog)
+   vsg::ref_ptr<vsg::Data> fog_data)
   {
     auto shaderHints = vsg::ShaderCompileSettings::create();
 
@@ -232,7 +233,7 @@ vsg::ref_ptr<vsg::ShaderSet> vsgFlatShaderSet
     flat->addDescriptorBinding
       ("gl_Fog", "WORLDVIEW_SIMPLEFOG", VIEW_DESCRIPTOR_SET, 11,
        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
-       vsg::vec4Array::create(1));
+       fog_data);
 
     // additional defines
     flat->optionalDefines =
@@ -259,7 +260,7 @@ vsg::ref_ptr<vsg::ShaderSet> vsgFlatShaderSet
 
 vsg::ref_ptr<vsg::ShaderSet> vsgPhongShaderSet
   (vsg::ref_ptr<const vsg::Options> options,
-   vsg::ref_ptr<vsg::Data> thefog)
+   vsg::ref_ptr<vsg::Data> fog_data)
   {
     auto shaderHints = vsg::ShaderCompileSettings::create();
 
@@ -343,7 +344,7 @@ vsg::ref_ptr<vsg::ShaderSet> vsgPhongShaderSet
     phong->addDescriptorBinding
       ("gl_Fog", "WORLDVIEW_SIMPLEFOG", VIEW_DESCRIPTOR_SET, 11,
        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
-       vsg::vec4Array::create(1));
+       fog_data);
 
     // additional defines
     phong->optionalDefines =
