@@ -118,7 +118,7 @@ namespace vsgviewer {
 
 #if 1
     pbr->addDescriptorBinding
-      ("Fog", "WORLDVIEW_SIMPLEFOG", CUSTOM_DESCRIPTOR_SET, 0,
+      ("Fog", "", CUSTOM_DESCRIPTOR_SET, 0,
        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
        FogValue::create());
 #endif

@@ -17,12 +17,12 @@
   </template>
 
   <template id="car" type="model">
-    <file>Defender.vsgb</file>
+    <file>Defender.glb</file>
   </template>
 
   <!-- controlled objects are all of type car? -->
   <template id="ObjectMotion" type="model" name="car #">
-    <file>Defender.vsgb</file>
+    <file>Defender.glb</file>
   </template>
 
   <!-- static, non-controlled objects -->
@@ -62,7 +62,7 @@
 
   <!-- arrow orientation -->
   <static name="arrows" parent="arrow-base" type="static-model">
-    <file>arrows.vsgb</file>
+    <file>arrows.glb</file>
   </static>
 
   <!-- simple ambient light -->

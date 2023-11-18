@@ -20,6 +20,7 @@
 #include <vsg/core/Array.h>
 #include <vsg/core/ref_ptr.h>
 #include <vsg/state/BufferInfo.h>
+#include <vsg/state/PipelineLayout.h>
 #include <vsgXchange/all.h>
 #include <WorldViewerBase.hxx>
 #include "VSGObjectFactory.hxx"
@@ -56,6 +57,9 @@ namespace vsgviewer {
 
     /** A single viewer, matching a single scene */
     vsg::ref_ptr<vsg::Viewer> viewer;
+
+
+    vsg::ref_ptr<vsg::PipelineLayout> layout;
 
   public:
     /** Options object */

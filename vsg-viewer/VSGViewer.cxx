@@ -335,7 +335,7 @@ namespace vsgviewer {
 
 #if 1
     // the "inherit option in customshaderset"
-    auto layout = pbr->createPipelineLayout({}, {0, 2});
+    layout = pbr->createPipelineLayout({}, {0, 2});
 
     uint32_t vds_set = 1;
     root->add(vsg::BindViewDescriptorSets::create(VK_PIPELINE_BIND_POINT_GRAPHICS, layout, vds_set));
