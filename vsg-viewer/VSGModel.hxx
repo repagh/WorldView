@@ -29,7 +29,13 @@ namespace vsgviewer {
     std::string modelfile;
 
   public:
-    /** Constructor */
+    /** Constructor
+
+        @param data:
+        * data.name        - model name
+        * data.parent      - if filled, used to look up parent node
+        * data.filename[0] - name for the visual model
+    */
     VSGStaticModel(const WorldDataSpec& data);
 
     /** Destructor */

@@ -2,9 +2,9 @@
 /*      item            : WorldDataSpecExtra.hxx
         made by         : Rene van Paassen
         date            : 170327
-	category        : header file addition
+        category        : header file addition
         description     :
-	changes         : 170327 converted from hand-coded
+        changes         : 170327 converted from hand-coded
         language        : C++
 */
 
@@ -22,3 +22,6 @@ void setCoordinates(unsigned offset, unsigned ncoord, const T& values)
     coordinates[offset+idx] = values[idx];
   }
 }
+
+/** Constructor that takes an partial WorldDataSpec */
+WorldDataSpec(const WorldDataSpec& o, unsigned nfstrip, unsigned ncstrip=0U);

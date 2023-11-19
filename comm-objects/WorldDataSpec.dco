@@ -25,7 +25,7 @@
        ;; Parent, if applicable, can be used to find a location for inserting
        ;; in a scene graph
        (vstring parent)
-       
+
        ;; Type, determines (through a factory) what code will implement the
        ;; object and thereby the behavior of the object
        (vstring type)
