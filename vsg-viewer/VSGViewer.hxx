@@ -280,16 +280,16 @@ public:
       @param base  Motion definition of the base observer/vehicle.
       @param late  Time [s] into current DUECA time tick.
   */
-  void setBase(TimeTickType tick, const BaseObjectMotion &base, double late,
+  void setBase(dueca::TimeTickType tick, const BaseObjectMotion &base, double late,
                bool freeze);
 
   /** Create a controllable object. Object creation depends on class of
       data supplied, further init may rely on fist data entering. */
-  bool createControllable(const GlobalId &master_id, const NameSet &cname,
-                          entryid_type entry_id, uint32_t creation_id,
+  bool createControllable(const dueca::GlobalId &master_id, const dueca::NameSet &cname,
+                          dueca::entryid_type entry_id, uint32_t creation_id,
                           const std::string &data_class,
                           const std::string &entry_label,
-                          Channel::EntryTimeAspect time_aspect);
+                          dueca::Channel::EntryTimeAspect time_aspect);
 
   /** Remove a controllable */
   void removeControllable(const dueca::NameSet &cname, uint32_t creation_id);

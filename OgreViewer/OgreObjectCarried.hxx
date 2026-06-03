@@ -48,7 +48,7 @@ public:
       case, this iterate will govern, and its position/orientation are
       not updated.
    */
-  virtual void iterate(TimeTickType ts,
+  virtual void iterate(dueca::TimeTickType ts,
                        const BaseObjectMotion& base, double late);
 };
 

@@ -2,9 +2,9 @@
 /*      item            : OsgObject.cxx
         made by         : Rene' van Paassen
         date            : 090617
-	category        : body file 
-        description     : 
-	changes         : 090617 first version
+        category        : body file
+        description     :
+        changes         : 090617 first version
         language        : C++
 */
 
@@ -18,6 +18,7 @@
 
 #define DEB(A) cout << A << endl;
 
+using namespace dueca;
 using namespace std;
 using namespace osg;
 
@@ -27,20 +28,16 @@ OSGObject::OSGObject() :
   //
 }
 
+OSGObject::~OSGObject() {}
 
-OSGObject::~OSGObject()
-{
-
-}
-
-void OSGObject::init(const osg::ref_ptr<osg::Group>& root, OSGViewer* master)
+void OSGObject::init(const osg::ref_ptr<osg::Group> &root, OSGViewer *master)
 {
   DEB("Reading file \"" << modelfile << "\"" << endl);
   entity = osgDB::readNodeFile(modelfile, NULL);
   if (!entity.valid()) {
     cerr << "Failed to read " << modelfile << endl;
     return;
-  }  
+  }
   entity->setDataVariance(osg::Object::DYNAMIC);
   entity->setName(this->getName());
   transform = new PositionAttitudeTransform();
@@ -49,7 +46,7 @@ void OSGObject::init(const osg::ref_ptr<osg::Group>& root, OSGViewer* master)
   visible(true);
 }
 
-void OSGObject::unInit(const osg::ref_ptr<osg::Group>& root)
+void OSGObject::unInit(const osg::ref_ptr<osg::Group> &root)
 {
   root->removeChild(transform);
 }
@@ -64,4 +61,3 @@ void OSGObject::visible(bool vis)
     transform->setNodeMask(0);
   }
 }
-      

@@ -164,7 +164,7 @@ public:
 
      @param dclass  Class name of the DCO type to match.
      @param label   Label of the entry.
-     @param cid     Channel entry id.
+     @param cid     dueca::Channel entry id.
      @param strict  Strict matching, i.e. against label only.
   */
   WorldDataSpec retrieveFactorySpec(const std::string &dclass,

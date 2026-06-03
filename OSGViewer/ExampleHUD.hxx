@@ -34,8 +34,8 @@ class ExampleHUD : public WorldObjectBase
   std::string vname;
 
 protected:
-  /** Channel read token for hud control input */
-  boost::scoped_ptr<ChannelReadToken> r_hud;
+  /** dueca::Channel read token for hud control input */
+  boost::scoped_ptr<dueca::ChannelReadToken> r_hud;
 
   /** Ortho camera for the view */
   osg::ref_ptr<osg::Camera> camera;
@@ -55,11 +55,11 @@ public:
 
   /** Connect to a channel entry
       @param master_id ID for opening a channel reader
-      @param cname     Channel with object data
+      @param cname     dueca::Channel with object data
       @param entry_id  Entry in the channel */
-  virtual void connect(const GlobalId &master_id, const NameSet &cname,
-                       entryid_type entry_id,
-                       Channel::EntryTimeAspect time_aspect);
+  virtual void connect(const dueca::GlobalId &master_id, const dueca::NameSet &cname,
+                       dueca::entryid_type entry_id,
+                       dueca::Channel::EntryTimeAspect time_aspect);
 
   /** Initialise the hud with the OSG scene */
   virtual void init(const osg::ref_ptr<osg::Group> &root, OSGViewer *master);
@@ -71,7 +71,7 @@ public:
   virtual void visible(bool vis);
 
   /** Play, update, recalculate, etc. */
-  void iterate(TimeTickType ts, const BaseObjectMotion &base, double late,
+  void iterate(dueca::TimeTickType ts, const BaseObjectMotion &base, double late,
                bool freeze) override;
 };
 

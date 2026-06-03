@@ -85,7 +85,7 @@ USING_DUECA_NS;
     include PlibObjectFactory.hxx, and create a SubContractor with the
     plib model factory. 
 
-    This class has been derived from the ScriptCreatable base class,
+    This class has been derived from the dueca::ScriptCreatable base class,
     and has a (scheme) script command to create it and optionally add
     parameters. This class encapsulates the PlibViewer objects, in
     this way these can be made and specified from a DUECA script.
@@ -95,7 +95,7 @@ USING_DUECA_NS;
 
     \verbinclude plib-viewer-dueca.scm
  */
-class PlibViewer_Dueca: public ScriptCreatable, public PlibViewer
+class PlibViewer_Dueca: public dueca::ScriptCreatable, public PlibViewer
 {
 public: // construction and further specification
   /** Constructor. Is normally called from scheme/the creation script. */
@@ -110,7 +110,7 @@ public: // construction and further specification
   ~PlibViewer_Dueca();
 
   /** Obtain a pointer to the parameter table. */
-  static const ParameterTable* getParameterTable();
+  static const dueca::ParameterTable* getParameterTable();
 
 private:
   /** Specification of a viewport */
@@ -150,7 +150,7 @@ private:
   bool addObject(const std::vector<std::string>& names);
   
   /** Add an object in the world. */
-  bool addScriptObject(ScriptCreatable& ava, bool in);
+  bool addScriptObject(dueca::ScriptCreatable& ava, bool in);
   
   /** Set the coordinates for an object in the world */
   bool setObjectCoordinates(const std::vector<double>& coord);

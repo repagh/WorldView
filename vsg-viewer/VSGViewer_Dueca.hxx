@@ -145,7 +145,7 @@ namespace vsgviewer {
     include VSGObjectFactory.hxx, and create a SubContractor with the
     VSG model factory.
 
-    This class has been derived from the ScriptCreatable base class,
+    This class has been derived from the dueca::ScriptCreatable base class,
     and has a script command to create it and optionally add
     parameters. This class encapsulates the VSGViewer objects, in
     this way these can be made and specified from a DUECA script.
@@ -155,7 +155,7 @@ namespace vsgviewer {
 
     \verbinclude vsg-viewer-dueca.scm
 */
-class VSGViewer_Dueca : public ScriptCreatable, public VSGViewer
+class VSGViewer_Dueca : public dueca::ScriptCreatable, public VSGViewer
 {
 private: // simulation data
   /** self-define the module type, to ease writing the parameter table */
@@ -174,7 +174,7 @@ public: // construction and further specification
   ~VSGViewer_Dueca();
 
   /** Obtain a pointer to the parameter table. */
-  static const ParameterTable *getParameterTable();
+  static const dueca::ParameterTable *getParameterTable();
 
 private:
   /** Specification of a viewport */
@@ -214,7 +214,7 @@ private:
   bool setEyeOffset(const std::vector<float> &frustum);
 
   /** Add an object in the world. */
-  bool addScriptObject(ScriptCreatable &ava, bool in);
+  bool addScriptObject(dueca::ScriptCreatable &ava, bool in);
 
   /** Set the coordinates for an object in the world */
   bool setObjectCoordinates(const std::vector<double> &coord);

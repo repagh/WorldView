@@ -50,7 +50,7 @@ USING_DUECA_NS;
     You can add a --fov=?? flag to match the field of view to the fov
     of your set-up
 
-    This class has been derived from the ScriptCreatable base class,
+    This class has been derived from the dueca::ScriptCreatable base class,
     and has a (scheme) script command to create it and optionally add
     parameters.
 
@@ -59,7 +59,7 @@ USING_DUECA_NS;
 
     \verbinclude flight-gear-viewer.scm
  */
-class FlightGearViewer_Dueca : public ScriptCreatable, public FlightGearViewer
+class FlightGearViewer_Dueca : public dueca::ScriptCreatable, public FlightGearViewer
 {
 private: // simulation data
   // define for internal reference
@@ -78,7 +78,7 @@ public: // construction and further specification
   ~FlightGearViewer_Dueca();
 
   /** Obtain a pointer to the parameter table. */
-  static const ParameterTable *getParameterTable();
+  static const dueca::ParameterTable *getParameterTable();
 
 public:
   /** Default script linkage. */

@@ -1,11 +1,11 @@
 /* ------------------------------------------------------------------   */
 /*      item            : OSGObjectCallback.cxx
-	made by         : Olaf Stroosma / Rene van Paassen
+        made by         : Olaf Stroosma / Rene van Paassen
         date            : 200403
-	category        : body file
+        category        : body file
         description     : base class for script-creatable objects that
-	                  do things in a post-draw callback (e.g. a HUD)
-	changes         : 200327 first version
+                          do things in a post-draw callback (e.g. a HUD)
+        changes         : 200327 first version
         language        : C++
 */
 
@@ -15,14 +15,9 @@
 OSGObjectCallback::OSGObjectCallback() :
   OSGObject(),
   osg::Camera::Camera::DrawCallback()
-{
-  
-}
+{}
 
-OSGObjectCallback::~OSGObjectCallback()
-{
-
-}
+OSGObjectCallback::~OSGObjectCallback() {}
 
 #if 0
 /** Example callback */
@@ -32,7 +27,7 @@ void OSGObjectCallback::operator()(osg::RenderInfo& renderInfo) const
   if(!initialized) {
 
     // do the initialization here
-    
+
     initialized = true;
   }
 
@@ -45,7 +40,7 @@ void OSGObjectCallback::operator()(osg::RenderInfo& renderInfo) const
   renderInfo.setState(ri);
 }
 
-#if DUECA_VERSION_NUM >= DUECA_VERSION(3,2,0)
+#if DUECA_VERSION_NUM >= DUECA_VERSION(3, 2, 0)
 #define OPT(A) , A
 #else
 #define OPT(A)
@@ -59,4 +54,3 @@ static auto OSGObjectCallback_maker = new
   ("mypostdrawcallback" OPT("Post draw callback routine"));
 
 #endif
-

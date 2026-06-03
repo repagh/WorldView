@@ -32,7 +32,7 @@ USING_DUECA_NS;
 
     \verbinclude viewpoint-hack.scm
  */
-class ViewpointHack: public Module
+class ViewpointHack: public dueca::Module
 {
 private: // simulation data
   /** Window with controls */
@@ -44,24 +44,24 @@ private: // channel access
 private: // activity allocation
   /** You might also need a clock. Don't mis-use this, because it is
       generally better to trigger on the incoming channels */
-  PeriodicAlarm        myclock;
+  dueca::PeriodicAlarm        myclock;
 
-  /** Callback object for simulation calculation. */
-  Callback<ViewpointHack>  cb1;
+  /** dueca::Callback object for simulation calculation. */
+  dueca::Callback<ViewpointHack>  cb1;
 
   /** Activity for simulation calculation. */
-  ActivityCallback      do_calc;
+  dueca::ActivityCallback      do_calc;
   
 public: // class name and trim/parameter tables
   /** Name of the module. */
   static const char* const           classname;
 
   /** Return the parameter table. */
-  static const ParameterTable*       getMyParameterTable();
+  static const dueca::ParameterTable*       getMyParameterTable();
   
 public: // construction and further specification
   /** Constructor. Is normally called from scheme/the creation script. */
-  ViewpointHack(Entity* e, const char* part, const PrioritySpec& ts);
+  ViewpointHack(dueca::Entity* e, const char* part, const dueca::PrioritySpec& ts);
 
   /** Continued construction. This is called after all script
       parameters have been read and filled in, according to the
@@ -81,27 +81,27 @@ public: // construction and further specification
   // Delete if not needed!
 
   /** Specify a time specification for the simulation activity. */
-  bool setTimeSpec(const TimeSpec& ts);
+  bool setTimeSpec(const dueca::TimeSpec& ts);
 
   /** Request check on the timing. */
-  bool checkTiming(const vector<int>& i);
+  bool checkTiming(const std::vector<int>& i);
 
 public: // member functions for cooperation with DUECA
   /** indicate that everything is ready. */
   bool isPrepared();
 
   /** start responsiveness to input data. */
-  void startModule(const TimeSpec &time);
+  void startModule(const dueca::TimeSpec &time);
   
   /** stop responsiveness to input data. */
-  void stopModule(const TimeSpec &time);
+  void stopModule(const dueca::TimeSpec &time);
 
   /** position change */
   void changePositionOrientation(GtkSpinButton *widget, gpointer udata);
 
 public: // the member functions that are called for activities
   /** the method that implements the main calculation. */
-  void doCalculation(const TimeSpec& ts);
+  void doCalculation(const dueca::TimeSpec& ts);
 };
 
 #endif

@@ -23,8 +23,8 @@
     entry label and dco class */
 class OgreObjectCompatible: public OgreObject
 {
-  /** Channel read token for motion input */
-  boost::scoped_ptr<ChannelReadToken>     r_motion;
+  /** dueca::Channel read token for motion input */
+  boost::scoped_ptr<dueca::ChannelReadToken>     r_motion;
 
   struct MeshAndGroup {
 
@@ -66,11 +66,11 @@ public:
   /** Connect to a channel entry
 
       @param master_id ID for opening a channel reader
-      @param cname     Channel with object data
+      @param cname     dueca::Channel with object data
       @param entry_id  Entry in the channel */
-  virtual void connect(const GlobalId& master_id, const NameSet& cname,
-                       entryid_type entry_id,
-                       Channel::EntryTimeAspect time_aspect);
+  virtual void connect(const dueca::GlobalId& master_id, const dueca::NameSet& cname,
+                       dueca::entryid_type entry_id,
+                       dueca::Channel::EntryTimeAspect time_aspect);
 
   /** Play, update, recalculate, etc.
 
@@ -78,7 +78,7 @@ public:
       @param base      Movement of the base object, extrapolated if applicable
       @param late      Time elapsed since ts start tick
    */
-  void iterate(TimeTickType ts, const BaseObjectMotion& base, double late, bool freeze) override;
+  void iterate(dueca::TimeTickType ts, const BaseObjectMotion& base, double late, bool freeze) override;
 };
 
 #endif

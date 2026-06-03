@@ -2,9 +2,9 @@
 /*      item            : OSGObjectMoving.cxx
         made by         : Rene' van Paassen
         date            : 180903
-	category        : body file
+        category        : body file
         description     :
-	changes         : 180903 first version
+        changes         : 180903 first version
         language        : C++
         copyright       : (c) 18 TUDelft-AE-C&S
 */
@@ -18,14 +18,16 @@
 #include "OSGObjectFactory.hxx"
 #include <osg/PositionAttitudeTransform>
 
-struct OSGObjectConfigError: public std::exception
+using namespace dueca;
+using namespace std;
+
+struct OSGObjectConfigError : public std::exception
 {
   /** Say what is the problem */
-  const char* what() { return "Incorrect configuration object"; }
+  const char *what() { return "Incorrect configuration object"; }
 };
 
-
-OSGObjectMoving::OSGObjectMoving(const WorldDataSpec& spec) :
+OSGObjectMoving::OSGObjectMoving(const WorldDataSpec &spec) :
   OSGObject(),
   r_motion()
 {
@@ -33,34 +35,29 @@ OSGObjectMoving::OSGObjectMoving(const WorldDataSpec& spec) :
   this->name = spec.name;
 }
 
+OSGObjectMoving::~OSGObjectMoving() {}
 
-OSGObjectMoving::~OSGObjectMoving()
-{
-
-}
-
-void OSGObjectMoving::connect(const GlobalId& master_id, const NameSet& cname,
+void OSGObjectMoving::connect(const GlobalId &master_id, const NameSet &cname,
                               entryid_type entry_id,
                               Channel::EntryTimeAspect time_aspect)
 {
-  r_motion.reset(new ChannelReadToken
-                 (master_id, cname, BaseObjectMotion::classname, entry_id,
-                  time_aspect, Channel::OneOrMoreEntries,
-                  Channel::JumpToMatchTime));
+  r_motion.reset(new ChannelReadToken(
+    master_id, cname, BaseObjectMotion::classname, entry_id, time_aspect,
+    Channel::OneOrMoreEntries, Channel::JumpToMatchTime));
 }
 
-void OSGObjectMoving::iterate(TimeTickType ts,
-                              const BaseObjectMotion& base,
+void OSGObjectMoving::iterate(TimeTickType ts, const BaseObjectMotion &base,
                               double late, bool freeze)
 {
   if (r_motion->isValid() && entity != NULL) {
     try {
-      DataReader<BaseObjectMotion,MatchIntervalStartOrEarlier>
-        r(*r_motion, ts);
+      DataReader<BaseObjectMotion, MatchIntervalStartOrEarlier> r(*r_motion,
+                                                                  ts);
       if (r.data().dt != 0.0) {
         BaseObjectMotion o2(r.data());
-        double textra = DataTimeSpec
-          (r.timeSpec().getValidityStart(), ts).getDtInSeconds() + late;
+        double textra =
+          DataTimeSpec(r.timeSpec().getValidityStart(), ts).getDtInSeconds() +
+          late;
         if (textra > 0.0) {
           o2.extrapolate(textra);
         }
@@ -72,19 +69,19 @@ void OSGObjectMoving::iterate(TimeTickType ts,
         transform->setAttitude(AxisTransform::osgQuat(r.data().attitude_q));
       }
     }
-    catch (const std::exception& e) {
-      W_MOD("Cannot read OSGObjectCompatible data for object " <<
-            name << " error " << e.what());
+    catch (const std::exception &e) {
+      W_MOD("Cannot read OSGObjectCompatible data for object "
+            << name << " error " << e.what());
     }
   }
 }
 
-#if DUECA_VERSION_NUM >= DUECA_VERSION(3,2,0)
+#if DUECA_VERSION_NUM >= DUECA_VERSION(3, 2, 0)
 #define OPT(A) , A
 #else
 #define OPT(A)
 #endif
 
-static auto OSGObjectMoving_maker = new
-  SubContractor<OSGObjectTypeKey,OSGObjectMoving>
-  ("moving" OPT("Moving object, defined by single model, controlled"));
+static auto OSGObjectMoving_maker =
+  new SubContractor<OSGObjectTypeKey, OSGObjectMoving>(
+    "moving" OPT("Moving object, defined by single model, controlled"));

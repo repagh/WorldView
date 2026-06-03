@@ -19,7 +19,8 @@
 
 #define DO_INSTANTIATE
 #include <dueca/dueca.h>
-
+using namespace std;
+using namespace dueca;
 
 // static map object
 std::map<std::string,OgreObjectCompatible::MeshAndGroup>

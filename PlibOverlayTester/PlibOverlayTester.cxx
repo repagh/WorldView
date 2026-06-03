@@ -33,6 +33,7 @@ static const char c_id[] =
 // the standard package for DUSIME, including template source
 #define DO_INSTANTIATE
 #include <dueca.h>
+using namespace std;
 #include <Entity.hxx>
 #include <MemberCall2Way.hxx>
 

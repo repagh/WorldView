@@ -50,7 +50,7 @@ USING_DUECA_NS;
     more useful applications, e.g. instrument overlays or HUD
     overlays. 
    
-    This class has been derived from the ScriptCreatable base class,
+    This class has been derived from the dueca::ScriptCreatable base class,
     and has a (scheme) script command to create it and optionally add
     parameters.
 
@@ -59,7 +59,7 @@ USING_DUECA_NS;
 
     \verbinclude plib-test-overlay.scm
  */
-class PlibTestOverlay: public ScriptCreatable, public PlibObject
+class PlibTestOverlay: public dueca::ScriptCreatable, public PlibObject
 {
 private: // simulation data
 
@@ -82,7 +82,7 @@ public: // construction and further specification
   ~PlibTestOverlay();
 
   /** Obtain a pointer to the parameter table. */
-  static const ParameterTable* getParameterTable();
+  static const dueca::ParameterTable* getParameterTable();
 
 public:
   /** Select the next message, function called by my controlling module. */

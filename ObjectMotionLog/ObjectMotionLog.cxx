@@ -44,6 +44,7 @@ typedef Eigen::Map<Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::Row
 // the standard package for DUSIME, including template source
 #define DO_INSTANTIATE
 #include <dusime.h>
+using namespace std;
 
 ObjectMotionLog::LoggedData::LoggedData(int npoints) :
   count(0),

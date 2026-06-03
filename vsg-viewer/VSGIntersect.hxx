@@ -27,8 +27,8 @@ namespace vsgviewer {
         locality */
     vsg::ref_ptr<vsg::AbsoluteTransform> rev_transform;
 
-    /** Channel token for sending intersector data */
-    boost::scoped_ptr<ChannelWriteToken>       w_intersects;
+    /** dueca::Channel token for sending intersector data */
+    boost::scoped_ptr<dueca::ChannelWriteToken>       w_intersects;
 
   public:
     /** Constructor.
@@ -49,9 +49,9 @@ namespace vsgviewer {
               VSGViewer* master);
 
     /** Connect to the DUECA system */
-    void connect(const GlobalId& master_id, const NameSet& cname,
-                 entryid_type entry_id,
-                 Channel::EntryTimeAspect time_aspect);
+    void connect(const dueca::GlobalId& master_id, const dueca::NameSet& cname,
+                 dueca::entryid_type entry_id,
+                 dueca::Channel::EntryTimeAspect time_aspect);
   };
 
 }; // namespace

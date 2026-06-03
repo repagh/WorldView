@@ -26,6 +26,7 @@
 #include <dueca/debug.h>
 
 using namespace std;
+using namespace dueca;
 
 /** Hidden object for X implementation, to prevent all kinds of
     #define trouble */

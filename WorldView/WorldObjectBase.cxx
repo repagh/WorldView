@@ -11,6 +11,7 @@
 #include "DataTimeSpec.hxx"
 #define WorldObjectBase_cxx
 #include "WorldObjectBase.hxx"
+using namespace dueca;
 
 #ifndef USE_BOOST_IRC
 void intrusive_ptr_add_ref(WorldObjectBase *t) { t->intrusive_refcount++; }

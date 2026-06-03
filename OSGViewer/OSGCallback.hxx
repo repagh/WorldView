@@ -19,7 +19,7 @@
 USING_DUECA_NS;
 
 /** A script-creatable post-draw callback object for e.g. HUDs. */
-class OSGCallback: public ScriptCreatable, public osg::Camera::Camera::DrawCallback
+class OSGCallback: public dueca::ScriptCreatable, public osg::Camera::Camera::DrawCallback
 {
 protected:
   
@@ -34,7 +34,7 @@ public: // osg::Camera::DrawCallback
   /** Actual callback function, called by renderer. */
   virtual void operator()(osg::RenderInfo& renderInfo) const;
  
-public: // ScriptCreatable
+public: // dueca::ScriptCreatable
   /** This is a scheme-level callable class */
   SCM_FEATURES_DEF;
   

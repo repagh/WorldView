@@ -33,6 +33,9 @@
 #define DEB(A)
 #endif
 
+using namespace dueca;
+using namespace std;
+
 /** Possibility to wait for video sync */
 static PFNGLXWAITVIDEOSYNCSGIPROC glXWaitVideoSyncSGI = NULL;
 

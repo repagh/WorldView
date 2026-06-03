@@ -172,7 +172,7 @@ private:
   osg::Camera::Camera::DrawCallback *global_draw_callback;
 
   /** View-specific draw callbacks, per viewspec name. */
-  std::map<string, osg::Camera::Camera::DrawCallback *> draw_callbacks;
+  std::map<std::string, osg::Camera::Camera::DrawCallback *> draw_callbacks;
 
 public:
   /** Setting of global draw callback. */
@@ -182,7 +182,7 @@ public:
   }
 
   /** Setting of viewspec-specific draw callback. */
-  void setDrawCallback(const string &view_spec_name,
+  void setDrawCallback(const std::string &view_spec_name,
                        osg::Camera::Camera::DrawCallback *cb);
 
   /** Set a view-specific draw callback. If the view is not specified,
@@ -211,16 +211,16 @@ public:
   void addWindow(const WinSpec &window) { winspec.push_back(window); }
 
   /** set the base camera position */
-  void setBase(TimeTickType tick, const BaseObjectMotion &base, double late,
+  void setBase(dueca::TimeTickType tick, const BaseObjectMotion &base, double late,
                bool freeze) final;
 
   /** Create a controllable object. Object creation depends on class of
       data supplied, further init may rely on fist data entering. */
-  bool createControllable(const GlobalId &master_id, const NameSet &cname,
-                          entryid_type entry_id, uint32_t creation_id,
+  bool createControllable(const dueca::GlobalId &master_id, const dueca::NameSet &cname,
+                          dueca::entryid_type entry_id, uint32_t creation_id,
                           const std::string &data_class,
                           const std::string &entry_label,
-                          Channel::EntryTimeAspect time_aspect);
+                          dueca::Channel::EntryTimeAspect time_aspect);
 
   /** Remove a controllable */
   void removeControllable(const dueca::NameSet &cname, uint32_t creation_id);

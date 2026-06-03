@@ -30,6 +30,7 @@ static const char c_id[] =
 // the standard package for DUSIME, including template source
 #define DO_INSTANTIATE
 #include <dusime.h>
+using namespace std;
 
 // class/module name
 const char *const VisualTestDrive::classname = "visual-test-drive";

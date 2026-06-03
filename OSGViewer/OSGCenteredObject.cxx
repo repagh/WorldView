@@ -10,12 +10,12 @@
 
 #define OSGCenteredObject_cxx
 #include "OSGCenteredObject.hxx"
-#include "RvPQuat.hxx"
 #include "OSGObjectFactory.hxx"
 #include "AxisTransform.hxx"
-#include <cstring>
-#include <algorithm>
 #include <osg/PositionAttitudeTransform>
+
+using namespace dueca;
+using namespace std;
 
 OSGCenteredObject::OSGCenteredObject(const WorldDataSpec &specification) :
   OSGStaticObject(specification)

@@ -30,7 +30,7 @@ USING_DUECA_NS;
     objects, once created, are understood by the OgreViewer class and
     can be fed with the appropriate data from DUECA.
 
-    This class has been derived from the ScriptCreatable base class,
+    This class has been derived from the dueca::ScriptCreatable base class,
     and has a (scheme) script command to create it and optionally add
     parameters.
 
@@ -39,7 +39,7 @@ USING_DUECA_NS;
 
     \verbinclude dueca-ogre-attachment.scm
  */
-class OgreObject_Dueca: public ScriptCreatable, public OgreObject
+class OgreObject_Dueca: public dueca::ScriptCreatable, public OgreObject
 {
   
 public:
@@ -55,7 +55,7 @@ public:
   bool complete();
 
   /** Obtain a pointer to the parameter table. */
-  static const ParameterTable* getParameterTable();
+  static const dueca::ParameterTable* getParameterTable();
 
 public:
   /** Default script linkage. */
