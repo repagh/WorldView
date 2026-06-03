@@ -20,7 +20,7 @@
 #include "comm-objects.h"
 
 /** Map type for keeping track of objects in this world */
-typedef pair<WorldObjectBase*, unsigned int> ControlledWithCount;
+typedef std::pair<WorldObjectBase*, unsigned int> ControlledWithCount;
 typedef std::map<std::string,ControlledWithCount> ControllablesMap;
 
 /** Set for keeping track of object classes I cannot make */
@@ -30,7 +30,7 @@ class WorldView;
 /** This is a base class for viewer classes based on different scene
     graphing or graphics toolkits.
 
-    The base class is derived from ScriptCreatable, so it is connected
+    The base class is derived from dueca::ScriptCreatable, so it is connected
     to dueca scripting, but is not creatable, since it contains pure
     virtual functions.
 */
@@ -79,7 +79,7 @@ public: /* per-cycle interaction, updating viewpoint and drawing */
       @param tick  DUECA current time tick
       @param base  Object motion, position, etc.
       @param late  Time after DUECA tick */
-  virtual void setBase(TimeTickType tick, const BaseObjectMotion& base,
+  virtual void setBase(dueca::TimeTickType tick, const BaseObjectMotion& base,
                        double late, bool freeze) = 0;
 
   /** Set drawing context current; possibly needed when multiple GL windows

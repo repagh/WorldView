@@ -4,8 +4,8 @@
 	from template   : DuecaHelperTemplate.hxx
         template made by: Rene van Paassen
         date            : Mon Jan 25 15:47:13 2010
-	category        : header file 
-        description     : 
+	category        : header file
+        description     :
 	changes         : Mon Jan 25 15:47:13 2010 first version
 	template changes: 050825 RvP Added template creation comment
         language        : C++
@@ -25,24 +25,24 @@
 USING_DUECA_NS;
 
 /** A class definition for a DUECA helper class
-    
-    This class has been derived from the ScriptCreatable base class,
+
+    This class has been derived from the dueca::ScriptCreatable base class,
     and has a (scheme) script command to create it and optionally add
     parameters. This class encapsulates the OgreViewer objects, in
-    this way these can be made from a dueca script. 
+    this way these can be made from a dueca script.
 
     The helper class controls the parent OgreViewer class. There are a
     number of steps to take before you can produce a view:
 
     <ol>
-    <li> Create one or more windows; set window size and optionally position 
+    <li> Create one or more windows; set window size and optionally position
 
     <li> Within the windows, select viewports
 
     <li> Each viewport can have an eye offset; basically from the
          "vehicle" or "head" position you send, a viewport can look
          more left, right, etc.
-    
+
     <li> Each viewport needs a frustum definition
 
     <li> Load a scene file with the world
@@ -62,19 +62,19 @@ USING_DUECA_NS;
               then be OgreObjectMoving, and the third is the
               group/mesh combination.
 
-         <li> Compatibility objects, controlled with the old ObjectMotion 
+         <li> Compatibility objects, controlled with the old ObjectMotion
               entry. These have a "klass" and a "name" parameter, the "klass"
-              parameter will provide the link to the mesh, use the 
-              "add-object-class" parameter. 
-              
-         <li> Carried objects. These move or are placed relative to the 
-              viewpoints. In that case, use an OgreObjectCarried class to 
-              "add-object-class-data", and specify like normal single-mesh 
-              objects. 
-         
+              parameter will provide the link to the mesh, use the
+              "add-object-class" parameter.
+
+         <li> Carried objects. These move or are placed relative to the
+              viewpoints. In that case, use an OgreObjectCarried class to
+              "add-object-class-data", and specify like normal single-mesh
+              objects.
+
          <li> Custom objects. It is possible to add objects to this system,
-              using the SubContractor scheme. 
-     
+              using the SubContractor scheme.
+
          </ul>
 
     </li>
@@ -83,14 +83,14 @@ USING_DUECA_NS;
     or Python script are:
 
     \verbinclude ogre-viewer-dueca.scm
-    
+
  */
-class OgreViewer_Dueca: public ScriptCreatable, public OgreViewer
+class OgreViewer_Dueca: public dueca::ScriptCreatable, public OgreViewer
 {
 private: // simulation data
   /** self-define the module type, to ease writing the parameter table */
   typedef OgreViewer_Dueca _ThisObject_;
-  
+
 public: // construction and further specification
   /** Constructor. Is normally called from scheme/the creation script. */
   OgreViewer_Dueca();
@@ -104,7 +104,7 @@ public: // construction and further specification
   ~OgreViewer_Dueca();
 
   /** Obtain a pointer to the parameter table. */
-  static const ParameterTable* getParameterTable();
+  static const dueca::ParameterTable* getParameterTable();
 
 private:
   /** Specification of a viewport */
@@ -124,10 +124,10 @@ private:
 
   /** Specify a viewport */
   bool addViewport(const std::string& viewport);
-  
+
   /** Viewport window */
   bool setViewportWindow(const std::string& vp_window);
-  
+
   /** Viewport size */
   bool setViewportSize(const std::vector<int>& vpwin_size);
 
@@ -145,31 +145,31 @@ private:
 
   /** Currently handled objectclass */
   std::string latest_classdata;
-  
+
   /** Linking objects to movement data */
   bool addObjectClassData(const std::vector<std::string>& link);
 
   /** Linking objects to movement data */
   bool addObjectClassCoordinates(const std::vector<double>& l);
-  
+
   /** Add a scene */
   bool addScene(const std::vector<std::string>& sc);
-  
+
   /** Add a resource location */
   bool addResourceLocation(const std::vector<std::string>& rl);
-  
+
   /** Set rendering of shadows on (TRUE) or off (FALSE). Only tested and working for OGRE for now */
   bool addShadows(const bool& render_shadows);
-  
+
   /** set the shadow renderer technique you want to use - STENCIL or TEXTURE */
-  bool setShadowRenderer(const string& render_technique);
-  
+  bool setShadowRenderer(const std::string& render_technique);
+
   /** set the shadow colour you want, using r, g, b values to set the colour */
   bool setShadowColour(const std::vector<float>& colour);
-  
+
   /** set the shadow render distance */
   bool setShadowFarDistance(const float& distance);
-  
+
 public:
   /** Default script linkage. */
   SCM_FEATURES_DEF;

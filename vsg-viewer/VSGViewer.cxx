@@ -27,6 +27,8 @@ extern int *p_argc;
 extern char ***p_argv;
 } // namespace dueca
 
+using namespace dueca;
+
 namespace vsg {
   /** Could not initially find one? Frustum projection for VSG */
 class VSG_DECLSPEC FrustumPerspective :

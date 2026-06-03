@@ -30,6 +30,7 @@
 // the standard package for DUSIME, including template source
 #define DO_INSTANTIATE
 #include <dueca.h>
+using namespace std;
 
 // class/module name
 const char *const ControlView::classname = "control-view";

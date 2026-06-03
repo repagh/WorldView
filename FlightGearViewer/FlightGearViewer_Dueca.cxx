@@ -31,7 +31,8 @@ static const char c_id[] =
 #define E_MOD
 #include <debug.h>
 
-USING_DUECA_NS;
+using namespace dueca;
+using namespace std;
 
 // Parameters to be inserted
 const ParameterTable *FlightGearViewer_Dueca::getParameterTable()

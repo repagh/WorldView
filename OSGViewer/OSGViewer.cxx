@@ -39,6 +39,7 @@ namespace {
 
 using namespace osg;
 using namespace std;
+using namespace dueca;
 
 OSGViewer::ViewSet::ViewSet() :
   camera(NULL),

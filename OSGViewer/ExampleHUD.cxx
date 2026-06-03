@@ -2,11 +2,11 @@
 /*      item            : ExampleHUD.cxx
         made by         : Rene' van Paassen
         date            : 190430
-	category        : body file 
-        description     : 
-	changes         : 190430 first version
+        category        : body file
+        description     :
+        changes         : 190430 first version
         language        : C++
-	copyright       : (c) 2019 TUDelft-AE-C&S
+        copyright       : (c) 2019 TUDelft-AE-C&S
 */
 
 #define ExampleHUD_cxx
@@ -22,6 +22,8 @@ typedef rapidjson::Document JDocument;
 typedef rapidjson::Value JValue;
 
 #if 0
+using namespace dueca;
+using namespace std;
 
 ExampleHUD::ExampleHUD(const WorldDataSpec& spec) :
   WorldObjectBase(),
@@ -66,20 +68,20 @@ void ExampleHUD::init(const osg::ref_ptr<osg::Group>& root, OSGViewer* master)
 
   // get the master camera for this window, either first, or as given by
   osg::ref_ptr<osg::Camera> mastercam = master->getMainCamera(wname, vname);
-  
+
   // set the projection matrix (adjust?)
   camera->setProjectionMatrix(osg::Matrix::ortho2D(-500, 500, -500, 500));
 
   // set the view matrix
   camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
   camera->setViewMatrix(osg::Matrix::identity());
-  
+
   // only clear the depth buffer
   camera->setClearMask(GL_DEPTH_BUFFER_BIT);
-  
+
   // draw subgraph after main camera view.
   camera->setRenderOrder(osg::Camera::POST_RENDER);
-  
+
   // we don't want the camera to grab event focus from the viewers
   // main camera(s).
   camera->setAllowEventFocus(false);
@@ -100,14 +102,14 @@ void ExampleHUD::init(const osg::ref_ptr<osg::Group>& root, OSGViewer* master)
     {
       text = new  osgText::Text;
       geode->addDrawable( text );
-      
+
       text->setFont(timesFont);
       text->setPosition(position);
       std::stringstream spd; spd << "speed" << 100;
       text->setText(spd.str().c_str());
     }
 
-    
+
     // transform
     transform = new osg::PositionAttitudeTransform();
     geode->addChild(transform);
@@ -123,17 +125,17 @@ void ExampleHUD::init(const osg::ref_ptr<osg::Group>& root, OSGViewer* master)
     vertices->push_back(osg::Vec3(-200, -40, depth));
     vertices->push_back(osg::Vec3( 200, -40, depth));
     hline->setVertexArray(vertices);
-    
+
     osg::Vec3Array* normals = new osg::Vec3Array;
     normals->push_back(osg::Vec3(0.0f,0.0f,1.0f));
     hline->setNormalArray(normals, osg::Array::BIND_OVERALL);
-    
+
     osg::Vec4Array* colors = new osg::Vec4Array;
     colors->push_back(osg::Vec4(1.0f,1.0,0.8f,0.2f));
     hline->setColorArray(colors, osg::Array::BIND_OVERALL);
 
     hline->addPrimitiveSet(new osg::DrawArrays(GL_LINES,0,3));
-    
+
     osg::StateSet* ss = hline->getOrCreateStateSet();
     ss->setMode(GL_BLEND,osg::StateAttribute::ON);
     ss->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
@@ -143,7 +145,7 @@ void ExampleHUD::init(const osg::ref_ptr<osg::Group>& root, OSGViewer* master)
 
   camera->setGraphicsContext(mastercam->getGraphicsContext());
   camera->setViewport(mastercam->getViewport());
-  
+
   camera->addChild(transform);
 
   //viewer->addSlave(camera, false);

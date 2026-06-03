@@ -50,7 +50,7 @@ public:
   ~PlibCenteredObject();
 
   /** Play, update, recalculate, etc. */
-  virtual void iterate(TimeTickType ts,
+  virtual void iterate(dueca::TimeTickType ts,
                        const BaseObjectMotion& base, double late);
 
   /** Returns true if the object needs information on the observer
@@ -70,7 +70,7 @@ public:
   ~PlibTiledObject();
   
   /** Play, update, recalculate, etc. */
-  virtual void iterate(TimeTickType ts,
+  virtual void iterate(dueca::TimeTickType ts,
                        const BaseObjectMotion& base, double late);
 
   /** Returns true if the object needs information on the observer

@@ -58,7 +58,7 @@ USING_DUECA_NS;
     cursor events from the window(s) opened. This currently only works
     with the PlibViewer.
  */
-class WorldView : public Module
+class WorldView : public dueca::Module
 {
   /** self-define the module type, to ease writing the parameter table */
   typedef WorldView _ThisModule_;
@@ -82,7 +82,7 @@ private: // simulation data
   bool do_init;
 
   /** Flag to maybe keep running */
-  TimeTickType run_until;
+  dueca::TimeTickType run_until;
 
   /** Maximum prediction time */
   double max_predict;
@@ -101,23 +101,23 @@ private: // simulation data
 
 private: // dueca configuration calls
   /** Function call that adds an object to the scene. */
-  bool addObject(ScriptCreatable &ava, bool in);
+  bool addObject(dueca::ScriptCreatable &ava, bool in);
 
   /** Function call that sets the viewer object. */
-  bool setViewer(ScriptCreatable &ava, bool in);
+  bool setViewer(dueca::ScriptCreatable &ava, bool in);
 
   /** Set the initial camera position */
-  bool initialCamera(const vector<float> &i);
+  bool initialCamera(const std::vector<float> &i);
 
 private: // channel access
-  /** Channel with position and rates. Position as quaternion */
-  boost::scoped_ptr<ChannelReadToken> r_own;
+  /** dueca::Channel with position and rates. Position as quaternion */
+  boost::scoped_ptr<dueca::ChannelReadToken> r_own;
 
-  /** Channel watcher list, monitors one or more channels for
+  /** dueca::Channel watcher list, monitors one or more channels for
       compatible entries. */
   typedef std::list<boost::shared_ptr<ChannelWatcher>> watcher_list_t;
 
-  /** Channel watcher for the other entities */
+  /** dueca::Channel watcher for the other entities */
   watcher_list_t m_others;
 
   /** Flag to remember if the watcher list has been explicitly called */
@@ -131,44 +131,44 @@ private: // channel access
     /** Desired events */
     unsigned eventmask;
     /** channel token */
-    boost::shared_ptr<ChannelWriteToken> w_event;
+    boost::shared_ptr<dueca::ChannelWriteToken> w_event;
   };
 
   /** Channels for sending the pointer and keyboard events */
   std::list<EventFeedback> w_events;
 
-  /** Channel for receiving on-line configuration events */
-  ChannelReadToken r_config;
+  /** dueca::Channel for receiving on-line configuration events */
+  dueca::ChannelReadToken r_config;
 
   /** Follow DUSIME states */
-  boost::scoped_ptr<ChannelReadToken> r_dusime;
+  boost::scoped_ptr<dueca::ChannelReadToken> r_dusime;
 
   /** Send back world contact information */
-  boost::scoped_ptr<ChannelWriteToken> w_worldinfo;
+  boost::scoped_ptr<dueca::ChannelWriteToken> w_worldinfo;
 
 private: // activity allocation
-  /** Callback object for simulation calculation. */
-  Callback<WorldView> cb1;
+  /** dueca::Callback object for simulation calculation. */
+  dueca::Callback<WorldView> cb1;
 
   /** Activity for simulation calculation. */
-  ActivityCallback do_calc;
+  dueca::ActivityCallback do_calc;
 
   /** Clock */
-  PeriodicAlarm myclock;
+  dueca::PeriodicAlarm myclock;
 
   /** Clock */
-  AperiodicAlarm myalarm;
+  dueca::AperiodicAlarm myalarm;
 
 public: // class name and trim/parameter tables
   /** Name of the module. */
   static const char *const classname;
 
   /** Return the parameter table. */
-  static const ParameterTable *getMyParameterTable();
+  static const dueca::ParameterTable *getMyParameterTable();
 
 public: // construction and further specification
   /** Constructor. Is normally called from scheme/the creation script. */
-  WorldView(Entity *e, const char *part, const PrioritySpec &ts);
+  WorldView(dueca::Entity *e, const char *part, const dueca::PrioritySpec &ts);
 
   /** Continued construction. This is called after all script
       parameters have been read and filled in, according to the
@@ -188,7 +188,7 @@ public: // construction and further specification
   // Delete if not needed!
 
   /** Specify a time specification for the simulation activity. */
-  bool setTimeSpec(const TimeSpec &ts);
+  bool setTimeSpec(const dueca::TimeSpec &ts);
 
   /** Request check on the timing. */
   bool checkTiming(const std::vector<int> &i);
@@ -213,17 +213,17 @@ public: // member functions for cooperation with DUECA
   bool isPrepared();
 
   /** start responsiveness to input data. */
-  void startModule(const TimeSpec &time);
+  void startModule(const dueca::TimeSpec &time);
 
   /** stop responsiveness to input data. */
-  void stopModule(const TimeSpec &time);
+  void stopModule(const dueca::TimeSpec &time);
 
   /** access feedback to world */
   inline WorldContact &worldFeedback() { return worldinfo; }
 
 public: // the member functions that are called for activities
   /** the method that implements the main calculation. */
-  void doCalculation(const TimeSpec &ts);
+  void doCalculation(const dueca::TimeSpec &ts);
 };
 
 #endif

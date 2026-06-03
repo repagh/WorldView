@@ -81,11 +81,11 @@ private:
 
 private:
   /** Latest tick according to update call */
-  TimeTickType current_tick;
+  dueca::TimeTickType current_tick;
 
 protected:
   /** Age to keep multiplayer clients active */
-  TimeTickType retain_age;
+  dueca::TimeTickType retain_age;
 
   /** Flag to dump communication */
   bool debugdump;
@@ -149,7 +149,7 @@ public:
       @param base  Object motion, position, etc.
       @param late  Time after DUECA tick
       @param freeze Frozen simulation, suppress extrapolation */
-  void setBase(TimeTickType tick, const BaseObjectMotion &base, double late,
+  void setBase(dueca::TimeTickType tick, const BaseObjectMotion &base, double late,
                bool freeze);
 
   /** Initialise the windows etc. */
@@ -169,7 +169,7 @@ public:
   void waitSwap();
 
     /** Set the origin point for a local coordinate system */
-  bool setLatLonAltPsi0(const vector<double> &vec);
+  bool setLatLonAltPsi0(const std::vector<double> &vec);
 
   /** Send other object data */
   inline MultiplayerEncode &getEncoder() const { return *encoder; }
@@ -214,11 +214,11 @@ from the map when the entry is removed from the channel. */
 
   /** Create a controllable object. Object creation depends on class of
       data supplied, further init may rely on fist data entering. */
-  bool createControllable(const GlobalId &master_id, const NameSet &cname,
-                          entryid_type entry_id, uint32_t creation_id,
+  bool createControllable(const dueca::GlobalId &master_id, const dueca::NameSet &cname,
+                          dueca::entryid_type entry_id, uint32_t creation_id,
                           const std::string &data_class,
                           const std::string &entry_label,
-                          Channel::EntryTimeAspect time_aspect);
+                          dueca::Channel::EntryTimeAspect time_aspect);
 
   /** Remove a controllable */
   void removeControllable(const dueca::NameSet &cname, uint32_t creation_id);

@@ -39,6 +39,7 @@
 #include <Entity.hxx>
 #include <MemberCall2Way.hxx>
 #include <dusime.h>
+using namespace std;
 
 // X is a quite vicious header. include last
 #include <X11/Xlib.h>

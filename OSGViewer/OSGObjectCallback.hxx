@@ -32,9 +32,9 @@ USING_DUECA_NS;
       This is the OSD post draw callback function. 
 
     - @code
-      void connect(const GlobalId& master_id, const NameSet& cname,
-                   entryid_type entry_id,
-                   Channel::EntryTimeAspect time_aspect);
+      void connect(const dueca::GlobalId& master_id, const dueca::NameSet& cname,
+                   dueca::entryid_type entry_id,
+                   dueca::Channel::EntryTimeAspect time_aspect);
       @endcode
 
       Use this function to connect to the data entry in the 
@@ -49,7 +49,7 @@ USING_DUECA_NS;
       this to install the callback
 
     - @code
-      void iterate(TimeTickType ts, const BaseObjectMotion& base,
+      void iterate(dueca::TimeTickType ts, const BaseObjectMotion& base,
                    double late);
       @endcode
 

@@ -20,6 +20,8 @@
 #include <osgDB/ReadFile>
 #include <iostream>
 
+using namespace dueca;
+using namespace std;
 #define DEB(A) std::cerr << A << std::endl;
 
 // GL light counter

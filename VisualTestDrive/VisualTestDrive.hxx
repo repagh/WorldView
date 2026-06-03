@@ -35,7 +35,7 @@ USING_DUECA_NS;
 
     \verbinclude visual-test-drive.scm
 */
-class VisualTestDrive : public SimulationModule
+class VisualTestDrive : public dueca::SimulationModule
 {
   typedef VisualTestDrive _ThisModule_;
 
@@ -50,11 +50,11 @@ private: // simulation data
     ObjectMotion moving;
 
         /* channel token pointer for writing the results */
-    ChannelWriteToken *w_entity;
+    dueca::ChannelWriteToken *w_entity;
 
     /** Constructor, with initial motion object and token pointer */
     MotionSet(const ObjectMotion &i,
-              ChannelWriteToken *w_entity) :
+              dueca::ChannelWriteToken *w_entity) :
       initial(i),
       moving(i),
       w_entity(w_entity)
@@ -100,14 +100,14 @@ private: // simulation data
     /** Moving and flapping aircraft motion */
     FGBaseAircraftMotion moving;
 
-    /** Channel write token */
-    boost::scoped_ptr<ChannelWriteToken> w_entry;
+    /** dueca::Channel write token */
+    boost::scoped_ptr<dueca::ChannelWriteToken> w_entry;
 
     /** Constructor, with only motion object and token pointer */
-    FlightGearTestSet(const WorldDataSpec &i, Module* module);
+    FlightGearTestSet(const WorldDataSpec &i, dueca::Module* module);
 
     /** Advance step */
-    void advance(const DataTimeSpec& ts, bool move);
+    void advance(const dueca::DataTimeSpec& ts, bool move);
   };
 
   /** Flightgear enabled test sets*/
@@ -145,35 +145,35 @@ private: // trim calculation data
 private: // snapshot data
   // declare, if you need, the room for placing snapshot data
 private: // channel access
-  // declare StreamChannelReadToken<Type>, StreamChannelWriteToken<Type>
-  // EventChannelReadToken<Type>, EventChannelWriteToken<Type>
+  // declare dueca::StreamChannelReadToken<Type>, dueca::StreamChannelWriteToken<Type>
+  // dueca::EventChannelReadToken<Type>, dueca::EventChannelWriteToken<Type>
   // access tokens for all the channels you read and write
   // example
-  ChannelWriteToken w_ego;
+  dueca::ChannelWriteToken w_ego;
 
 private: // activity allocation
-  /** Callback object for simulation calculation. */
-  Callback<VisualTestDrive> cb1;
+  /** dueca::Callback object for simulation calculation. */
+  dueca::Callback<VisualTestDrive> cb1;
 
   /** Activity for simulation calculation. */
-  ActivityCallback do_calc;
+  dueca::ActivityCallback do_calc;
 
   /** Clock */
-  PeriodicAlarm myclock;
+  dueca::PeriodicAlarm myclock;
 
 public: // class name and trim/parameter tables
   /** Name of the module. */
   static const char *const classname;
 
   /** Return the initial condition table. */
-  static const IncoTable *getMyIncoTable();
+  static const dueca::IncoTable *getMyIncoTable();
 
   /** Return the parameter table. */
-  static const ParameterTable *getMyParameterTable();
+  static const dueca::ParameterTable *getMyParameterTable();
 
 public: // construction and further specification
   /** Constructor. Is normally called from scheme/the creation script. */
-  VisualTestDrive(Entity *e, const char *part, const PrioritySpec &ts);
+  VisualTestDrive(dueca::Entity *e, const char *part, const dueca::PrioritySpec &ts);
 
   /** Continued construction. This is called after all script
       parameters have been read and filled in, according to the
@@ -193,40 +193,40 @@ public: // construction and further specification
    // Delete if not needed!
 
   /** Specify a time specification for the simulation activity. */
-  bool setTimeSpec(const TimeSpec &ts);
+  bool setTimeSpec(const dueca::TimeSpec &ts);
 
   /** Request check on the timing. */
-  bool checkTiming(const vector<int> &i);
+  bool checkTiming(const std::vector<int> &i);
 
 public: // member functions for cooperation with DUECA
   /** indicate that everything is ready. */
   bool isPrepared();
 
   /** start responsiveness to input data. */
-  void startModule(const TimeSpec &time);
+  void startModule(const dueca::TimeSpec &time);
 
     /** stop responsiveness to input data. */
-  void stopModule(const TimeSpec &time);
+  void stopModule(const dueca::TimeSpec &time);
 
 public: // the member functions that are called for activities
   /** the method that implements the main calculation. */
-  void doCalculation(const TimeSpec &ts);
+  void doCalculation(const dueca::TimeSpec &ts);
 
 public: // member functions for cooperation with DUSIME
-  /** For the Snapshot capability, fill the snapshot "snap" with the
+  /** For the dueca::Snapshot capability, fill the snapshot "snap" with the
       data saved at a point in your simulation (if from_trim is false)
       or with the state data calculated in the trim calculation (if
       from_trim is true). */
-  void fillSnapshot(const TimeSpec &ts, Snapshot &snap, bool from_trim);
+  void fillSnapshot(const dueca::TimeSpec &ts, dueca::Snapshot &snap, bool from_trim);
 
     /** Restoring the state of the simulation from a snapshot. */
-  void loadSnapshot(const TimeSpec &t, const Snapshot &snap);
+  void loadSnapshot(const dueca::TimeSpec &t, const dueca::Snapshot &snap);
 
   /** Perform a trim calculation. Should NOT use current state
       uses event channels parallel to the stream data channels,
       calculates, based on the event channel input, the steady state
       output. */
-  void trimCalculation(const TimeSpec &ts, const TrimMode &mode);
+  void trimCalculation(const dueca::TimeSpec &ts, const dueca::TrimMode &mode);
 };
 
 #endif

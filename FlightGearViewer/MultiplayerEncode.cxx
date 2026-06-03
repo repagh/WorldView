@@ -1742,7 +1742,7 @@ MultiplayerEncode::MultiplayerEncode(const std::string &receiver,
   struct in_addr inaddr;
   int res = inet_aton(receiver.c_str(), &inaddr);
   if (!res) {
-    cerr << "Cannot decode IP address \"" << receiver << '"' << endl;
+    std::cerr << "Cannot decode IP address \"" << receiver << '"' << std::endl;
   }
   else {
     this->receiver = inaddr.s_addr;
@@ -1769,7 +1769,7 @@ void MultiplayerEncode::encode(const BaseObjectMotion &motion,
   // /usr/share/FlightGear/Aircraft
   {
     char model_ptr[96] = {};
-    strncpy(model_ptr, fgclass.c_str(), min(fgclass.size(), 96UL));
+    strncpy(model_ptr, fgclass.c_str(), std::min(fgclass.size(), 96UL));
     xdr_opaque(&xdr_data, model_ptr, 96);
   } // 96
 
@@ -1859,7 +1859,7 @@ void MultiplayerEncode::encode(const BaseObjectMotion &motion,
   assert(xdr_getpos(&xdr_header) == 24);
   {
     char name_ptr[8] = {};
-    strncpy(name_ptr, name.c_str(), min(name.size(), 8UL));
+    strncpy(name_ptr, name.c_str(), std::min(name.size(), 8UL));
     xdr_opaque(&xdr_header, name_ptr, 8);
     // xdr_bytes(&xdr_header, &name_ptr, &size, 8);
     xdr_setpos(&xdr_header, 32);
@@ -1957,39 +1957,43 @@ void MultiplayerEncode::dump(const char *buffer, size_t bufsize)
   }
 }
 
-void MultiplayerEncode::propertyEncode(XDR &xdr_data, unsigned propno, float value)
+void MultiplayerEncode::propertyEncode(XDR &xdr_data, unsigned propno,
+                                       float value)
 {
   try {
     propmap[propno]->code(xdr_data, propno, value);
   }
-  catch (std::exception& e) {
+  catch (std::exception &e) {
     W_MOD("Cannot encode property " << propno)
   }
 }
-void MultiplayerEncode::propertyEncode(XDR &xdr_data, unsigned propno, int64_t value)
+void MultiplayerEncode::propertyEncode(XDR &xdr_data, unsigned propno,
+                                       int64_t value)
 {
   try {
     propmap[propno]->code(xdr_data, propno, value);
   }
-  catch (std::exception& e) {
+  catch (std::exception &e) {
     W_MOD("Cannot encode property " << propno)
   }
 }
-void MultiplayerEncode::propertyEncode(XDR &xdr_data, unsigned propno, bool value)
+void MultiplayerEncode::propertyEncode(XDR &xdr_data, unsigned propno,
+                                       bool value)
 {
   try {
     propmap[propno]->code(xdr_data, propno, value);
   }
-  catch (std::exception& e) {
+  catch (std::exception &e) {
     W_MOD("Cannot encode property " << propno)
   }
 }
-void MultiplayerEncode::propertyEncode(XDR &xdr_data, unsigned propno, const std::string& value)
+void MultiplayerEncode::propertyEncode(XDR &xdr_data, unsigned propno,
+                                       const std::string &value)
 {
   try {
     propmap[propno]->code(xdr_data, propno, value);
   }
-  catch (std::exception& e) {
+  catch (std::exception &e) {
     W_MOD("Cannot encode property " << propno)
   }
 }

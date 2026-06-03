@@ -15,6 +15,9 @@
 #include <dueca/ChannelReadToken.hxx>
 #include <dueca/debug.h>
 
+using namespace dueca;
+using namespace std;
+
 namespace vsgviewer {
 
 VSGBaseTransform::VSGBaseTransform(const WorldDataSpec &data) :

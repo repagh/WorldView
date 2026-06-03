@@ -24,6 +24,7 @@
 
 
 USING_DUECA_NS;
+using namespace std;
 
 // Parameters to be inserted
 const ParameterTable* OgreObject_Dueca::getParameterTable()

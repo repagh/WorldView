@@ -10,17 +10,16 @@
 
 #define OSGOverlay_cxx
 #include "OSGOverlay.hxx"
-#include "RvPQuat.hxx"
 #include "OSGObjectFactory.hxx"
 #include <osg/Geode>
 #include <osg/Camera>
 #include <osg/Texture2D>
 #include <osgDB/ReadFile>
-#include <cstring>
-#include <algorithm>
-#include <cmath>
 #include <debug.h>
 #include "OSGViewer.hxx"
+
+using namespace dueca;
+using namespace std;
 
 static const double deg2rad = M_PI / 180.0;
 

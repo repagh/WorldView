@@ -2,9 +2,9 @@
 /*      item            : OgreObject.cxx
         made by         : Rene' van Paassen
         date            : 090617
-	category        : body file 
-        description     : 
-	changes         : 090617 first version
+        category        : body file
+        description     :
+        changes         : 090617 first version
         language        : C++
 */
 
@@ -19,6 +19,8 @@
 #endif
 
 using namespace Ogre;
+using namespace dueca;
+using namespace std;
 
 OgreObject::OgreObject() :
   entity(NULL),
@@ -30,40 +32,40 @@ OgreObject::OgreObject() :
   // no further initialisation
 }
 
+OgreObject::~OgreObject() {}
 
-OgreObject::~OgreObject()
-{
-  
-}
-
-void OgreObject::init(Ogre::SceneManager* manager)
+void OgreObject::init(Ogre::SceneManager *manager)
 {
   try {
     MeshPtr m = Ogre::MeshManager::getSingleton().load(mesh_name, groupname);
-    DEB("getting mesh " << groupname << "/" << mesh_name << " ptr=" <<
-        reinterpret_cast<void*>(m.get()));
+    DEB("getting mesh " << groupname << "/" << mesh_name
+                        << " ptr=" << reinterpret_cast<void *>(m.get()));
     entity = manager->createEntity(name.c_str(), mesh_name.c_str());
-    
+
     node = manager->getRootSceneNode()->createChildSceneNode(name.c_str());
     node->attachObject(entity);
   }
-  catch (const Ogre::Exception& e) {
+  catch (const Ogre::Exception &e) {
     std::cerr << "OgreObject caught " << e.what() << std::endl;
     return;
   }
 }
 
-void OgreObject::unInit(Ogre::SceneManager* manager)
+void OgreObject::unInit(Ogre::SceneManager *manager)
 {
   if (node) {
     node->removeAndDestroyAllChildren();
     manager->destroySceneNode(node);
   }
-  if (entity) { manager->destroyEntity(entity); }
-  node = NULL; entity = NULL;
+  if (entity) {
+    manager->destroyEntity(entity);
+  }
+  node = NULL;
+  entity = NULL;
 }
 
 void OgreObject::visible(bool vis)
 {
-  if (entity) entity->setVisible(vis);
+  if (entity)
+    entity->setVisible(vis);
 }

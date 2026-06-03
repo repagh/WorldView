@@ -17,6 +17,7 @@
 #include <map>
 
 using namespace std;
+using namespace dueca;
 
 // keep a check of loaded models
 // convert this to a proper static class, so it can destruct the stuff

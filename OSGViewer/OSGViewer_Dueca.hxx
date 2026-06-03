@@ -143,7 +143,7 @@ USING_DUECA_NS;
     include OSGObjectFactory.hxx, and create a SubContractor with the
     OSG model factory. 
 
-    This class has been derived from the ScriptCreatable base class,
+    This class has been derived from the dueca::ScriptCreatable base class,
     and has a (scheme) script command to create it and optionally add
     parameters. This class encapsulates the OSGViewer objects, in
     this way these can be made and specified from a DUECA script.
@@ -153,7 +153,7 @@ USING_DUECA_NS;
 
     \verbinclude osg-viewer-dueca.scm
  */
-class OSGViewer_Dueca: public ScriptCreatable, public OSGViewer
+class OSGViewer_Dueca: public dueca::ScriptCreatable, public OSGViewer
 {
 private: // simulation data
   /** self-define the module type, to ease writing the parameter table */
@@ -172,7 +172,7 @@ public: // construction and further specification
   ~OSGViewer_Dueca();
 
   /** Obtain a pointer to the parameter table. */
-  static const ParameterTable* getParameterTable();
+  static const dueca::ParameterTable* getParameterTable();
 
 private:
   /** Specification of a viewport */
@@ -184,7 +184,7 @@ private:
   /** Specification of a visual object in the world */
   WorldDataSpec build_object_spec;
 
-  /** Callback to be attached to the viewport.
+  /** dueca::Callback to be attached to the viewport.
       Not added to ViewSpec because it cannot be communicated
       over a channel (pointer). */
   osg::Camera::Camera::DrawCallback *build_callback;
@@ -214,7 +214,7 @@ private:
   bool setEyeOffset(const std::vector<float>& frustum);
 
   /** Add an object in the world. */
-  bool addScriptObject(ScriptCreatable& ava, bool in);
+  bool addScriptObject(dueca::ScriptCreatable& ava, bool in);
   
   /** Set the coordinates for an object in the world */
   bool setObjectCoordinates(const std::vector<double>& coord);
@@ -232,7 +232,7 @@ private:
   bool setFog(const std::vector<double>& fog);
 
   /** Add a callback to the current viewport/camera. */
-  bool addDrawCallback(ScriptCreatable& cb, bool in);
+  bool addDrawCallback(dueca::ScriptCreatable& cb, bool in);
   
 public:
   /** Default script linkage. */

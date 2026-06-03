@@ -31,7 +31,8 @@
 #define E_MOD
 #include <debug.h>
 
-USING_DUECA_NS;
+using namespace dueca;
+using namespace std;
 
 // Parameters to be inserted
 const ParameterTable *OSGViewer_Dueca::getParameterTable()

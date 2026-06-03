@@ -31,7 +31,7 @@ USING_DUECA_NS;
 
     \verbinclude configure-view.scm
  */
-class ConfigureView: public Module
+class ConfigureView: public dueca::Module
 {
 private: // simulation data
   /** Window with controls */
@@ -45,25 +45,25 @@ private: // simulation data
   
 private: // channel access
   /** Write the configation */
-  EventChannelWriteToken<WorldViewConfig>  w_config;
+  dueca::EventChannelWriteToken<WorldViewConfig>  w_config;
 
 private: // activity allocation
-  /** Callback object for simulation calculation. */
-  Callback<ConfigureView>  cb1;
+  /** dueca::Callback object for simulation calculation. */
+  dueca::Callback<ConfigureView>  cb1;
 
   /** Activity for simulation calculation. */
-  ActivityCallback      do_calc;
+  dueca::ActivityCallback      do_calc;
   
 public: // class name and trim/parameter tables
   /** Name of the module. */
   static const char* const           classname;
 
   /** Return the parameter table. */
-  static const ParameterTable*       getMyParameterTable();
+  static const dueca::ParameterTable*       getMyParameterTable();
   
 public: // construction and further specification
   /** Constructor. Is normally called from scheme/the creation script. */
-  ConfigureView(Entity* e, const char* part, const PrioritySpec& ts);
+  ConfigureView(dueca::Entity* e, const char* part, const dueca::PrioritySpec& ts);
 
   /** Continued construction. This is called after all script
       parameters have been read and filled in, according to the
@@ -83,10 +83,10 @@ public: // construction and further specification
   // Delete if not needed!
 
   /** Specify a time specification for the simulation activity. */
-  bool setTimeSpec(const TimeSpec& ts);
+  bool setTimeSpec(const dueca::TimeSpec& ts);
 
   /** Request check on the timing. */
-  bool checkTiming(const vector<int>& i);
+  bool checkTiming(const std::vector<int>& i);
 
   void doAction(GtkToolButton* button, gpointer gp);
 
@@ -95,14 +95,14 @@ public: // member functions for cooperation with DUECA
   bool isPrepared();
 
   /** start responsiveness to input data. */
-  void startModule(const TimeSpec &time);
+  void startModule(const dueca::TimeSpec &time);
   
   /** stop responsiveness to input data. */
-  void stopModule(const TimeSpec &time);
+  void stopModule(const dueca::TimeSpec &time);
 
 public: // the member functions that are called for activities
   /** the method that implements the main calculation. */
-  void doCalculation(const TimeSpec& ts);
+  void doCalculation(const dueca::TimeSpec& ts);
 };
 
 #endif
