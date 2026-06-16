@@ -93,7 +93,7 @@ class objects. Please also add a description (c-style string). */
     { "set-frustum",
       new MemberCall<_ThisObject_, vector<float>>(&_ThisObject_::setFrustum),
       "Set view geometry, <near plane> <far plane>, and then either:\n"
-      "<fov y> for specifying viewing with only a field-o-view angle, or\n"
+      "<fov y> [deg] for specifying viewing with only a field-of-view angle, or\n"
       "<left> <right> <bottom> <top> of the near frustum plane\n"
       "in camera coordinates" },
 
