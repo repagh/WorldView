@@ -149,7 +149,7 @@ void OSGViewer::ViewSet::setProjection()
 
   // set up the projection
   if (frustum_data.size() == 3) {
-	if(frustum_data[2] < 3.0 {  // reasonable guess on units
+	if(frustum_data[2] < 3.0) {  // reasonable guess on units
 	  cout << "Using projection FoV of " << rad2deg(frustum_data[2]) <<
 		" degrees" << endl;
       camera->setProjectionMatrixAsPerspective
