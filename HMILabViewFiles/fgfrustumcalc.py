@@ -73,7 +73,7 @@ def writexml(winname, vpx, vpw, fl, fr, fb, ft, vh):
     view = etree.SubElement(camera, 'view')
     l = etree.SubElement(view, 'heading-deg')
     l.set('type', "double")
-    l.text = str(vh)
+    l.text = str(-vh)
 
     gui = etree.SubElement(camera_group, "gui")
     window = etree.SubElement(gui, 'window')

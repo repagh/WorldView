@@ -149,19 +149,15 @@ void OSGViewer::ViewSet::setProjection()
 
   // set up the projection
   if (frustum_data.size() == 3) {
-	if(frustum_data[2] < 3.0) {  // reasonable guess on units
-	  cout << "Using projection FoV of " << rad2deg(frustum_data[2]) <<
-		" degrees" << endl;
-      camera->setProjectionMatrixAsPerspective
-        (rad2deg(frustum_data[2]), aspect,
-         frustum_data[0], frustum_data[1]);
-	} else {
-	  cout << "Using projection FoV of " << frustum_data[2] <<
-		" degrees" << endl;
-      camera->setProjectionMatrixAsPerspective
-        (frustum_data[2], aspect,
-         frustum_data[0], frustum_data[1]);
-	}
+    if (frustum_data[2] < 1.0 || frustum_data[2] > 80.0) {
+      W_MOD("Frustum view angle (" << frustum_data[2] << ") is very small or excessively large");
+    }
+    if (frustum_data[1] < frustum_data[0]) {
+      W_MOD("Frustum near and far distance error? " << frustum_data[0] << " .. " << frustum_data[1]);
+    }
+    camera->setProjectionMatrixAsPerspective
+      (frustum_data[2], aspect,
+       frustum_data[0], frustum_data[1]);
   }
   else if (frustum_data.size() == 6) {
     osg::Matrixd f;

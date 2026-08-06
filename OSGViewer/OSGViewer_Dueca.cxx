@@ -167,7 +167,7 @@ const ParameterTable *OSGViewer_Dueca::getParameterTable()
     { "set-frustum",
       new MemberCall<_ThisObject_, vector<float>>(&_ThisObject_::setFrustum),
       "Set frustum geometry, <near plane> <far plane>, and then either:\n"
-      "<fov y> [rad] for specifying viewing with only a field-o-view angle,\n"
+      "<fov y> [deg] for specifying viewing with only a field-of-view angle,\n"
       "or <left> <right> <bottom> <top> of the near frustum plane\n"
       "in camera coordinates" },
 
