@@ -174,7 +174,7 @@ void OgreViewer::ViewSet::init ( const ViewSpec& spec,
     camera->setFarClipDistance ( spec.frustum_data[1]);
   }
   if ( spec.frustum_data.size() == 3) {
-    camera->setFOVy ( Radian ( Degree ( spec.frustum_data[2])));
+    camera->setFOVy ( Radian ( spec.frustum_data[2]));
   }
   else if ( spec.frustum_data.size() == 6) {
     camera->setFrustumExtents ( spec.frustum_data[2], spec.frustum_data[3],
