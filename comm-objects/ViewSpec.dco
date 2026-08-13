@@ -22,7 +22,7 @@ typedef std::vector<float> vector_float_t;")
        (IncludeFile ViewSpecExtra)
        (ConstructorCode "
 frustum_data[0] = 1.0;
-frustum_data[1] = 1000.0, frustum_data[2] = 0.8;
+frustum_data[1] = 1000.0, frustum_data[2] = 45.0;
 shadow_colour[0] = 0.2;
 shadow_colour[1] = 0.2;
 shadow_colour[2] = 0.2;")
@@ -61,7 +61,7 @@ shadow_colour[2] = 0.2;")
 
        ;; shadowing technique
        (vstring shadow_technique (Default "stencil"))
-       
+
        ;; color for shadow
        (vector_float_t shadow_colour (Default 3))
 
