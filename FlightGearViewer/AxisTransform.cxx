@@ -169,6 +169,55 @@ void FGECEFAxis::toECEF(double pos[3], float velocity[3], float attitude[4],
   v_omega = R * v_pqr;
 }
 
+FGLatLonAltAxis::FGLatLonAltAxis()
+{
+  //
+}
+
+void FGLatLonAltAxis::transform(double result[6], const double xyz[3],
+                                const double quat[4])
+{
+  // fill in position
+  result[0] = rad2deg(xyz[0]);
+  result[1] = rad2deg(xyz[1]);
+  result[2] = m2ft(xyz[2]);
+
+  result[3] = rad2deg(Q2phi(quat)); // roll
+  result[4] = rad2deg(Q2tht(quat)); // pitch
+  result[5] = rad2deg(Q2psi(quat)); // yaw
+}
+
+void FGLatLonAltAxis::toECEF(double pos[3], float velocity[3], float attitude[4],
+                        float omega[3], const double xyz[3],
+                        const double quat[4], const float uvw[3],
+                        const float pqr[3]) const
+{
+  LatLonAlt lla(xyz[0], xyz[1], xyz[2]);
+
+  ECEF ecef(lla);
+
+  VectorE v_pos(pos, 3);
+  v_pos = ecef.xyz;
+
+  // construct local axis here
+  LocalAxis axis(lla);
+  Orientation o_ecef = axis.toECEF(Orientation(quat));
+  toAngleAxis(o_ecef, attitude);
+
+  // velocities to ECEF?
+  VectorfE v_velocity(velocity, 3);
+  cVectorfE v_uvw(uvw, 3);
+  VectorfE v_omega(omega, 3);
+  cVectorfE v_pqr(pqr, 3);
+  Eigen::Matrix<float, 3, 3> R = axis.R().cast<float>();
+
+  // transform the speed vector, in body axes, to ECEF coordinates
+  v_velocity = R * v_uvw;
+
+  // transform the rotational speed vector, in body axes, to ECEF coordinates
+  v_omega = R * v_pqr;
+}
+
 // new set-up
 Orientation::Orientation(const EulerAngles &angles) :
   quat(&(this->L), 4)

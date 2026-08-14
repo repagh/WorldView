@@ -43,62 +43,68 @@ const ParameterTable *FlightGearViewer_Dueca::getParameterTable()
        VarProbe pointers to perform calls or insert values into your
        class objects. Please also add a description (c-style string). */
     { "receiver",
-      new VarProbe<FlightGearViewer_Dueca, string>(
-        &FlightGearViewer_Dueca::receiver),
+      new VarProbe<_ThisModule_, string>(
+        &_ThisModule_::receiver),
       "IP address for the flightgear process" },
 
     { "own_interface",
-      new VarProbe<FlightGearViewer_Dueca, string>(
-        &FlightGearViewer_Dueca::own_interface),
+      new VarProbe<_ThisModule_, string>(
+        &_ThisModule_::own_interface),
       "IP address of own interface, empty to bind to all interfaces" },
 
     { "port",
-      new VarProbe<FlightGearViewer_Dueca, int>(&FlightGearViewer_Dueca::port),
+      new VarProbe<_ThisModule_, int>(&_ThisModule_::port),
       "Port to be used" },
 
     { "receive-port",
-      new VarProbe<FlightGearViewer_Dueca, int>(
-        &FlightGearViewer_Dueca::receive_port),
+      new VarProbe<_ThisModule_, int>(
+        &_ThisModule_::receive_port),
       "reception port, needed if return message is required" },
 
     { "lat-lon-psi0",
-      new MemberCall<FlightGearViewer_Dueca, vector<double>>(
-        &FlightGearViewer_Dueca::setLatLonAltPsi0),
+      new MemberCall<_ThisModule_, vector<double>>(
+        &_ThisModule_::setLatLonAltPsi0),
       "call with three parameters to set local coordinate system" },
 
     { "lat-lon-alt-psi0",
-      new MemberCall<FlightGearViewer_Dueca, vector<double>>(
-        &FlightGearViewer_Dueca::setLatLonAltPsi0),
+      new MemberCall<_ThisModule_, vector<double>>(
+        &_ThisModule_::setLatLonAltPsi0),
       "call with four parameters to set local coordinate system" },
 
+    { "select-coordinate-system",
+      new MemberCall<_ThisModule_, string>(
+        &_ThisModule_::selectCoordinateSystem),
+      "Coordinate system to select, either ECEF or LatLonAlt. To use a local\n"
+      "coordinate system, define it with \"lat-lon-alt-psi0" },
+
     { "binary-packets",
-      new VarProbe<FlightGearViewer_Dueca, bool>(
-        &FlightGearViewer_Dueca::binary_packets),
+      new VarProbe<_ThisModule_, bool>(
+        &_ThisModule_::binary_packets),
       "Use binary packets for sending and receiving" },
 
     { "mp-interface",
-      new VarProbe<FlightGearViewer_Dueca, string>(
-        &FlightGearViewer_Dueca::mp_interface),
+      new VarProbe<_ThisModule_, string>(
+        &_ThisModule_::mp_interface),
       "Interface address to listen on for the multiplayer server" },
 
     { "mp-port",
-      new VarProbe<FlightGearViewer_Dueca, int>(
-        &FlightGearViewer_Dueca::mp_port),
+      new VarProbe<_ThisModule_, int>(
+        &_ThisModule_::mp_port),
       "Port number of the multiplayer server, enables if set" },
 
     { "mp-client",
-      new MemberCall<FlightGearViewer_Dueca, string>(
-        &FlightGearViewer_Dueca::addMultiplayClient),
+      new MemberCall<_ThisModule_, string>(
+        &_ThisModule_::addMultiplayClient),
       "Specify multiplayer client, network/host address and port" },
 
     { "mp-radarrange",
-      new VarProbe<FlightGearViewer_Dueca, float>(
-        &FlightGearViewer_Dueca::mp_radarrange),
+      new VarProbe<_ThisModule_, float>(
+        &_ThisModule_::mp_radarrange),
       "Radar range/visibility for the multiplayer connection." },
 
     { "model-table",
-      new MemberCall<FlightGearViewer_Dueca, std::vector<std::string>>(
-        &FlightGearViewer_Dueca::modelTableEntry),
+      new MemberCall<_ThisModule_, std::vector<std::string>>(
+        &_ThisModule_::modelTableEntry),
       "Set the link between simulation class name, and FlightGear, for\n"
       "sending player data to a multiplayer server. Each object needs a name\n"
       "and a model class, and optionally a livery.\n"

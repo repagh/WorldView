@@ -66,7 +66,7 @@ protected:
   double elevation;
 
   /** Pointer to WorldView object */
-  WorldView* master;
+  WorldView *master;
 
 private:
   /** Current position */
@@ -149,14 +149,14 @@ public:
       @param base  Object motion, position, etc.
       @param late  Time after DUECA tick
       @param freeze Frozen simulation, suppress extrapolation */
-  void setBase(dueca::TimeTickType tick, const BaseObjectMotion &base, double late,
-               bool freeze);
+  void setBase(dueca::TimeTickType tick, const BaseObjectMotion &base,
+               double late, bool freeze);
 
   /** Initialise the windows etc. */
   void init(bool waitswap) {};
 
   /** Collect pointer to the master */
-  void setMaster(WorldView* m) override;
+  void setMaster(WorldView *m) override;
 
   /** Do a re-draw
 
@@ -168,8 +168,11 @@ public:
   /** Wait for the swap. */
   void waitSwap();
 
-    /** Set the origin point for a local coordinate system */
+  /** Set the origin point for a local coordinate system */
   bool setLatLonAltPsi0(const std::vector<double> &vec);
+
+  /** Select either ECEF or LatLonAlt as coordinate system */
+  bool selectCoordinateSystem(const std::string &sel);
 
   /** Send other object data */
   inline MultiplayerEncode &getEncoder() const { return *encoder; }
@@ -214,7 +217,8 @@ from the map when the entry is removed from the channel. */
 
   /** Create a controllable object. Object creation depends on class of
       data supplied, further init may rely on fist data entering. */
-  bool createControllable(const dueca::GlobalId &master_id, const dueca::NameSet &cname,
+  bool createControllable(const dueca::GlobalId &master_id,
+                          const dueca::NameSet &cname,
                           dueca::entryid_type entry_id, uint32_t creation_id,
                           const std::string &data_class,
                           const std::string &entry_label,

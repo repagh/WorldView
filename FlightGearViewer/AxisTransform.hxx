@@ -50,7 +50,6 @@ typedef Eigen::Map<const Eigen::VectorXd> cVectorE;
 
 struct EulerAngles;
 
-
 /** Convert a quaternion in a vector to an angle/axis rep
 
     This should match the flightgear approach.
@@ -58,21 +57,20 @@ struct EulerAngles;
 template <typename T1, typename T2>
 inline void toAngleAxis(const T1 &q, T2 &res)
 {
-  float nrm = std::sqrt(q[0]*q[0]+ q[1]*q[1]+ q[2]*q[2]+ q[3]*q[3]);
-  float angle = std::acos(q[0]/nrm);
+  float nrm = std::sqrt(q[0] * q[0] + q[1] * q[1] + q[2] * q[2] + q[3] * q[3]);
+  float angle = std::acos(q[0] / nrm);
   float sinangle = std::sin(angle);
   if (fabs(sinangle) < 1e-6) {
-    res[1] = q[1]*2.0/nrm;
-    res[2] = q[2]*2.0/nrm;
-    res[3] = q[3]+2.0/nrm;
+    res[1] = q[1] * 2.0 / nrm;
+    res[2] = q[2] * 2.0 / nrm;
+    res[3] = q[3] + 2.0 / nrm;
   }
   else {
-    res[1] = q[1] * angle * 2.0 / (nrm*sinangle);
-    res[2] = q[2] * angle * 2.0 / (nrm*sinangle);
-    res[3] = q[3] * angle * 2.0 / (nrm*sinangle);
+    res[1] = q[1] * angle * 2.0 / (nrm * sinangle);
+    res[2] = q[2] * angle * 2.0 / (nrm * sinangle);
+    res[3] = q[3] * angle * 2.0 / (nrm * sinangle);
   }
 }
-
 
 /** Represent an orientation or rotation step with quaternion */
 struct Orientation
@@ -95,10 +93,16 @@ struct Orientation
   template <class V> Orientation(double angle, const V &axis);
 
   /** Construct from raw quaternion */
-  template <class V> Orientation(const V& q) :
-    L(q[0]), lx(q[1]), ly(q[2]), lz(q[3]),
+  template <class V>
+  Orientation(const V &q) :
+    L(q[0]),
+    lx(q[1]),
+    ly(q[2]),
+    lz(q[3]),
     quat(&(this->L), 4)
-  { normalize(); }
+  {
+    normalize();
+  }
 
   /** Default, null orientation */
   Orientation();
@@ -125,8 +129,9 @@ struct Orientation
 };
 
 namespace std {
+/** Print an orientation, mainly for debugging. */
 ostream &operator<<(ostream &os, const Orientation &c);
-}
+} // namespace std
 
 /** Euler angles describing an orientation */
 struct EulerAngles
@@ -138,15 +143,17 @@ struct EulerAngles
   /** yaw angle */
   double psi;
 
-    /** Construction, phi, theta, psi */
+  /** Construction, phi, theta, psi */
   EulerAngles(double phi, double tht, double psi);
 
   /** Construction from quaternion */
   EulerAngles(const Orientation &o);
 };
+
 namespace std {
+/** Print an euler angles set, mainly for debugging. */
 ostream &operator<<(ostream &os, const EulerAngles &c);
-}
+} // namespace std
 
 class LocalAxis;
 struct ECEF;
@@ -194,14 +201,14 @@ struct ECEF : public Carthesian
 /** Position on the WGS geoid in geodetic coordinates */
 struct LatLonAlt
 {
-  /** Latitude */
+  /** Latitude [rad] */
   double lat;
-  /** Longitude */
+  /** Longitude [rad] */
   double lon;
-  /** Altitude */
+  /** Altitude [m] */
   double alt;
 
-    /** Constructor, straightforward from lat, lon and alt */
+  /** Constructor, straightforward from lat, lon and alt */
   LatLonAlt(double lat, double lon, double alt);
 
   /** Constructor from an ECEF object. Uses approximate calculation
@@ -232,7 +239,7 @@ ostream &operator<<(ostream &os, const LatLonAlt &lla);
     60 NM lead to a height error of approximately 7 m (versus 900 m
     uncorrected!). This approximation is good enough for flying around
     a single airport. Otherwise, consider ECEF coordinates for your
-    simulation and use those */
+    simulation and use those. */
 class LocalAxis
 {
   /** Conversion matrix to convert local position to ECEF orientation */
@@ -261,7 +268,7 @@ public:
   ECEF toECEF(const Carthesian &coords) const;
 
   /** Create and ECEF orientation from a local orientation */
-  Orientation toECEF(const Orientation& o) const;
+  Orientation toECEF(const Orientation &o) const;
 
   /** Create a local representation from an ECEF location */
   Carthesian toLocal(const ECEF &ecef) const;
@@ -273,8 +280,18 @@ public:
   inline const Eigen::Matrix<double, 3, 3> &R() const { return to_ECEF; }
 };
 
-/** Base class for flightgear axes. Derived class implements ecef
-    coordinates, or coordinates with respect to a local axis somewhere */
+/** Base class for flightgear axes.
+
+    Derived class implements ECEF
+    coordinates, or coordinates with respect to a local axis, or LatLonAlt
+    coordinates.
+
+    This class provides two conversions:
+
+    - To lat-lon-alt and attitude angles to be sent to FlightGear for the
+   ownship
+    - To an ECEF, including rotational and linear speeds, for other entities
+    */
 struct FGAxis
 {
   /** Constructor */
@@ -284,11 +301,11 @@ struct FGAxis
   virtual ~FGAxis();
 
     /** Result of this transformation is latitude, in degrees,
-      longitude, in degrees, and geodetic altitude, in feet,
-      next roll, pitch and yaw angles, also in degrees.
-      \param  result vector for result
-      \param  xyz    position vector
-      \param  quat   attitude quaternion. */
+longitude, in degrees, and geodetic altitude, in feet,
+next roll, pitch and yaw angles, also in degrees.
+\param  result vector for result
+\param  xyz    position vector
+\param  quat   attitude quaternion. */
   virtual void transform(double result[6], const double xyz[3],
                          const double quat[4]) = 0;
 
@@ -338,13 +355,14 @@ struct FGLocalAxis : public FGAxis
       \param  result vector for result
       \param  xyz    position vector
       \param  quat   attitude quaternion. */
-  void transform(double result[6], const double xyz[3], const double quat[4]);
+  void transform(double result[6], const double xyz[3],
+                 const double quat[4]) final;
 
   /** Result of this transformation is ECEF position, double, in m
       Standard ECEF, x through Greenwich meridian, y through east, z upwards */
   void toECEF(double pos[3], float velocity[3], float attitude[4],
               float omega[3], const double xyz[3], const double quat[4],
-              const float uvw[3], const float pqr[3]) const;
+              const float uvw[3], const float pqr[3]) const final;
 };
 
 /** Axis transformation from ECEF to FlightGear coordinates.
@@ -356,19 +374,65 @@ struct FGECEFAxis : public FGAxis
   /** Constructor. */
   FGECEFAxis();
 
-    /** Result of this transformation is latitude, in degrees,
-      longitude, in degrees, and geodetic altitude, in feet,
-      next roll, pitch and yaw angles, also in degrees.
-      \param  result vector for result
-      \param  xyz    position vector, wrt ecef
-      \param  quat   attitude quaternion, wrt ecef */
-  void transform(double result[6], const double xyz[3], const double quat[4]);
+    /** Axis transformatio from ECEF
+
+        Result of this transformation is latitude, in degrees,
+        longitude, in degrees, and geodetic altitude, in feet,
+        next roll, pitch and yaw angles, also in degrees.
+        @param  result vector for result
+        @param  xyz    position vector, wrt ecef
+        @param  quat   attitude quaternion, wrt ecef
+        */
+  void transform(double result[6], const double xyz[3],
+                 const double quat[4]) final;
 
   /** Result of this transformation is ECEF position, double, in m
       Standard ECEF, x through Greenwich meridian, y through east, z upwards */
   void toECEF(double pos[3], float velocity[3], float attitude[4],
               float omega[3], const double xyz[3], const double quat[4],
-              const float uvw[3], const float pqr[3]) const;
+              const float uvw[3], const float pqr[3]) const final;
+};
+
+/** Axis transformation from lat lon alt and an
+    orientation wrt the local horizontal and north to FlightGear coordinates.
+
+    - X contains latitude in degrees
+    - Y contains longitude in degrees
+    - Z is latitude above ellipsoid in m.
+   */
+struct FGLatLonAltAxis : public FGAxis
+{
+  /** Constructor. */
+  FGLatLonAltAxis();
+
+  /** Transform to FlightGear inputs
+
+      Result of this transformation is latitude, in degrees,
+      longitude, in degrees, and geodetic altitude, in feet,
+      next roll, pitch and yaw angles, also in degrees.
+
+      @param  result vector for result
+      @param  xyz    position vector, wrt ecef
+      @param  quat   attitude quaternion, wrt ecef
+      */
+  void transform(double result[6], const double xyz[3],
+                 const double quat[4]) final;
+
+  /** Result of this transformation is ECEF position and motion
+      Standard ECEF, x through Greenwich meridian, y through east, z upwards
+
+      @param pos        Result, vehicle position, ECEF [m]
+      @param velocity   Result, velocity, ECEF [m/s]
+      @param attitude   Result, attitude wrt ECEF, quaternion
+      @param omega      Result, body rate wrt ECEF, [rad/s]
+      @param xyz        Input, lat [rad], lon [rad], alt above geoid [m]
+      @param quat       Orientation quaternion wrt local north/level
+      @param uvw        Velocity vector, in body coordinates
+      @param pqr        Rotational velocity, in body coordinates
+      */
+  void toECEF(double pos[3], float velocity[3], float attitude[4],
+              float omega[3], const double xyz[3], const double quat[4],
+              const float uvw[3], const float pqr[3]) const final;
 };
 
 #endif
