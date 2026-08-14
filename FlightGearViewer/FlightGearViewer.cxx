@@ -161,9 +161,24 @@ bool FlightGearViewer::setLatLonAltPsi0(const vector<double> &vec)
   const double deg2rad = M_PI / 180.0;
   double h_zero = vec.size() >= 3 ? vec[2] : 0.0;
   double psi_zero = vec.size() == 4 ? vec[3] : 0.0;
-  axis = boost::shared_ptr<FGAxis>(new FGLocalAxis(
-    vec[0] * deg2rad, vec[1] * deg2rad, h_zero, psi_zero * deg2rad));
+  axis.reset(new FGLocalAxis(vec[0] * deg2rad, vec[1] * deg2rad, h_zero,
+                             psi_zero * deg2rad));
   elevation = h_zero;
+  return true;
+}
+
+bool FlightGearViewer::selectCoordinateSystem(const string &sel)
+{
+  if (sel == "ECEF") {
+    axis.reset(new FGECEFAxis());
+  }
+  else if (sel == "LatLonAlt") {
+    axis.reset(new FGLatLonAltAxis());
+  }
+  else {
+    E_MOD("Cannot specify the " << sel << " coordinate system.");
+    return false;
+  }
   return true;
 }
 
@@ -342,8 +357,7 @@ void FlightGearViewer::redraw(bool wait, bool save_context)
   }
 }
 
-void FlightGearViewer::setMaster(WorldView* m)
-{ master = m; }
+void FlightGearViewer::setMaster(WorldView *m) { master = m; }
 
 FlightGearViewer::MultiplayerClient::MultiplayerClient(int sockfd,
                                                        const sockaddr &in) :
@@ -410,8 +424,8 @@ bool FlightGearViewer::createControllable(
 
     auto op = FGObjectFactory::instance().create(obj.type, obj);
     op->setViewer(this);
-    //FlightGearObject *op =
-    //  new FlightGearObject(obj.name, obj.type, obj.filename[0], this);
+    // FlightGearObject *op =
+    //   new FlightGearObject(obj.name, obj.type, obj.filename[0], this);
 
     op->connect(master_id, cname, entry_id, time_aspect);
     boost::intrusive_ptr<FlightGearObject> bop(op);
@@ -430,10 +444,7 @@ bool FlightGearViewer::createControllable(
   return false;
 }
 
-void FlightGearObject::setViewer(const FlightGearViewer* v)
-{
-  master = v;
-}
+void FlightGearObject::setViewer(const FlightGearViewer *v) { master = v; }
 
 double FlightGearViewer::getFlightTime(double time) const
 {
