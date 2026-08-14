@@ -201,14 +201,14 @@ struct ECEF : public Carthesian
 /** Position on the WGS geoid in geodetic coordinates */
 struct LatLonAlt
 {
-  /** Latitude */
+  /** Latitude [rad] */
   double lat;
-  /** Longitude */
+  /** Longitude [rad] */
   double lon;
-  /** Altitude */
+  /** Altitude [m] */
   double alt;
 
-    /** Constructor, straightforward from lat, lon and alt */
+  /** Constructor, straightforward from lat, lon and alt */
   LatLonAlt(double lat, double lon, double alt);
 
   /** Constructor from an ECEF object. Uses approximate calculation

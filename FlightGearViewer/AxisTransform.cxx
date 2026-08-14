@@ -178,8 +178,8 @@ void FGLatLonAltAxis::transform(double result[6], const double xyz[3],
                                 const double quat[4])
 {
   // fill in position
-  result[0] = xyz[0];
-  result[1] = xyz[1];
+  result[0] = rad2deg(xyz[0]);
+  result[1] = rad2deg(xyz[1]);
   result[2] = m2ft(xyz[2]);
 
   result[3] = rad2deg(Q2phi(quat)); // roll
